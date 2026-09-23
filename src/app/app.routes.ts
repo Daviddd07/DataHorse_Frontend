@@ -2,13 +2,11 @@ import { Routes } from '@angular/router';
 import { Login } from './pages/login/login';
 
 export const routes: Routes = [
+  { path: '', redirectTo: 'login', pathMatch: 'full' },
+  { path: 'login', component: Login },
   {
-    path: 'login',
-    component: Login,
-  },
-  {
-    path: '',
-    redirectTo: 'login',
-    pathMatch: 'full',
+    path: 'registrar',
+    loadComponent: () =>
+      import('./pages/registrar/Registrar.component').then((m) => m.RegistrarComponent),
   },
 ];

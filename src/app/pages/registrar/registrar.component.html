@@ -1,0 +1,140 @@
+<main class="card">
+  <h1>Crea tu cuenta</h1>
+  <p class="sub">Los campos con * son obligatorios.</p>
+
+  <form [formGroup]="form" (ngSubmit)="enviar()" novalidate>
+    <div class="campo">
+      <label for="nombre">Nombre completo *</label>
+      <input
+        id="nombre"
+        type="text"
+        formControlName="nombre"
+        maxlength="120"
+        autocomplete="name"
+        [class.invalido]="error('nombre')"
+        [attr.aria-invalid]="!!error('nombre')"
+      />
+      <small class="error" role="alert">{{ error('nombre') }}</small>
+    </div>
+
+    <div class="campo">
+      <label for="correo">Correo electrónico *</label>
+      <input
+        id="correo"
+        type="email"
+        formControlName="correo"
+        maxlength="180"
+        autocomplete="email"
+        inputmode="email"
+        [class.invalido]="error('correo')"
+        [attr.aria-invalid]="!!error('correo')"
+      />
+      <small class="error" role="alert">{{ error('correo') }}</small>
+    </div>
+
+    <div class="campo">
+      <label for="contrasena">Contraseña *</label>
+      <div class="con-boton">
+        <input
+          id="contrasena"
+          [type]="verPass() ? 'text' : 'password'"
+          formControlName="contrasena"
+          maxlength="64"
+          autocomplete="new-password"
+          aria-describedby="ayuda-pass"
+          [class.invalido]="error('contrasena')"
+          [attr.aria-invalid]="!!error('contrasena')"
+        />
+        <button
+          type="button"
+          class="ver"
+          (click)="verPass.set(!verPass())"
+          [attr.aria-label]="verPass() ? 'Ocultar contraseña' : 'Mostrar contraseña'"
+        >
+          {{ verPass() ? 'Ocultar' : 'Mostrar' }}
+        </button>
+      </div>
+      <small id="ayuda-pass" class="ayuda"
+        >Mínimo 8 caracteres, con mayúscula, minúscula y número.</small
+      >
+      <div class="fuerza" aria-hidden="true">
+        <span
+          [style.width.%]="fuerza * 20"
+          [class.media]="fuerza === 3"
+          [class.alta]="fuerza >= 4"
+        ></span>
+      </div>
+      <small class="error" role="alert">{{ error('contrasena') }}</small>
+    </div>
+
+    <div class="campo">
+      <label for="confirmar">Confirmar contraseña *</label>
+      <div class="con-boton">
+        <input
+          id="confirmar"
+          [type]="verConfirmar() ? 'text' : 'password'"
+          formControlName="confirmar"
+          maxlength="64"
+          autocomplete="new-password"
+          [class.invalido]="error('confirmar')"
+          [attr.aria-invalid]="!!error('confirmar')"
+        />
+        <button
+          type="button"
+          class="ver"
+          (click)="verConfirmar.set(!verConfirmar())"
+          [attr.aria-label]="verConfirmar() ? 'Ocultar confirmación' : 'Mostrar confirmación'"
+        >
+          {{ verConfirmar() ? 'Ocultar' : 'Mostrar' }}
+        </button>
+      </div>
+      <small class="error" role="alert">{{ error('confirmar') }}</small>
+    </div>
+
+    <div class="campo">
+      <label for="telefono">Teléfono</label>
+      <input
+        id="telefono"
+        type="tel"
+        formControlName="telefono"
+        maxlength="30"
+        autocomplete="tel"
+        inputmode="tel"
+        [class.invalido]="error('telefono')"
+      />
+      <small class="error" role="alert">{{ error('telefono') }}</small>
+    </div>
+
+    <div class="campo">
+      <label for="ubicacion">Ubicación</label>
+      <input
+        id="ubicacion"
+        type="text"
+        formControlName="ubicacion"
+        maxlength="180"
+        autocomplete="address-level2"
+        placeholder="Ciudad, departamento"
+        [class.invalido]="error('ubicacion')"
+      />
+      <small class="error" role="alert">{{ error('ubicacion') }}</small>
+    </div>
+
+    @if (mensaje(); as m) {
+      <p
+        class="mensaje"
+        [class.ok-msg]="m.tipo === 'ok'"
+        [class.error-msg]="m.tipo === 'error'"
+        role="status"
+        aria-live="polite"
+      >
+        {{ m.texto }}
+      </p>
+    }
+
+    <button type="submit" class="primario" [disabled]="cargando()">
+      {{ cargando() ? 'Creando cuenta…' : 'Crear cuenta' }}
+    </button>
+  </form>
+
+  <p class="pie">¿Ya tienes cuenta? <a routerLink="/login">Inicia sesión</a></p>
+</main>
