@@ -16,10 +16,12 @@ export interface RegistroRequest {
 export class RegistroService {
   private http = inject(HttpClient);
 
-  // Cámbiala por environment.apiUrl + '/usuarios/registro' (siempre HTTPS en producción).
-  private readonly url = '/api/usuarios/registro';
+  // Backend FastAPI en local. En producción usa HTTPS y mueve esto a environment.
+  private readonly url = 'http://127.0.0.1:8000/api/v1/auth/registro';
 
   registrar(datos: RegistroRequest): Observable<void> {
-    return this.http.post<void>(this.url, datos);
+    const { contrasena, ...resto } = datos;
+    // El backend espera el campo "password".
+    return this.http.post<void>(this.url, { ...resto, password: contrasena });
   }
 }

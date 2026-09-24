@@ -1,4 +1,5 @@
 import { Component, inject, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
   AbstractControl,
   FormBuilder,
@@ -21,6 +22,8 @@ const contrasenaSegura: ValidatorFn = (c: AbstractControl): ValidationErrors | n
 // Confirmación igual a la contraseña.
 const coinciden: ValidatorFn = (g: AbstractControl): ValidationErrors | null =>
   g.get('contrasena')?.value === g.get('confirmar')?.value ? null : { noCoinciden: true };
+
+type Campo = 'nombre' | 'correo' | 'contrasena' | 'confirmar' | 'telefono' | 'ubicacion';
 
 @Component({
   selector: 'app-registrar',
@@ -61,7 +64,16 @@ export class RegistrarComponent {
     { validators: coinciden },
   );
 
+  // Se incrementa con cada cambio del formulario para que la pantalla se redibuje
+  // (necesario cuando la app funciona sin zone.js).
+  private version = signal(0);
+
+  constructor() {
+    this.form.events.pipe(takeUntilDestroyed()).subscribe(() => this.version.update((n) => n + 1));
+  }
+
   get fuerza(): number {
+    this.version();
     const p = this.form.controls.contrasena.value;
     let n = 0;
     if (p.length >= 8) n++;
@@ -73,9 +85,8 @@ export class RegistrarComponent {
   }
 
   // Mensaje de error de un campo (solo si ya lo tocó o intentó enviar).
-  error(
-    campo: 'nombre' | 'correo' | 'contrasena' | 'confirmar' | 'telefono' | 'ubicacion',
-  ): string {
+  error(campo: Campo): string {
+    this.version();
     const c = this.form.controls[campo];
     if (!(c.touched || c.dirty)) return '';
     if (campo === 'confirmar' && this.form.hasError('noCoinciden') && c.value)
