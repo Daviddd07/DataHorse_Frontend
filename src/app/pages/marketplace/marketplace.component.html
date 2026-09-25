@@ -1,0 +1,139 @@
+<div class="dh-page">
+  <header class="dh-header">
+    <div class="dh-logo">
+      <svg class="dh-logo-icon" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+        <path
+          d="M9 24c0-7 3-13 7-13s7 6 7 13"
+          stroke="currentColor"
+          stroke-width="2.5"
+          stroke-linecap="round"
+        />
+      </svg>
+      <span>DataHorse</span>
+    </div>
+
+    <div class="dh-search">
+      <input type="text" placeholder="Buscar por nombre, raza o ubicación" />
+    </div>
+
+    <div class="dh-header-actions">
+      <button class="dh-icon-btn" type="button" aria-label="Favoritos">♥</button>
+      <button class="dh-icon-btn" type="button" aria-label="Solicitudes de compatibilidad">
+        ⇄
+      </button>
+      <div class="dh-avatar">{{ inicial() }}</div>
+    </div>
+  </header>
+
+  <div class="dh-greeting">
+    <h1>Hola, {{ nombreUsuario() }}</h1>
+    <p>Estos caballos coinciden con lo que has buscado antes.</p>
+  </div>
+
+  <nav class="dh-categories">
+    <button
+      *ngFor="let categoria of categorias"
+      type="button"
+      [class.active]="categoriaActiva() === categoria"
+      (click)="categoriaActiva.set(categoria)"
+    >
+      {{ categoria }}
+    </button>
+  </nav>
+
+  <div class="dh-body">
+    <aside class="dh-filters">
+      <div class="dh-filter-group">
+        <h3>Precio de referencia</h3>
+        <input
+          type="range"
+          min="10000000"
+          max="60000000"
+          step="1000000"
+          [value]="precioMax()"
+          (input)="precioMax.set(+$any($event.target).value)"
+        />
+        <p class="dh-filter-value">
+          Hasta {{ precioMax() | currency: 'COP' : 'symbol' : '1.0-0' }}
+        </p>
+      </div>
+
+      <div class="dh-filter-group">
+        <h3>Raza</h3>
+        <label *ngFor="let raza of razas" class="dh-checkbox">
+          <input
+            type="checkbox"
+            [checked]="razasSeleccionadas().includes(raza)"
+            (change)="toggleRaza(raza)"
+          />
+          {{ raza }}
+        </label>
+      </div>
+
+      <div class="dh-filter-group">
+        <label class="dh-checkbox">
+          <input
+            type="checkbox"
+            [checked]="soloVerificados()"
+            (change)="soloVerificados.set(!soloVerificados())"
+          />
+          Solo con pedigrí verificado
+        </label>
+      </div>
+    </aside>
+
+    <section class="dh-grid">
+      <article class="dh-card dh-card--featured" *ngIf="destacado() as h">
+        <div class="dh-card-media" [style.background]="h.color">
+          <svg class="dh-horse-mark" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+            <path
+              d="M9 24c0-7 3-13 7-13s7 6 7 13"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+            />
+          </svg>
+          <span class="dh-badge" *ngIf="h.verificado">Pedigrí verificado</span>
+          <button class="dh-fav" type="button" aria-label="Guardar en favoritos">♥</button>
+        </div>
+        <div class="dh-card-body">
+          <p class="dh-card-tag">{{ h.raza }} · {{ h.sexo }}</p>
+          <h3>{{ h.nombre }}</h3>
+          <p class="dh-card-loc">{{ h.ubicacion }}</p>
+          <div class="dh-card-footer">
+            <span class="dh-price">{{ h.precio | currency: 'COP' : 'symbol' : '1.0-0' }}</span>
+            <span class="dh-rating">★ {{ h.calificacion }}</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="dh-card" *ngFor="let h of caballosFiltrados()">
+        <div class="dh-card-media" [style.background]="h.color">
+          <svg class="dh-horse-mark" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+            <path
+              d="M9 24c0-7 3-13 7-13s7 6 7 13"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+            />
+          </svg>
+          <span class="dh-badge" *ngIf="h.verificado">Pedigrí verificado</span>
+          <button class="dh-fav" type="button" aria-label="Guardar en favoritos">♥</button>
+        </div>
+        <div class="dh-card-body">
+          <p class="dh-card-tag">{{ h.raza }} · {{ h.sexo }}</p>
+          <h3>{{ h.nombre }}</h3>
+          <p class="dh-card-loc">{{ h.ubicacion }}</p>
+          <div class="dh-card-footer">
+            <span class="dh-price">{{ h.precio | currency: 'COP' : 'symbol' : '1.0-0' }}</span>
+            <span class="dh-rating">★ {{ h.calificacion }}</span>
+          </div>
+        </div>
+      </article>
+
+      <p class="dh-empty" *ngIf="caballosFiltrados().length === 0">
+        Ningún caballo coincide con estos filtros. Prueba a ampliar el precio o quitar una raza.
+      </p>
+    </section>
+  </div>
+</div>

@@ -1,7 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
+import { HttpErrorResponse } from '@angular/common/http';
+import { AuthService } from '../../Services/auth.service';
 
 @Component({
   selector: 'app-login',
@@ -11,6 +13,9 @@ import { RouterLink } from '@angular/router';
   styleUrl: './login.css',
 })
 export class Login {
+  private auth = inject(AuthService);
+  private router = inject(Router);
+
   correo: string = '';
   password: string = '';
   mensaje: string = '';
@@ -25,10 +30,18 @@ export class Login {
     this.mensaje = '';
     this.cargando = true;
 
-    // Aquí luego conectas el LoginUseCase / AuthPort en vez de este console.log
-    console.log('Intento de login para:', this.correo);
-
-    // Simulación temporal hasta conectar el backend:
-    this.cargando = false;
+    this.auth.login(this.correo, this.password).subscribe({
+      next: () => {
+        this.cargando = false;
+        this.router.navigate(['/marketplace']);
+      },
+      error: (e: HttpErrorResponse) => {
+        this.cargando = false;
+        this.mensaje =
+          e.status === 401
+            ? 'Correo o contraseña incorrectos.'
+            : 'No pudimos iniciar sesión. Inténtalo de nuevo.';
+      },
+    });
   }
 }
