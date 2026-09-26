@@ -1,137 +1,926 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+
+/* ======================================================
+   FONDO
+====================================================== */
+
 :host {
-  --dh-bg: #f5f5f3;
-  --dh-surface: #ffffff;
-  --dh-ink: #1e2530;
-  --dh-ink-soft: #616b78;
-  --dh-line: #e2e4e8;
-  --dh-slate: #3e5c76;
-  --dh-accent: #c97a2b;
-  --dh-green: #1f3b2e;
+  position: relative;
 
   display: block;
-  font-family: 'Work Sans', sans-serif;
-  color: var(--dh-ink);
-  background: var(--dh-bg);
+
+  min-height: 100vh;
+
+  overflow: hidden;
+
+  font-family: 'Inter', sans-serif;
+
+  color: #17172a;
+
+  background:
+    radial-gradient(
+      ellipse at 15% 110%,
+      rgba(126, 104, 255, 0.16) 0%,
+      transparent 45%
+    ),
+    radial-gradient(
+      ellipse at 85% 115%,
+      rgba(126, 104, 255, 0.18) 0%,
+      transparent 45%
+    ),
+    radial-gradient(
+      circle at 50% 20%,
+      rgba(255, 255, 255, 0.92),
+      transparent 40%
+    ),
+    linear-gradient(
+      135deg,
+      #f7f8ff 0%,
+      #eef0ff 55%,
+      #e5e4ff 100%
+    );
 }
 
-.np-page {
-  max-width: 640px;
-  margin: 0 auto;
-  padding: 24px 24px 64px;
+
+/* ======================================================
+   CABALLO FONDO IZQUIERDA
+====================================================== */
+
+:host::before {
+  content: '';
+
+  position: absolute;
+
+  left: -130px;
+  top: 130px;
+
+  width: 580px;
+  height: 520px;
+
+  background-image:
+    url('https://images.unsplash.com/photo-1553284965-83fd3e82fa5a?auto=format&fit=crop&w=1200&q=80');
+
+  background-size: cover;
+
+  background-position: center;
+
+  opacity: 0.06;
+
+  filter:
+    grayscale(1)
+    blur(2px);
+
+  transform:
+    scaleX(-1);
+
+  pointer-events: none;
+
+  z-index: 0;
+
+  -webkit-mask-image:
+    linear-gradient(
+      to right,
+      transparent,
+      black 25%,
+      black 68%,
+      transparent
+    );
+
+  mask-image:
+    linear-gradient(
+      to right,
+      transparent,
+      black 25%,
+      black 68%,
+      transparent
+    );
 }
+
+
+/* ======================================================
+   CABALLO FONDO DERECHA
+====================================================== */
+
+:host::after {
+  content: '';
+
+  position: absolute;
+
+  right: -130px;
+  top: 130px;
+
+  width: 580px;
+  height: 520px;
+
+  background-image:
+    url('https://images.unsplash.com/photo-1534773728080-33d31da27ae5?auto=format&fit=crop&w=1200&q=80');
+
+  background-size: cover;
+
+  background-position: center;
+
+  opacity: 0.06;
+
+  filter:
+    grayscale(1)
+    blur(2px);
+
+  pointer-events: none;
+
+  z-index: 0;
+
+  -webkit-mask-image:
+    linear-gradient(
+      to left,
+      transparent,
+      black 25%,
+      black 68%,
+      transparent
+    );
+
+  mask-image:
+    linear-gradient(
+      to left,
+      transparent,
+      black 25%,
+      black 68%,
+      transparent
+    );
+}
+
+
+/* ======================================================
+   PÁGINA
+====================================================== */
+
+.np-page {
+  position: relative;
+
+  z-index: 1;
+
+  width: 100%;
+
+  min-height: 100vh;
+
+  box-sizing: border-box;
+
+  padding:
+    38px
+    48px
+    70px;
+}
+
+
+/* ======================================================
+   VOLVER
+====================================================== */
 
 .np-back {
   border: none;
-  background: none;
-  color: var(--dh-ink-soft);
-  font-size: 0.9rem;
-  cursor: pointer;
-  padding: 8px 0;
-}
 
-h1 {
-  font-family: 'Fraunces', serif;
+  background: transparent;
+
+  color: #716cb0;
+
+  font-family: inherit;
+
+  font-size: 0.95rem;
+
   font-weight: 500;
-  font-size: 1.6rem;
-  margin: 8px 0 4px;
+
+  padding: 6px 0;
+
+  cursor: pointer;
+
+  transition:
+    color 0.2s ease,
+    transform 0.2s ease;
 }
 
-.np-subtitle {
-  color: var(--dh-ink-soft);
-  margin: 0 0 20px;
+
+.np-back:hover {
+  color: #6251e4;
+
+  transform:
+    translateX(-2px);
 }
+
+
+/* ======================================================
+   TITULO SELECCIÓN
+====================================================== */
+
+.np-heading {
+  max-width: 760px;
+
+  margin:
+    10px auto 38px;
+
+  text-align: center;
+}
+
+
+.np-plus {
+  width: 58px;
+  height: 58px;
+
+  margin:
+    0 auto 18px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  border-radius: 16px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #eeeaff,
+      #dbd3ff
+    );
+
+  color: #6e55ee;
+
+  font-size: 2.15rem;
+
+  box-shadow:
+    0 10px 28px
+    rgba(106, 82, 235, 0.18);
+}
+
+
+.np-heading h1 {
+  margin:
+    0 0 10px;
+
+  font-size: 2.2rem;
+
+  font-weight: 800;
+
+  letter-spacing:
+    -0.045em;
+
+  color: #14152f;
+}
+
+
+.np-heading p {
+  margin: 0;
+
+  color: #77789c;
+
+  font-size: 1rem;
+
+  line-height: 1.55;
+}
+
+
+/* ======================================================
+   TARJETAS
+====================================================== */
 
 .np-tipo-opciones {
+  width: 100%;
+
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
-  margin-top: 12px;
+
+  grid-template-columns:
+    repeat(
+      2,
+      minmax(0, 1fr)
+    );
+
+  gap: 30px;
+
+  margin-top: 38px;
 }
+
 
 .np-tipo-card {
-  border: 1px solid var(--dh-line);
-  background: var(--dh-surface);
-  border-radius: 14px;
-  padding: 28px 16px;
-  text-align: center;
+  padding: 0;
+
+  overflow: hidden;
+
+  border:
+    1px solid #e3e0f2;
+
+  border-radius: 26px;
+
+  background: #ffffff;
+
+  font-family: inherit;
+
+  text-align: left;
+
   cursor: pointer;
+
+  box-shadow:
+    0 14px 35px
+    rgba(60, 44, 125, 0.10);
+
+  transition:
+    transform 0.28s ease,
+    box-shadow 0.28s ease,
+    border-color 0.28s ease;
 }
+
 
 .np-tipo-card:hover {
-  border-color: var(--dh-accent);
+  transform:
+    translateY(-7px);
+
+  border-color:
+    #9d8df2;
+
+  box-shadow:
+    0 24px 48px
+    rgba(72, 54, 150, 0.18);
 }
 
-.np-tipo-card h2 {
-  font-family: 'Fraunces', serif;
-  margin: 0 0 6px;
+
+/* ======================================================
+   FOTO
+====================================================== */
+
+.np-card-media {
+  position: relative;
+
+  width: 100%;
+
+  height: 340px;
+
+  overflow: hidden;
 }
 
-.np-tipo-card p {
+
+.np-horse-image {
+  width: 100%;
+
+  height: 100%;
+
+  display: block;
+
+  object-fit: cover;
+
+  transition:
+    transform 0.45s ease,
+    filter 0.45s ease;
+}
+
+
+.np-tipo-card:hover
+.np-horse-image {
+  transform:
+    scale(1.045);
+
+  filter:
+    brightness(1.04);
+}
+
+
+.np-yegua
+.np-horse-image {
+  object-position:
+    center 38%;
+}
+
+
+.np-caballo
+.np-horse-image {
+  object-position:
+    center 42%;
+}
+
+
+/* ======================================================
+   SEXO
+====================================================== */
+
+.np-sex-icon {
+  position: absolute;
+
+  top: 20px;
+
+  left: 20px;
+
+  width: 54px;
+
+  height: 54px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background:
+    rgba(
+      255,
+      255,
+      255,
+      0.94
+    );
+
+  font-size: 1.65rem;
+
+  font-weight: 700;
+
+  z-index: 5;
+
+  box-shadow:
+    0 7px 20px
+    rgba(20, 20, 45, 0.12);
+}
+
+
+.np-sex-icon.female {
+  color: #ec55ad;
+}
+
+
+.np-sex-icon.male {
+  color: #527cf5;
+}
+
+
+/* ======================================================
+   CONTENIDO TARJETA
+====================================================== */
+
+.np-card-content {
+  display: flex;
+
+  align-items: center;
+
+  justify-content:
+    space-between;
+
+  gap: 18px;
+
+  padding:
+    23px
+    28px
+    27px;
+
+  background:
+    #ffffff;
+}
+
+
+.np-card-content h2 {
+  margin:
+    0 0 7px;
+
+  color:
+    #17172e;
+
+  font-size:
+    1.55rem;
+
+  font-weight:
+    800;
+}
+
+
+.np-card-content p {
   margin: 0;
-  color: var(--dh-ink-soft);
-  font-size: 0.9rem;
+
+  color:
+    #82839e;
+
+  font-size:
+    0.95rem;
 }
+
+
+.np-arrow {
+  flex-shrink: 0;
+
+  width: 52px;
+
+  height: 52px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background:
+    #ebe6ff;
+
+  color:
+    #6550ed;
+
+  font-size:
+    1.5rem;
+}
+
+
+/* ======================================================
+   FORMULARIO CENTRADO
+====================================================== */
+
+.np-form-wrapper {
+  width: 100%;
+
+  max-width: 1120px;
+
+  margin: 0 auto;
+
+  padding:
+    12px
+    10px
+    40px;
+
+  box-sizing:
+    border-box;
+}
+
+
+.np-change {
+  margin-bottom:
+    22px;
+}
+
+
+.np-form-heading {
+  margin-bottom:
+    32px;
+}
+
+
+.np-form-heading h1 {
+  margin:
+    0 0 12px;
+
+  font-size:
+    2.7rem;
+
+  font-weight:
+    800;
+
+  letter-spacing:
+    -0.045em;
+
+  color:
+    #151631;
+}
+
+
+.np-form-heading p {
+  margin: 0;
+
+  color:
+    #77789c;
+
+  font-size:
+    1.05rem;
+}
+
+
+/* ======================================================
+   GRID FORMULARIO
+====================================================== */
 
 .np-form {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  margin-top: 16px;
+  width: 100%;
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(
+      2,
+      minmax(0, 1fr)
+    );
+
+  gap:
+    24px 26px;
 }
+
 
 .np-form label {
   display: flex;
-  flex-direction: column;
-  gap: 6px;
-  font-size: 0.9rem;
-  color: var(--dh-ink);
+
+  flex-direction:
+    column;
+
+  gap: 9px;
+
+  color:
+    #292a4d;
+
+  font-size:
+    0.95rem;
+
+  font-weight:
+    700;
 }
+
+
+/* ======================================================
+   INPUT
+====================================================== */
 
 .np-form input,
 .np-form select,
 .np-form textarea {
-  border: 1px solid var(--dh-line);
-  background: var(--dh-surface);
-  border-radius: 10px;
-  padding: 10px 12px;
-  font-size: 0.95rem;
-  font-family: inherit;
-  color: var(--dh-ink);
+  width: 100%;
+
+  box-sizing:
+    border-box;
+
+  border:
+    1px solid
+    rgba(
+      110,
+      91,
+      213,
+      0.16
+    );
+
+  border-radius:
+    16px;
+
+  background:
+    rgba(
+      255,
+      255,
+      255,
+      0.78
+    );
+
+  padding:
+    15px 17px;
+
+  font-family:
+    inherit;
+
+  font-size:
+    0.96rem;
+
+  color:
+    #252642;
+
+  outline:
+    none;
+
+  transition:
+    border-color
+    0.2s ease,
+    box-shadow
+    0.2s ease,
+    background
+    0.2s ease;
 }
+
+
+.np-form input:focus,
+.np-form select:focus,
+.np-form textarea:focus {
+  border-color:
+    #7968ed;
+
+  background:
+    #ffffff;
+
+  box-shadow:
+    0 0 0 4px
+    rgba(
+      121,
+      104,
+      237,
+      0.10
+    );
+}
+
 
 .np-form textarea {
-  min-height: 90px;
-  resize: vertical;
+  min-height:
+    145px;
+
+  resize:
+    vertical;
 }
+
+
+/* ======================================================
+   PRECIO
+====================================================== */
+
+.np-price-input {
+  position: relative;
+
+  width: 100%;
+}
+
+
+.np-price-input span {
+  position: absolute;
+
+  left: 17px;
+
+  top: 50%;
+
+  transform:
+    translateY(-50%);
+
+  color:
+    #6856e6;
+
+  font-weight:
+    800;
+
+  z-index: 2;
+}
+
+
+.np-price-input input {
+  padding-left:
+    36px;
+}
+
+
+/* ======================================================
+   CAMPOS COMPLETOS
+====================================================== */
+
+.np-full {
+  grid-column:
+    1 / -1;
+}
+
+
+/* ======================================================
+   HINT
+====================================================== */
 
 .np-hint {
-  font-size: 0.78rem;
-  color: var(--dh-ink-soft);
+  color:
+    #9393aa;
+
+  font-size:
+    0.77rem;
+
+  font-weight:
+    400;
 }
 
+
+/* ======================================================
+   ERROR
+====================================================== */
+
 .np-error {
-  color: #b3261e;
-  font-size: 0.9rem;
   margin: 0;
+
+  padding:
+    12px 14px;
+
+  border-radius:
+    12px;
+
+  background:
+    #fff0f0;
+
+  color:
+    #c43a3a;
+
+  font-size:
+    0.88rem;
 }
+
+
+/* ======================================================
+   PUBLICAR
+====================================================== */
 
 .np-submit {
   border: none;
-  background: var(--dh-green);
-  color: var(--dh-bg);
-  border-radius: 10px;
-  padding: 12px 16px;
-  font-size: 1rem;
-  cursor: pointer;
+
+  border-radius:
+    16px;
+
+  padding:
+    16px 20px;
+
+  background:
+    linear-gradient(
+      90deg,
+      #6651e7,
+      #8169f4
+    );
+
+  color:
+    #ffffff;
+
+  font-family:
+    inherit;
+
+  font-size:
+    1rem;
+
+  font-weight:
+    700;
+
+  cursor:
+    pointer;
+
+  box-shadow:
+    0 10px 24px
+    rgba(
+      102,
+      81,
+      231,
+      0.24
+    );
+
+  transition:
+    transform
+    0.2s ease,
+    box-shadow
+    0.2s ease;
 }
+
+
+.np-submit:hover:not(:disabled) {
+  transform:
+    translateY(-2px);
+
+  box-shadow:
+    0 15px 30px
+    rgba(
+      102,
+      81,
+      231,
+      0.30
+    );
+}
+
 
 .np-submit:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
+  opacity: 0.55;
+
+  cursor:
+    not-allowed;
 }
 
-@media (max-width: 480px) {
+
+/* ======================================================
+   TABLET / MÓVIL
+====================================================== */
+
+@media (max-width: 900px) {
+
+  .np-page {
+    padding:
+      28px
+      20px
+      50px;
+  }
+
+
   .np-tipo-opciones {
-    grid-template-columns: 1fr;
+    grid-template-columns:
+      1fr;
+  }
+
+
+  .np-form {
+    grid-template-columns:
+      1fr;
+  }
+
+
+  .np-full {
+    grid-column:
+      auto;
+  }
+
+
+  .np-form-heading h1 {
+    font-size:
+      2rem;
+  }
+
+
+  .np-card-media {
+    height:
+      280px;
+  }
+
+
+  :host::before,
+  :host::after {
+    display:
+      none;
   }
 }

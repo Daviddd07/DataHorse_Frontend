@@ -30,8 +30,8 @@ export interface Caballo extends NuevaPublicacion {
   providedIn: 'root',
 })
 export class CaballoService {
-  private apiUrl = 'http://localhost:8000/api/v1';
 
+  private apiUrl = 'http://localhost:8000';
   constructor(private http: HttpClient) {}
 
   listarRazas(): Observable<Raza[]> {
