@@ -1,5 +1,7 @@
-import { Component, computed, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
+import { AuthService } from '../../Services/auth.service';
 
 interface CaballoMock {
   id: number;
@@ -13,9 +15,9 @@ interface CaballoMock {
   color: string;
 }
 
-// Componente de solo maqueta: los datos son fijos y el filtrado es local,
-// no hay llamadas al backend. Reemplaza `nombreUsuario` y `caballos` cuando
-// conectes esto con el login y con GET /publicaciones.
+// Componente de solo maqueta: el nombre viene de GET /auth/me (sesión real),
+// pero las publicaciones todavía no existen en la base de datos, así que la
+// lista queda vacía hasta que conectemos GET /publicaciones.
 @Component({
   selector: 'app-marketplace',
   standalone: true,
@@ -24,8 +26,11 @@ interface CaballoMock {
   styleUrl: './marketplace.component.css',
 })
 export class MarketplaceComponent {
-  nombreUsuario = signal('David');
-  inicial = computed(() => this.nombreUsuario().charAt(0).toUpperCase());
+  private auth = inject(AuthService);
+  private router = inject(Router);
+
+  nombreUsuario = signal('');
+  inicial = computed(() => this.nombreUsuario().charAt(0).toUpperCase() || '?');
 
   categorias = ['Todos', 'En venta', 'Compatibilidad', 'Pedigrí', 'Favoritos'];
   categoriaActiva = signal('Todos');
@@ -35,94 +40,46 @@ export class MarketplaceComponent {
   soloVerificados = signal(false);
   precioMax = signal(60_000_000);
 
-  caballos = signal<CaballoMock[]>([
-    {
-      id: 1,
-      nombre: 'Relámpago',
-      raza: 'Criollo',
-      sexo: 'Macho',
-      ubicacion: 'Fusagasugá, Cundinamarca',
-      precio: 18_500_000,
-      calificacion: 4.8,
-      verificado: true,
-      color: 'linear-gradient(135deg, #1E2530, #3E5C76)',
-    },
-    {
-      id: 2,
-      nombre: 'Estrella',
-      raza: 'Paso Fino',
-      sexo: 'Hembra',
-      ubicacion: 'Chía, Cundinamarca',
-      precio: 24_000_000,
-      calificacion: 4.6,
-      verificado: true,
-      color: 'linear-gradient(135deg, #3E5C76, #6E8CA6)',
-    },
-    {
-      id: 3,
-      nombre: 'Trueno',
-      raza: 'Cuarto de Milla',
-      sexo: 'Macho',
-      ubicacion: 'Girardot, Cundinamarca',
-      precio: 32_000_000,
-      calificacion: 4.9,
-      verificado: false,
-      color: 'linear-gradient(135deg, #4A5568, #7B8794)',
-    },
-    {
-      id: 4,
-      nombre: 'Luna',
-      raza: 'Andaluz',
-      sexo: 'Hembra',
-      ubicacion: 'Ibagué, Tolima',
-      precio: 45_000_000,
-      calificacion: 5,
-      verificado: true,
-      color: 'linear-gradient(135deg, #1E2530, #4A5568)',
-    },
-    {
-      id: 5,
-      nombre: 'Fuego',
-      raza: 'Pura Sangre',
-      sexo: 'Macho',
-      ubicacion: 'Bogotá D.C.',
-      precio: 58_000_000,
-      calificacion: 4.7,
-      verificado: false,
-      color: 'linear-gradient(135deg, #C97A2B, #E0A867)',
-    },
-    {
-      id: 6,
-      nombre: 'Aurora',
-      raza: 'Criollo',
-      sexo: 'Hembra',
-      ubicacion: 'Melgar, Tolima',
-      precio: 15_900_000,
-      calificacion: 4.5,
-      verificado: true,
-      color: 'linear-gradient(135deg, #6E8CA6, #3E5C76)',
-    },
-  ]);
+  // Sin publicaciones todavía: esto se llena cuando exista GET /publicaciones.
+  caballos = signal<CaballoMock[]>([]);
 
-  destacado = computed(() => this.caballos()[3]);
+  destacado = computed(() => this.caballos()[0]);
 
   caballosFiltrados = computed(() => {
     const razas = this.razasSeleccionadas();
     const soloVerif = this.soloVerificados();
     const max = this.precioMax();
-    const destacadoId = this.destacado().id;
+    const destacado = this.destacado();
 
     return this.caballos()
-      .filter((c) => c.id !== destacadoId)
+      .filter((c) => !destacado || c.id !== destacado.id)
       .filter((c) => razas.length === 0 || razas.includes(c.raza))
       .filter((c) => !soloVerif || c.verificado)
       .filter((c) => c.precio <= max);
   });
+
+  constructor() {
+    this.auth.me().subscribe({
+      next: (usuario) => {
+        const primerNombre = usuario.nombre.trim().split(/\s+/)[0];
+        this.nombreUsuario.set(primerNombre);
+      },
+      error: () => {
+        // El guard ya debería haber redirigido a /login si no hay sesión;
+        // esto es solo un respaldo por si /me falla después de entrar.
+        this.nombreUsuario.set('');
+      },
+    });
+  }
 
   toggleRaza(raza: string): void {
     const actuales = this.razasSeleccionadas();
     this.razasSeleccionadas.set(
       actuales.includes(raza) ? actuales.filter((r) => r !== raza) : [...actuales, raza],
     );
+  }
+
+  agregarPublicacion(): void {
+    this.router.navigate(['/publicaciones/nueva']);
   }
 }

@@ -16,4 +16,12 @@ export const routes: Routes = [
       import('./pages/marketplace/marketplace.component').then((m) => m.MarketplaceComponent),
     canActivate: [authGuard],
   },
+  {
+    path: 'publicaciones/nueva',
+    loadComponent: () =>
+      import('./pages/marketplace/nueva-publicacion/nueva-publicacion.component').then(
+        (m) => m.NuevaPublicacionComponent,
+      ),
+    canActivate: [authGuard],
+  },
 ];

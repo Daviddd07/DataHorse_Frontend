@@ -18,8 +18,13 @@
 
     <div class="dh-header-actions">
       <button class="dh-icon-btn" type="button" aria-label="Favoritos">♥</button>
-      <button class="dh-icon-btn" type="button" aria-label="Solicitudes de compatibilidad">
-        ⇄
+      <button
+        class="dh-icon-btn"
+        type="button"
+        aria-label="Agregar publicación"
+        (click)="agregarPublicacion()"
+      >
+        +
       </button>
       <div class="dh-avatar">{{ inicial() }}</div>
     </div>
@@ -132,7 +137,7 @@
       </article>
 
       <p class="dh-empty" *ngIf="caballosFiltrados().length === 0">
-        Ningún caballo coincide con estos filtros. Prueba a ampliar el precio o quitar una raza.
+        Todavía no hay publicaciones registradas.
       </p>
     </section>
   </div>

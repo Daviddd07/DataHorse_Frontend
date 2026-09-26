@@ -1,0 +1,124 @@
+<div class="np-page">
+  <button class="np-back" type="button" (click)="cancelar()">← Volver al marketplace</button>
+
+  <ng-container *ngIf="paso() === 'tipo'">
+    <h1>¿Qué vas a publicar?</h1>
+    <p class="np-subtitle">Elige el tipo de ejemplar para continuar.</p>
+
+    <div class="np-tipo-opciones">
+      <button class="np-tipo-card" type="button" (click)="elegirTipo('Hembra')">
+        <h2>Yegua</h2>
+        <p>Publicar un ejemplar hembra</p>
+      </button>
+      <button class="np-tipo-card" type="button" (click)="elegirTipo('Macho')">
+        <h2>Caballo</h2>
+        <p>Publicar un ejemplar macho</p>
+      </button>
+    </div>
+  </ng-container>
+
+  <ng-container *ngIf="paso() === 'formulario'">
+    <button class="np-back" type="button" (click)="volver()">← Cambiar tipo</button>
+    <h1>Datos de la publicación</h1>
+    <p class="np-subtitle">
+      Tipo seleccionado: <strong>{{ sexo() === 'Hembra' ? 'Yegua' : 'Caballo' }}</strong>
+    </p>
+
+    <form class="np-form" (ngSubmit)="guardar()">
+      <label>
+        Nombre
+        <input
+          type="text"
+          [value]="nombre()"
+          (input)="nombre.set($any($event.target).value)"
+          required
+        />
+      </label>
+
+      <label>
+        Raza
+        <select (change)="onRazaChange($any($event.target).value)" required>
+          <option value="" disabled selected>Selecciona una raza</option>
+          <option *ngFor="let r of razas()" [value]="r.id_raza">{{ r.nombre }}</option>
+          <option value="-1">Otro</option>
+        </select>
+      </label>
+
+      <label *ngIf="razaEsOtro()">
+        ¿Cuál raza?
+        <input
+          type="text"
+          placeholder="Escribe la raza"
+          [value]="razaPersonalizada()"
+          (input)="razaPersonalizada.set($any($event.target).value)"
+        />
+      </label>
+
+      <label>
+        Fecha de nacimiento
+        <input
+          type="date"
+          [value]="fechaNacimiento()"
+          (input)="fechaNacimiento.set($any($event.target).value)"
+          required
+        />
+        <span class="np-hint">Si no la sabes con exactitud, ingresa una fecha aproximada.</span>
+      </label>
+
+      <label>
+        Altura (metros)
+        <input
+          type="number"
+          step="0.01"
+          min="0"
+          [value]="altura()"
+          (input)="altura.set(+$any($event.target).value)"
+          required
+        />
+      </label>
+
+      <label>
+        Color
+        <input
+          type="text"
+          [value]="color()"
+          (input)="color.set($any($event.target).value)"
+          required
+        />
+      </label>
+
+      <label>
+        Ubicación
+        <input
+          type="text"
+          [value]="ubicacion()"
+          (input)="ubicacion.set($any($event.target).value)"
+          required
+        />
+      </label>
+
+      <label>
+        Descripción
+        <textarea
+          [value]="descripcion()"
+          (input)="descripcion.set($any($event.target).value)"
+          required
+        ></textarea>
+      </label>
+
+      <label>
+        Disponibilidad
+        <select (change)="onDisponibilidadChange($any($event.target).value)">
+          <option value="Disponible" selected>Disponible</option>
+          <option value="No disponible">No disponible</option>
+        </select>
+      </label>
+
+      <p class="np-error" *ngIf="error()">{{ error() }}</p>
+
+      <button class="np-submit" type="submit" [disabled]="enviando()">
+        {{ enviando() ? 'Guardando...' : 'Publicar' }}
+      </button>
+    </form>
+  </ng-container>
+</div>
