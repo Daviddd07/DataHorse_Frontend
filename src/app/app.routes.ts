@@ -8,7 +8,7 @@ export const routes: Routes = [
   {
     path: 'registrar',
     loadComponent: () =>
-      import('./pages/registrar/Registrar.component').then((m) => m.RegistrarComponent),
+      import('./pages/registrar/registrar.component').then((m) => m.RegistrarComponent),
   },
   {
     path: 'marketplace',

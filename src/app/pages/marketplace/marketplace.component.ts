@@ -2,6 +2,7 @@ import { Component, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { AuthService } from '../../Services/auth.service';
+import { CaballoService, PublicacionListItem } from '../../Services/caballo.service';
 
 interface CaballoMock {
   id: number;
@@ -15,9 +16,9 @@ interface CaballoMock {
   color: string;
 }
 
-// Componente de solo maqueta: el nombre viene de GET /auth/me (sesión real),
-// pero las publicaciones todavía no existen en la base de datos, así que la
-// lista queda vacía hasta que conectemos GET /publicaciones.
+// El nombre viene de GET /auth/me (sesión real), y las publicaciones ahora
+// vienen de GET /api/v1/caballos. El backend no tiene calificacion ni
+// verificado (no existen en la BD), así que quedan en 0 / false por ahora.
 @Component({
   selector: 'app-marketplace',
   standalone: true,
@@ -27,6 +28,7 @@ interface CaballoMock {
 })
 export class MarketplaceComponent {
   private auth = inject(AuthService);
+  private caballoService = inject(CaballoService);
   private router = inject(Router);
 
   nombreUsuario = signal('');
@@ -35,28 +37,21 @@ export class MarketplaceComponent {
   categorias = ['Todos', 'En venta', 'Compatibilidad', 'Pedigrí', 'Favoritos'];
   categoriaActiva = signal('Todos');
 
-  razas = ['Criollo', 'Paso Fino', 'Cuarto de Milla', 'Andaluz', 'Pura Sangre'];
+  // Catálogo de razas del backend (GET /api/v1/razas)
+  razas = signal<string[]>([]);
   razasSeleccionadas = signal<string[]>([]);
   soloVerificados = signal(false);
   precioMax = signal(60_000_000);
 
-  // Sin publicaciones todavía: esto se llena cuando exista GET /publicaciones.
   caballos = signal<CaballoMock[]>([]);
 
-  destacado = computed(() => this.caballos()[0]);
+  // El destacado es el primer caballo que pasa los filtros del sidebar.
+  destacado = computed(() => this.aplicarFiltros()[0]);
 
-  caballosFiltrados = computed(() => {
-    const razas = this.razasSeleccionadas();
-    const soloVerif = this.soloVerificados();
-    const max = this.precioMax();
-    const destacado = this.destacado();
-
-    return this.caballos()
-      .filter((c) => !destacado || c.id !== destacado.id)
-      .filter((c) => razas.length === 0 || razas.includes(c.raza))
-      .filter((c) => !soloVerif || c.verificado)
-      .filter((c) => c.precio <= max);
-  });
+  // La lista son los filtrados, sin incluir al que ya se muestra como destacado.
+  caballosFiltrados = computed(() =>
+    this.aplicarFiltros().filter((c) => c.id !== this.destacado()?.id),
+  );
 
   constructor() {
     this.auth.me().subscribe({
@@ -70,6 +65,33 @@ export class MarketplaceComponent {
         this.nombreUsuario.set('');
       },
     });
+
+    // Catálogo de razas para el filtro lateral (viene de la BD)
+    this.caballoService.listarRazas().subscribe({
+      next: (razas) => this.razas.set(razas.map((r) => r.nombre)),
+      error: () => this.razas.set([]),
+    });
+
+    // GET /api/v1/caballos ya devuelve el nombre de la raza y el precio de
+    // referencia directamente (join hecho en el backend), no hace falta
+    // traducir un id_raza aquí.
+    this.caballoService.listar().subscribe({
+      next: (publicaciones: PublicacionListItem[]) => {
+        const mapeados: CaballoMock[] = publicaciones.map((p: PublicacionListItem) => ({
+          id: p.id_publicacion,
+          nombre: p.nombre,
+          raza: p.raza,
+          sexo: p.sexo as 'Macho' | 'Hembra',
+          ubicacion: p.ubicacion,
+          precio: p.precio_referencia,
+          calificacion: 0,
+          verificado: false,
+          color: 'var(--dh-purple)',
+        }));
+        this.caballos.set(mapeados);
+      },
+      error: () => this.caballos.set([]),
+    });
   }
 
   toggleRaza(raza: string): void {
@@ -81,5 +103,21 @@ export class MarketplaceComponent {
 
   agregarPublicacion(): void {
     this.router.navigate(['/publicaciones/nueva']);
+  }
+
+  /**
+   * Aplica TODOS los filtros del sidebar a la lista completa de caballos.
+   * Se usa tanto para `destacado` como para `caballosFiltrados`, así el
+   * destacado respeta los filtros (Opción A) y la lista no lo duplica.
+   */
+  private aplicarFiltros(): CaballoMock[] {
+    const razas = this.razasSeleccionadas();
+    const soloVerif = this.soloVerificados();
+    const max = this.precioMax();
+
+    return this.caballos()
+      .filter((c) => razas.length === 0 || razas.includes(c.raza))
+      .filter((c) => !soloVerif || c.verificado)
+      .filter((c) => c.precio <= max);
   }
 }

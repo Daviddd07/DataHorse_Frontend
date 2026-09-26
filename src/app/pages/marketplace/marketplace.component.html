@@ -65,7 +65,7 @@
 
       <div class="dh-filter-group">
         <h3>Raza</h3>
-        <label *ngFor="let raza of razas" class="dh-checkbox">
+        <label *ngFor="let raza of razas()" class="dh-checkbox">
           <input
             type="checkbox"
             [checked]="razasSeleccionadas().includes(raza)"

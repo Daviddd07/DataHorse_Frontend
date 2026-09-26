@@ -173,14 +173,11 @@ export class NuevaPublicacionComponent {
       return;
     }
 
-    /*
-      El precio se muestra únicamente
-      para Caballo.
+    if (this.sexo() === 'Macho' && !this.precio()) {
+      this.error.set('El precio es obligatorio para publicar un caballo.');
 
-      Todavía NO se envía al backend,
-      porque el backend actual no tiene
-      ese campo.
-    */
+      return;
+    }
 
     this.enviando.set(true);
 
@@ -200,6 +197,12 @@ export class NuevaPublicacionComponent {
       descripcion: this.descripcion().trim(),
 
       disponibilidad: this.disponibilidad(),
+
+      ...(this.sexo() === 'Macho'
+        ? {
+            precio: this.precio()!,
+          }
+        : {}),
     };
 
     const datos = this.razaEsOtro()
@@ -213,7 +216,9 @@ export class NuevaPublicacionComponent {
 
           id_raza: this.idRazaSeleccionada()!,
         };
-
+    console.log('datos a enviar:', JSON.stringify(datos));
+    console.log('sexo actual:', this.sexo());
+    console.log('precio actual:', this.precio());
     this.caballoService.crear(datos).subscribe({
       next: () => {
         this.router.navigate(['/marketplace']);
