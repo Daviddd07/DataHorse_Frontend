@@ -2,8 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
-// Solo los datos que controla el usuario.
-// id_usuario, id_rol, estado y fecha_registro los asigna el BACKEND.
+// Datos que ingresa el usuario
 export interface RegistroRequest {
   nombre: string;
   correo: string;
@@ -12,16 +11,29 @@ export interface RegistroRequest {
   ubicacion: string | null;
 }
 
+export interface RegistroResponse {
+  id: number;
+  nombre: string;
+  correo: string;
+}
+
 @Injectable({ providedIn: 'root' })
 export class RegistroService {
+
   private http = inject(HttpClient);
 
-  // Backend FastAPI en local. En producción usa HTTPS y mueve esto a environment.
-  private readonly url = 'http://127.0.0.1:8000/api/v1/auth/registro';
+  private readonly url = 'http://127.0.0.1:8000/auth/register';
 
-  registrar(datos: RegistroRequest): Observable<void> {
+  registrar(datos: RegistroRequest): Observable<RegistroResponse> {
+
     const { contrasena, ...resto } = datos;
-    // El backend espera el campo "password".
-    return this.http.post<void>(this.url, { ...resto, password: contrasena });
+
+    return this.http.post<RegistroResponse>(
+      this.url,
+      {
+        ...resto,
+        password: contrasena
+      }
+    );
   }
 }
