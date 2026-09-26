@@ -12,7 +12,7 @@ export interface UsuarioSesion {
   providedIn: 'root',
 })
 export class AuthService {
-  private apiUrl = 'http://localhost:8000/api/v1';
+  private apiUrl = 'http://localhost:8000';
 
   constructor(private http: HttpClient) {}
 
@@ -25,8 +25,11 @@ export class AuthService {
   }
 
   me(): Observable<UsuarioSesion> {
-    return this.http.get<UsuarioSesion>(`${this.apiUrl}/auth/me`, {
-      withCredentials: true,
-    });
+    return this.http.get<UsuarioSesion>(
+      `${this.apiUrl}/auth/me`,
+      {
+        withCredentials: true,
+      },
+    );
   }
 }
