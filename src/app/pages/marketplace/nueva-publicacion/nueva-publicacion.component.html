@@ -1,309 +1,159 @@
 <div class="np-page">
-
   <!-- ======================================================
        VOLVER
   ====================================================== -->
 
-  <button
-    class="np-back"
-    type="button"
-    (click)="cancelar()"
-  >
-    ← Volver al marketplace
-  </button>
-
+  <button class="np-back" type="button" (click)="cancelar()">← Volver al marketplace</button>
 
   <!-- ======================================================
        PASO 1: SELECCIONAR TIPO
   ====================================================== -->
 
   <ng-container *ngIf="paso() === 'tipo'">
-
     <div class="np-heading">
+      <div class="np-plus">+</div>
 
-      <div class="np-plus">
-        +
-      </div>
+      <h1>Publica un nuevo ejemplar</h1>
 
-      <h1>
-        Publica un nuevo ejemplar
-      </h1>
-
-      <p>
-        Selecciona el tipo de caballo que deseas registrar en el marketplace.
-      </p>
-
+      <p>Selecciona el tipo de caballo que deseas registrar en el marketplace.</p>
     </div>
 
-
     <div class="np-tipo-opciones">
-
-
       <!-- ======================================================
            YEGUA
       ====================================================== -->
 
-      <button
-        class="np-tipo-card np-yegua"
-        type="button"
-        (click)="elegirTipo('Hembra')"
-      >
-
+      <button class="np-tipo-card np-yegua" type="button" (click)="elegirTipo('Hembra')">
         <div class="np-card-media">
-
           <img
             class="np-horse-image"
             src="https://images.unsplash.com/photo-1553284965-83fd3e82fa5a?auto=format&fit=crop&w=1400&q=90"
             alt="Yegua"
           />
 
-          <span
-            class="np-sex-icon female"
-          >
-            ♀
-          </span>
-
+          <span class="np-sex-icon female"> ♀ </span>
         </div>
-
 
         <div class="np-card-content">
-
           <div>
+            <h2>Yegua</h2>
 
-            <h2>
-              Yegua
-            </h2>
-
-            <p>
-              Publicar un ejemplar hembra
-            </p>
-
+            <p>Publicar un ejemplar hembra</p>
           </div>
 
-
-          <span class="np-arrow">
-            →
-          </span>
-
+          <span class="np-arrow"> → </span>
         </div>
-
       </button>
-
 
       <!-- ======================================================
            CABALLO
       ====================================================== -->
 
-      <button
-        class="np-tipo-card np-caballo"
-        type="button"
-        (click)="elegirTipo('Macho')"
-      >
-
+      <button class="np-tipo-card np-caballo" type="button" (click)="elegirTipo('Macho')">
         <div class="np-card-media">
-
           <img
             class="np-horse-image"
             src="https://images.unsplash.com/photo-1534773728080-33d31da27ae5?auto=format&fit=crop&w=1400&q=90"
             alt="Caballo"
           />
 
-          <span
-            class="np-sex-icon male"
-          >
-            ♂
-          </span>
-
+          <span class="np-sex-icon male"> ♂ </span>
         </div>
-
 
         <div class="np-card-content">
-
           <div>
+            <h2>Caballo</h2>
 
-            <h2>
-              Caballo
-            </h2>
-
-            <p>
-              Publicar un ejemplar macho
-            </p>
-
+            <p>Publicar un ejemplar macho</p>
           </div>
 
-
-          <span class="np-arrow">
-            →
-          </span>
-
+          <span class="np-arrow"> → </span>
         </div>
-
       </button>
-
     </div>
-
   </ng-container>
-
 
   <!-- ======================================================
        PASO 2: FORMULARIO
   ====================================================== -->
 
-  <ng-container
-    *ngIf="paso() === 'formulario'"
-  >
-
+  <ng-container *ngIf="paso() === 'formulario'">
     <div class="np-form-wrapper">
-
-      <button
-        class="np-back np-change"
-        type="button"
-        (click)="volver()"
-      >
-        ← Cambiar tipo
-      </button>
-
+      <button class="np-back np-change" type="button" (click)="volver()">← Cambiar tipo</button>
 
       <div class="np-form-heading">
-
-        <h1>
-          Datos de la publicación
-        </h1>
+        <h1>Datos de la publicación</h1>
 
         <p>
           Tipo seleccionado:
 
           <strong>
-            {{
-              sexo() === 'Hembra'
-                ? 'Yegua'
-                : 'Caballo'
-            }}
+            {{ sexo() === 'Hembra' ? 'Yegua' : 'Caballo' }}
           </strong>
         </p>
-
       </div>
 
-
-      <form
-        class="np-form"
-        (ngSubmit)="guardar()"
-      >
-
-
+      <form class="np-form" (ngSubmit)="guardar()" novalidate>
         <!-- NOMBRE -->
 
         <label>
-
           Nombre
 
           <input
             type="text"
             [value]="nombre()"
-            (input)="
-              nombre.set(
-                $any($event.target).value
-              )
-            "
+            (input)="nombre.set($any($event.target).value)"
             required
           />
-
         </label>
-
 
         <!-- RAZA -->
 
         <label>
-
           Raza
 
-          <select
-            (change)="
-              onRazaChange(
-                $any($event.target).value
-              )
-            "
-            required
-          >
+          <select (change)="onRazaChange($any($event.target).value)" required>
+            <option value="" disabled selected>Selecciona una raza</option>
 
-            <option
-              value=""
-              disabled
-              selected
-            >
-              Selecciona una raza
-            </option>
-
-
-            <option
-              *ngFor="let r of razas()"
-              [value]="r.id_raza"
-            >
+            <option *ngFor="let r of razas()" [value]="r.id_raza">
               {{ r.nombre }}
             </option>
 
-
-            <option value="-1">
-              Otro
-            </option>
-
+            <option value="-1">Otro</option>
           </select>
-
         </label>
-
 
         <!-- RAZA PERSONALIZADA -->
 
-        <label
-          *ngIf="razaEsOtro()"
-        >
-
+        <label *ngIf="razaEsOtro()">
           ¿Cuál raza?
 
           <input
             type="text"
             placeholder="Escribe la raza"
             [value]="razaPersonalizada()"
-            (input)="
-              razaPersonalizada.set(
-                $any($event.target).value
-              )
-            "
+            (input)="razaPersonalizada.set($any($event.target).value)"
           />
-
         </label>
-
 
         <!-- FECHA DE NACIMIENTO -->
 
         <label>
-
           Fecha de nacimiento
 
           <input
             type="date"
             [value]="fechaNacimiento()"
-            (input)="
-              fechaNacimiento.set(
-                $any($event.target).value
-              )
-            "
+            (input)="fechaNacimiento.set($any($event.target).value)"
             required
           />
 
-
-          <span class="np-hint">
-            Si no la sabes con exactitud,
-            ingresa una fecha aproximada.
-          </span>
-
+          <span class="np-hint"> Si no la sabes con exactitud, ingresa una fecha aproximada. </span>
         </label>
-
 
         <!-- ALTURA -->
 
         <label>
-
           Altura (metros)
 
           <input
@@ -311,73 +161,47 @@
             step="0.01"
             min="0"
             [value]="altura()"
-            (input)="
-              altura.set(
-                +$any($event.target).value
-              )
-            "
+            (input)="altura.set(+$any($event.target).value)"
             required
           />
-
         </label>
-
 
         <!-- COLOR -->
 
         <label>
-
           Color
 
           <input
             type="text"
             [value]="color()"
-            (input)="
-              color.set(
-                $any($event.target).value
-              )
-            "
+            (input)="color.set($any($event.target).value)"
             required
           />
-
         </label>
-
 
         <!-- UBICACIÓN -->
 
         <label>
-
           Ubicación
 
           <input
             type="text"
             [value]="ubicacion()"
-            (input)="
-              ubicacion.set(
-                $any($event.target).value
-              )
-            "
+            (input)="ubicacion.set($any($event.target).value)"
             required
           />
-
         </label>
-
 
         <!-- ======================================================
              PRECIO
              SOLO APARECE SI ES CABALLO
         ====================================================== -->
 
-        <label
-          *ngIf="sexo() === 'Macho'"
-        >
-
+        <label *ngIf="sexo() === 'Macho'">
           Precio
 
           <div class="np-price-input">
-
-            <span>
-              $
-            </span>
+            <span> $ </span>
 
             <input
               type="number"
@@ -385,101 +209,47 @@
               step="1000"
               placeholder="Ej. 25000000"
               [value]="precio() ?? ''"
-              (input)="
-                precio.set(
-                  +$any($event.target).value
-                  || null
-                )
-              "
+              (input)="precio.set(+$any($event.target).value || null)"
             />
-
           </div>
-
         </label>
-
 
         <!-- DESCRIPCIÓN -->
 
         <label class="np-full">
-
           Descripción
 
           <textarea
             [value]="descripcion()"
-            (input)="
-              descripcion.set(
-                $any($event.target).value
-              )
-            "
+            (input)="descripcion.set($any($event.target).value)"
             required
           ></textarea>
-
         </label>
-
 
         <!-- DISPONIBILIDAD -->
 
         <label>
-
           Disponibilidad
 
-          <select
-            (change)="
-              onDisponibilidadChange(
-                $any($event.target).value
-              )
-            "
-          >
+          <select (change)="onDisponibilidadChange($any($event.target).value)">
+            <option value="Disponible" selected>Disponible</option>
 
-            <option
-              value="Disponible"
-              selected
-            >
-              Disponible
-            </option>
-
-
-            <option
-              value="No disponible"
-            >
-              No disponible
-            </option>
-
+            <option value="No disponible">No disponible</option>
           </select>
-
         </label>
-
 
         <!-- ERROR -->
 
-        <p
-          class="np-error np-full"
-          *ngIf="error()"
-        >
+        <p class="np-error np-full" *ngIf="error()">
           {{ error() }}
         </p>
 
-
         <!-- PUBLICAR -->
 
-        <button
-          class="np-submit np-full"
-          type="submit"
-          [disabled]="enviando()"
-        >
-
-          {{
-            enviando()
-              ? 'Guardando...'
-              : 'Publicar ejemplar'
-          }}
-
+        <button class="np-submit np-full" type="submit" [disabled]="enviando()">
+          {{ enviando() ? 'Guardando...' : 'Publicar ejemplar' }}
         </button>
-
       </form>
-
     </div>
-
   </ng-container>
-
 </div>
