@@ -1,12 +1,8 @@
 <div class="np-page">
-  <!-- ======================================================
-       VOLVER
-  ====================================================== -->
-
   <button class="np-back" type="button" (click)="cancelar()">← Volver al marketplace</button>
 
   <!-- ======================================================
-       PASO 1: SELECCIONAR TIPO
+       SELECCIONAR TIPO
   ====================================================== -->
 
   <ng-container *ngIf="paso() === 'tipo'">
@@ -15,13 +11,11 @@
 
       <h1>Publica un nuevo ejemplar</h1>
 
-      <p>Selecciona el tipo de caballo que deseas registrar en el marketplace.</p>
+      <p>Selecciona el tipo de ejemplar que deseas registrar.</p>
     </div>
 
     <div class="np-tipo-opciones">
-      <!-- ======================================================
-           YEGUA
-      ====================================================== -->
+      <!-- YEGUA -->
 
       <button class="np-tipo-card np-yegua" type="button" (click)="elegirTipo('Hembra')">
         <div class="np-card-media">
@@ -45,9 +39,7 @@
         </div>
       </button>
 
-      <!-- ======================================================
-           CABALLO
-      ====================================================== -->
+      <!-- CABALLO -->
 
       <button class="np-tipo-card np-caballo" type="button" (click)="elegirTipo('Macho')">
         <div class="np-card-media">
@@ -74,7 +66,7 @@
   </ng-container>
 
   <!-- ======================================================
-       PASO 2: FORMULARIO
+       FORMULARIO
   ====================================================== -->
 
   <ng-container *ngIf="paso() === 'formulario'">
@@ -93,18 +85,13 @@
         </p>
       </div>
 
-      <form class="np-form" (ngSubmit)="guardar()" novalidate>
+      <form class="np-form">
         <!-- NOMBRE -->
 
         <label>
           Nombre
 
-          <input
-            type="text"
-            [value]="nombre()"
-            (input)="nombre.set($any($event.target).value)"
-            required
-          />
+          <input type="text" [value]="nombre()" (input)="nombre.set($any($event.target).value)" />
         </label>
 
         <!-- RAZA -->
@@ -112,9 +99,7 @@
         <label>
           Raza
 
-          <select (change)="onRazaChange($any($event.target).value)" required>
-            <option value="" disabled selected>Selecciona una raza</option>
-
+          <select (change)="onRazaChange($any($event.target).value)">
             <option *ngFor="let r of razas()" [value]="r.id_raza">
               {{ r.nombre }}
             </option>
@@ -123,7 +108,7 @@
           </select>
         </label>
 
-        <!-- RAZA PERSONALIZADA -->
+        <!-- OTRA RAZA -->
 
         <label *ngIf="razaEsOtro()">
           ¿Cuál raza?
@@ -136,7 +121,7 @@
           />
         </label>
 
-        <!-- FECHA DE NACIMIENTO -->
+        <!-- FECHA -->
 
         <label>
           Fecha de nacimiento
@@ -145,10 +130,11 @@
             type="date"
             [value]="fechaNacimiento()"
             (input)="fechaNacimiento.set($any($event.target).value)"
-            required
           />
 
-          <span class="np-hint"> Si no la sabes con exactitud, ingresa una fecha aproximada. </span>
+          <span class="np-hint">
+            Si no conoces la fecha exacta, puedes ingresar una aproximada.
+          </span>
         </label>
 
         <!-- ALTURA -->
@@ -158,11 +144,10 @@
 
           <input
             type="number"
-            step="0.01"
             min="0"
-            [value]="altura()"
-            (input)="altura.set(+$any($event.target).value)"
-            required
+            step="0.01"
+            [value]="altura() ?? ''"
+            (input)="onAlturaChange($any($event.target).value)"
           />
         </label>
 
@@ -171,12 +156,7 @@
         <label>
           Color
 
-          <input
-            type="text"
-            [value]="color()"
-            (input)="color.set($any($event.target).value)"
-            required
-          />
+          <input type="text" [value]="color()" (input)="color.set($any($event.target).value)" />
         </label>
 
         <!-- UBICACIÓN -->
@@ -188,14 +168,10 @@
             type="text"
             [value]="ubicacion()"
             (input)="ubicacion.set($any($event.target).value)"
-            required
           />
         </label>
 
-        <!-- ======================================================
-             PRECIO
-             SOLO APARECE SI ES CABALLO
-        ====================================================== -->
+        <!-- PRECIO SOLO CABALLO -->
 
         <label *ngIf="sexo() === 'Macho'">
           Precio
@@ -205,11 +181,11 @@
 
             <input
               type="number"
-              min="0"
+              min="1"
               step="1000"
-              placeholder="Ej. 25000000"
+              placeholder="Ej. 3400000"
               [value]="precio() ?? ''"
-              (input)="precio.set(+$any($event.target).value || null)"
+              (input)="onPrecioChange($any($event.target).value)"
             />
           </div>
         </label>
@@ -222,7 +198,6 @@
           <textarea
             [value]="descripcion()"
             (input)="descripcion.set($any($event.target).value)"
-            required
           ></textarea>
         </label>
 
@@ -232,7 +207,7 @@
           Disponibilidad
 
           <select (change)="onDisponibilidadChange($any($event.target).value)">
-            <option value="Disponible" selected>Disponible</option>
+            <option value="Disponible">Disponible</option>
 
             <option value="No disponible">No disponible</option>
           </select>
@@ -243,12 +218,14 @@
         <p class="np-error np-full" *ngIf="error()">
           {{ error() }}
         </p>
+
         <!-- FOTOS -->
 
         <div class="np-fotos-field np-full">
           <div class="np-fotos-head">
-            <span class="np-fotos-title">Fotos del ejemplar</span>
-            <span class="np-fotos-hint">Hasta 5 MB por foto. La primera será la principal.</span>
+            <span class="np-fotos-title"> Fotos del ejemplar </span>
+
+            <span class="np-fotos-hint"> Hasta 5 MB por foto. La primera será la principal. </span>
           </div>
 
           <input
@@ -269,12 +246,16 @@
                 stroke-linecap="round"
               />
             </svg>
+
             Añadir fotos
           </button>
 
           <ul class="np-fotos-list" *ngIf="fotosSeleccionadas().length > 0">
             <li class="np-foto-item" *ngFor="let foto of fotosSeleccionadas(); let i = index">
-              <span class="np-foto-name">{{ foto.name }}</span>
+              <span class="np-foto-name">
+                {{ foto.name }}
+              </span>
+
               <button
                 type="button"
                 class="np-foto-remove"
@@ -286,9 +267,10 @@
             </li>
           </ul>
         </div>
-        <!-- PUBLICAR -->
 
-        <button class="np-submit np-full" type="submit" [disabled]="enviando()">
+        <!-- BOTÓN PUBLICAR -->
+
+        <button class="np-submit np-full" type="button" [disabled]="enviando()" (click)="guardar()">
           {{ enviando() ? 'Guardando...' : 'Publicar ejemplar' }}
         </button>
       </form>

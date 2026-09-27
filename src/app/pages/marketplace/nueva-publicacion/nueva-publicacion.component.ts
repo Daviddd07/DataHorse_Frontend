@@ -1,46 +1,53 @@
 import { Component, computed, inject, signal } from '@angular/core';
+
 import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
+
 import { Router } from '@angular/router';
 
-import { CaballoService, Raza } from '../../../Services/caballo.service';
+import { CaballoService, Raza, NuevaPublicacion } from '../../../Services/caballo.service';
 
 type Paso = 'tipo' | 'formulario';
 
 @Component({
   selector: 'app-nueva-publicacion',
   standalone: true,
+
   imports: [CommonModule, FormsModule],
+
   templateUrl: './nueva-publicacion.component.html',
+
   styleUrl: './nueva-publicacion.component.css',
 })
 export class NuevaPublicacionComponent {
   private caballoService = inject(CaballoService);
+
   private router = inject(Router);
 
-  /* ======================================================
-     PASOS
-  ====================================================== */
+  // ======================================================
+  // PASOS
+  // ======================================================
 
   paso = signal<Paso>('tipo');
 
   sexo = signal<'Macho' | 'Hembra' | null>(null);
 
-  /* ======================================================
-     RAZAS
-  ====================================================== */
+  // ======================================================
+  // RAZAS
+  // ======================================================
 
   razas = signal<Raza[]>([]);
 
   idRazaSeleccionada = signal<number | null>(null);
 
-  razaEsOtro = computed(() => this.idRazaSeleccionada() === -1);
-
   razaPersonalizada = signal('');
 
-  /* ======================================================
-     DATOS DEL EJEMPLAR
-  ====================================================== */
+  razaEsOtro = computed(() => this.idRazaSeleccionada() === -1);
+
+  // ======================================================
+  // DATOS DEL EJEMPLAR
+  // ======================================================
 
   nombre = signal('');
 
@@ -56,16 +63,15 @@ export class NuevaPublicacionComponent {
 
   disponibilidad = signal<'Disponible' | 'No disponible'>('Disponible');
 
-  /* ======================================================
-     PRECIO
-     Solo se muestra cuando es Caballo
-  ====================================================== */
+  // ======================================================
+  // PRECIO
+  // ======================================================
 
   precio = signal<number | null>(null);
 
-  /* ======================================================
-     ESTADO
-  ====================================================== */
+  // ======================================================
+  // ESTADO
+  // ======================================================
 
   enviando = signal(false);
 
@@ -73,31 +79,34 @@ export class NuevaPublicacionComponent {
 
   fotosSeleccionadas = signal<File[]>([]);
 
-  /* ======================================================
-     CONSTRUCTOR
-  ====================================================== */
+  // ======================================================
+  // CONSTRUCTOR
+  // ======================================================
 
   constructor() {
     this.caballoService.listarRazas().subscribe({
       next: (razas) => {
+        console.log('RAZAS:', razas);
+
         this.razas.set(razas);
       },
 
-      error: () => {
+      error: (err) => {
+        console.error('ERROR CARGANDO RAZAS:', err);
+
         this.razas.set([]);
       },
     });
   }
 
-  /* ======================================================
-     SELECCIONAR TIPO
-  ====================================================== */
+  // ======================================================
+  // TIPO DE EJEMPLAR
+  // ======================================================
 
   elegirTipo(sexo: 'Macho' | 'Hembra'): void {
     this.sexo.set(sexo);
 
-    // Si selecciona Yegua,
-    // eliminamos cualquier precio anterior.
+    // Las yeguas no manejan precio
     if (sexo === 'Hembra') {
       this.precio.set(null);
     }
@@ -105,85 +114,202 @@ export class NuevaPublicacionComponent {
     this.paso.set('formulario');
   }
 
-  /* ======================================================
-     VOLVER A SELECCIONAR TIPO
-  ====================================================== */
+  // ======================================================
+  // VOLVER
+  // ======================================================
 
   volver(): void {
     this.paso.set('tipo');
   }
 
-  /* ======================================================
-     RAZA
-  ====================================================== */
-
-  onRazaChange(valor: string): void {
-    this.idRazaSeleccionada.set(valor ? +valor : null);
-  }
-
-  /* ======================================================
-     DISPONIBILIDAD
-  ====================================================== */
-
-  onDisponibilidadChange(valor: string): void {
-    this.disponibilidad.set(valor as 'Disponible' | 'No disponible');
-  }
-
-  /* ======================================================
-     CANCELAR
-  ====================================================== */
+  // ======================================================
+  // CANCELAR
+  // ======================================================
 
   cancelar(): void {
     this.router.navigate(['/marketplace']);
   }
 
-  /* ======================================================
-     GUARDAR
-  ====================================================== */
+  // ======================================================
+  // RAZA
+  // ======================================================
 
-  guardar(): void {
-    console.log('guardar() se ejecutó');
+  onRazaChange(valor: string): void {
+    if (!valor) {
+      this.idRazaSeleccionada.set(null);
 
-    this.error.set('');
-
-    if (!this.sexo()) {
       return;
     }
 
-    if (!this.idRazaSeleccionada()) {
+    const id = Number(valor);
+
+    this.idRazaSeleccionada.set(id);
+
+    if (id !== -1) {
+      this.razaPersonalizada.set('');
+    }
+  }
+
+  // ======================================================
+  // PRECIO
+  // ======================================================
+
+  onPrecioChange(valor: string): void {
+    if (valor === null || valor === undefined || valor.trim() === '') {
+      this.precio.set(null);
+
+      return;
+    }
+
+    const valorNormalizado = valor.replace(',', '.');
+
+    const numero = Number(valorNormalizado);
+
+    if (Number.isNaN(numero)) {
+      this.precio.set(null);
+
+      return;
+    }
+
+    this.precio.set(numero);
+
+    console.log('PRECIO ACTUAL:', numero);
+  }
+
+  // ======================================================
+  // ALTURA
+  // ======================================================
+
+  onAlturaChange(valor: string): void {
+    if (!valor) {
+      this.altura.set(null);
+
+      return;
+    }
+
+    const normalizado = valor.replace(',', '.');
+
+    const numero = Number(normalizado);
+
+    if (Number.isNaN(numero)) {
+      this.altura.set(null);
+
+      return;
+    }
+
+    this.altura.set(numero);
+  }
+
+  // ======================================================
+  // DISPONIBILIDAD
+  // ======================================================
+
+  onDisponibilidadChange(valor: string): void {
+    this.disponibilidad.set(valor as 'Disponible' | 'No disponible');
+  }
+
+  // ======================================================
+  // FOTOS
+  // ======================================================
+
+  onFotosSeleccionadas(event: Event): void {
+    const input = event.target as HTMLInputElement;
+
+    this.fotosSeleccionadas.set(input.files ? Array.from(input.files) : []);
+  }
+
+  eliminarFoto(index: number): void {
+    const actuales = this.fotosSeleccionadas();
+
+    this.fotosSeleccionadas.set(actuales.filter((_, i) => i !== index));
+  }
+
+  // ======================================================
+  // GUARDAR
+  // ======================================================
+
+  guardar(): void {
+    console.log('ENTRÓ A GUARDAR');
+
+    console.log('PRECIO ANTES DE GUARDAR:', this.precio());
+
+    this.error.set('');
+
+    // ==================================================
+    // SEXO
+    // ==================================================
+
+    if (!this.sexo()) {
+      this.error.set('Selecciona si es Caballo o Yegua.');
+
+      return;
+    }
+
+    // ==================================================
+    // RAZA
+    // ==================================================
+
+    if (this.idRazaSeleccionada() === null) {
       this.error.set('Selecciona una raza.');
 
       return;
     }
 
+    // ==================================================
+    // OTRA RAZA
+    // ==================================================
+
     if (this.razaEsOtro() && !this.razaPersonalizada().trim()) {
-      this.error.set('Escribe la raza en el campo "Otro".');
+      this.error.set('Escribe la raza del ejemplar.');
 
       return;
     }
+
+    // ==================================================
+    // CAMPOS OBLIGATORIOS
+    // ==================================================
 
     if (
       !this.nombre().trim() ||
       !this.fechaNacimiento() ||
-      !this.altura() ||
+      this.altura() === null ||
+      this.altura()! <= 0 ||
       !this.color().trim() ||
       !this.ubicacion().trim() ||
       !this.descripcion().trim()
     ) {
-      this.error.set('Todos los campos son obligatorios.');
+      this.error.set('Completa todos los campos obligatorios.');
 
       return;
     }
 
-    if (this.sexo() === 'Macho' && !this.precio()) {
-      this.error.set('El precio es obligatorio para publicar un caballo.');
+    // ==================================================
+    // PRECIO CABALLO
+    // ==================================================
+
+    if (this.sexo() === 'Macho') {
+      if (this.precio() === null || this.precio()! <= 0) {
+        this.error.set('Debes ingresar un precio válido para el caballo.');
+
+        return;
+      }
+    }
+
+    // ==================================================
+    // FOTOS
+    // ==================================================
+
+    if (this.fotosSeleccionadas().length === 0) {
+      this.error.set('Debes subir al menos una foto del ejemplar.');
 
       return;
     }
 
-    this.enviando.set(true);
+    // ==================================================
+    // CREAR OBJETO
+    // ==================================================
 
-    const base = {
+    const datos: NuevaPublicacion = {
       nombre: this.nombre().trim(),
 
       sexo: this.sexo()!,
@@ -200,63 +326,75 @@ export class NuevaPublicacionComponent {
 
       disponibilidad: this.disponibilidad(),
 
-      ...(this.sexo() === 'Macho'
-        ? {
-            precio: this.precio()!,
-          }
-        : {}),
+      precio: this.sexo() === 'Macho' ? Number(this.precio()) : null,
     };
 
-    if (this.fotosSeleccionadas().length === 0) {
-      this.error.set('Debes subir al menos una foto del ejemplar.');
-      return;
+    // ==================================================
+    // RAZA
+    // ==================================================
+
+    if (this.razaEsOtro()) {
+      datos.raza_personalizada = this.razaPersonalizada().trim();
+    } else {
+      datos.id_raza = this.idRazaSeleccionada()!;
     }
 
-    const datos = this.razaEsOtro()
-      ? {
-          ...base,
+    console.log('JSON FINAL A ENVIAR:', datos);
 
-          raza_personalizada: this.razaPersonalizada().trim(),
-        }
-      : {
-          ...base,
+    // ==================================================
+    // ENVIAR
+    // ==================================================
 
-          id_raza: this.idRazaSeleccionada()!,
-        };
-    console.log('datos a enviar:', JSON.stringify(datos));
-    console.log('sexo actual:', this.sexo());
-    console.log('precio actual:', this.precio());
+    this.enviando.set(true);
+
     this.caballoService.crear(datos).subscribe({
-      next: (caballo) => {
+      next: (respuesta) => {
+        console.log('PUBLICACIÓN GUARDADA:', respuesta);
+
         const fotos = this.fotosSeleccionadas();
 
         if (fotos.length === 0) {
+          this.enviando.set(false);
+
           this.router.navigate(['/marketplace']);
+
           return;
         }
 
-        this.caballoService.subirFotos(caballo.id_caballo, fotos).subscribe({
-          next: () => this.router.navigate(['/marketplace']),
-          error: () => {
+        // ============================================
+        // SUBIR FOTOS
+        // ============================================
+
+        this.caballoService.subirFotos(respuesta.id_caballo, fotos).subscribe({
+          next: () => {
             this.enviando.set(false);
+
+            this.router.navigate(['/marketplace']);
+          },
+
+          error: (err) => {
+            console.error('ERROR SUBIENDO FOTOS:', err);
+
+            this.enviando.set(false);
+
             this.error.set('Caballo creado, pero fallaron las fotos. Intenta de nuevo.');
           },
         });
       },
-      error: () => {
+
+      error: (err) => {
+        console.error('ERROR PUBLICACIÓN:', err);
+
         this.enviando.set(false);
-        this.error.set('No se pudo guardar la publicación. Intenta de nuevo.');
+
+        const detalle = err?.error?.detail;
+
+        if (typeof detalle === 'string') {
+          this.error.set(detalle);
+        } else {
+          this.error.set('No se pudo guardar la publicación. Intenta de nuevo.');
+        }
       },
     });
-  }
-
-  onFotosSeleccionadas(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    this.fotosSeleccionadas.set(input.files ? Array.from(input.files) : []);
-  }
-
-  eliminarFoto(index: number): void {
-    const actuales = this.fotosSeleccionadas();
-    this.fotosSeleccionadas.set(actuales.filter((_, i) => i !== index));
   }
 }
