@@ -243,7 +243,49 @@
         <p class="np-error np-full" *ngIf="error()">
           {{ error() }}
         </p>
+        <!-- FOTOS -->
 
+        <div class="np-fotos-field np-full">
+          <div class="np-fotos-head">
+            <span class="np-fotos-title">Fotos del ejemplar</span>
+            <span class="np-fotos-hint">Hasta 5 MB por foto. La primera será la principal.</span>
+          </div>
+
+          <input
+            #fileInput
+            type="file"
+            accept="image/jpeg,image/png,image/webp"
+            multiple
+            (change)="onFotosSeleccionadas($event)"
+            hidden
+          />
+
+          <button type="button" class="np-fotos-btn" (click)="fileInput.click()">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" aria-hidden="true">
+              <path
+                d="M12 5v14M5 12h14"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+              />
+            </svg>
+            Añadir fotos
+          </button>
+
+          <ul class="np-fotos-list" *ngIf="fotosSeleccionadas().length > 0">
+            <li class="np-foto-item" *ngFor="let foto of fotosSeleccionadas(); let i = index">
+              <span class="np-foto-name">{{ foto.name }}</span>
+              <button
+                type="button"
+                class="np-foto-remove"
+                (click)="eliminarFoto(i)"
+                aria-label="Eliminar foto"
+              >
+                ×
+              </button>
+            </li>
+          </ul>
+        </div>
         <!-- PUBLICAR -->
 
         <button class="np-submit np-full" type="submit" [disabled]="enviando()">

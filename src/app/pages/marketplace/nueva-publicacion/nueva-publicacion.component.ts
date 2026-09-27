@@ -71,6 +71,8 @@ export class NuevaPublicacionComponent {
 
   error = signal('');
 
+  fotosSeleccionadas = signal<File[]>([]);
+
   /* ======================================================
      CONSTRUCTOR
   ====================================================== */
@@ -205,6 +207,11 @@ export class NuevaPublicacionComponent {
         : {}),
     };
 
+    if (this.fotosSeleccionadas().length === 0) {
+      this.error.set('Debes subir al menos una foto del ejemplar.');
+      return;
+    }
+
     const datos = this.razaEsOtro()
       ? {
           ...base,
@@ -220,15 +227,36 @@ export class NuevaPublicacionComponent {
     console.log('sexo actual:', this.sexo());
     console.log('precio actual:', this.precio());
     this.caballoService.crear(datos).subscribe({
-      next: () => {
-        this.router.navigate(['/marketplace']);
-      },
+      next: (caballo) => {
+        const fotos = this.fotosSeleccionadas();
 
+        if (fotos.length === 0) {
+          this.router.navigate(['/marketplace']);
+          return;
+        }
+
+        this.caballoService.subirFotos(caballo.id_caballo, fotos).subscribe({
+          next: () => this.router.navigate(['/marketplace']),
+          error: () => {
+            this.enviando.set(false);
+            this.error.set('Caballo creado, pero fallaron las fotos. Intenta de nuevo.');
+          },
+        });
+      },
       error: () => {
         this.enviando.set(false);
-
         this.error.set('No se pudo guardar la publicación. Intenta de nuevo.');
       },
     });
+  }
+
+  onFotosSeleccionadas(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    this.fotosSeleccionadas.set(input.files ? Array.from(input.files) : []);
+  }
+
+  eliminarFoto(index: number): void {
+    const actuales = this.fotosSeleccionadas();
+    this.fotosSeleccionadas.set(actuales.filter((_, i) => i !== index));
   }
 }

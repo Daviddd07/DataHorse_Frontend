@@ -90,14 +90,22 @@
     <section class="dh-grid">
       <article class="dh-card dh-card--featured" *ngIf="destacado() as h">
         <div class="dh-card-media" [style.background]="h.color">
-          <svg class="dh-horse-mark" viewBox="0 0 32 32" fill="none" aria-hidden="true">
-            <path
-              d="M9 24c0-7 3-13 7-13s7 6 7 13"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-            />
-          </svg>
+          <img
+            *ngIf="h.fotoPrincipal; else placeholderDestacado"
+            [src]="h.fotoPrincipal"
+            [alt]="h.nombre"
+            class="dh-card-img"
+          />
+          <ng-template #placeholderDestacado>
+            <svg class="dh-horse-mark" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+              <path
+                d="M9 24c0-7 3-13 7-13s7 6 7 13"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+              />
+            </svg>
+          </ng-template>
           <span class="dh-badge" *ngIf="h.verificado">Pedigrí verificado</span>
           <button class="dh-fav" type="button" aria-label="Guardar en favoritos">♥</button>
         </div>
@@ -114,14 +122,22 @@
 
       <article class="dh-card" *ngFor="let h of caballosFiltrados()">
         <div class="dh-card-media" [style.background]="h.color">
-          <svg class="dh-horse-mark" viewBox="0 0 32 32" fill="none" aria-hidden="true">
-            <path
-              d="M9 24c0-7 3-13 7-13s7 6 7 13"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-            />
-          </svg>
+          <img
+            *ngIf="h.fotoPrincipal; else placeholderCard"
+            [src]="h.fotoPrincipal"
+            [alt]="h.nombre"
+            class="dh-card-img"
+          />
+          <ng-template #placeholderCard>
+            <svg class="dh-horse-mark" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+              <path
+                d="M9 24c0-7 3-13 7-13s7 6 7 13"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+              />
+            </svg>
+          </ng-template>
           <span class="dh-badge" *ngIf="h.verificado">Pedigrí verificado</span>
           <button class="dh-fav" type="button" aria-label="Guardar en favoritos">♥</button>
         </div>

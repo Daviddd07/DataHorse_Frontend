@@ -1,6 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
-
 /* ======================================================
    FONDO
 ====================================================== */
@@ -19,29 +18,11 @@
   color: #17172a;
 
   background:
-    radial-gradient(
-      ellipse at 15% 110%,
-      rgba(126, 104, 255, 0.16) 0%,
-      transparent 45%
-    ),
-    radial-gradient(
-      ellipse at 85% 115%,
-      rgba(126, 104, 255, 0.18) 0%,
-      transparent 45%
-    ),
-    radial-gradient(
-      circle at 50% 20%,
-      rgba(255, 255, 255, 0.92),
-      transparent 40%
-    ),
-    linear-gradient(
-      135deg,
-      #f7f8ff 0%,
-      #eef0ff 55%,
-      #e5e4ff 100%
-    );
+    radial-gradient(ellipse at 15% 110%, rgba(126, 104, 255, 0.16) 0%, transparent 45%),
+    radial-gradient(ellipse at 85% 115%, rgba(126, 104, 255, 0.18) 0%, transparent 45%),
+    radial-gradient(circle at 50% 20%, rgba(255, 255, 255, 0.92), transparent 40%),
+    linear-gradient(135deg, #f7f8ff 0%, #eef0ff 55%, #e5e4ff 100%);
 }
-
 
 /* ======================================================
    CABALLO FONDO IZQUIERDA
@@ -58,8 +39,7 @@
   width: 580px;
   height: 520px;
 
-  background-image:
-    url('https://images.unsplash.com/photo-1553284965-83fd3e82fa5a?auto=format&fit=crop&w=1200&q=80');
+  background-image: url('https://images.unsplash.com/photo-1553284965-83fd3e82fa5a?auto=format&fit=crop&w=1200&q=80');
 
   background-size: cover;
 
@@ -67,36 +47,18 @@
 
   opacity: 0.06;
 
-  filter:
-    grayscale(1)
-    blur(2px);
+  filter: grayscale(1) blur(2px);
 
-  transform:
-    scaleX(-1);
+  transform: scaleX(-1);
 
   pointer-events: none;
 
   z-index: 0;
 
-  -webkit-mask-image:
-    linear-gradient(
-      to right,
-      transparent,
-      black 25%,
-      black 68%,
-      transparent
-    );
+  -webkit-mask-image: linear-gradient(to right, transparent, black 25%, black 68%, transparent);
 
-  mask-image:
-    linear-gradient(
-      to right,
-      transparent,
-      black 25%,
-      black 68%,
-      transparent
-    );
+  mask-image: linear-gradient(to right, transparent, black 25%, black 68%, transparent);
 }
-
 
 /* ======================================================
    CABALLO FONDO DERECHA
@@ -113,8 +75,7 @@
   width: 580px;
   height: 520px;
 
-  background-image:
-    url('https://images.unsplash.com/photo-1534773728080-33d31da27ae5?auto=format&fit=crop&w=1200&q=80');
+  background-image: url('https://images.unsplash.com/photo-1534773728080-33d31da27ae5?auto=format&fit=crop&w=1200&q=80');
 
   background-size: cover;
 
@@ -122,33 +83,16 @@
 
   opacity: 0.06;
 
-  filter:
-    grayscale(1)
-    blur(2px);
+  filter: grayscale(1) blur(2px);
 
   pointer-events: none;
 
   z-index: 0;
 
-  -webkit-mask-image:
-    linear-gradient(
-      to left,
-      transparent,
-      black 25%,
-      black 68%,
-      transparent
-    );
+  -webkit-mask-image: linear-gradient(to left, transparent, black 25%, black 68%, transparent);
 
-  mask-image:
-    linear-gradient(
-      to left,
-      transparent,
-      black 25%,
-      black 68%,
-      transparent
-    );
+  mask-image: linear-gradient(to left, transparent, black 25%, black 68%, transparent);
 }
-
 
 /* ======================================================
    PÁGINA
@@ -165,12 +109,8 @@
 
   box-sizing: border-box;
 
-  padding:
-    38px
-    48px
-    70px;
+  padding: 38px 48px 70px;
 }
-
 
 /* ======================================================
    VOLVER
@@ -198,14 +138,11 @@
     transform 0.2s ease;
 }
 
-
 .np-back:hover {
   color: #6251e4;
 
-  transform:
-    translateX(-2px);
+  transform: translateX(-2px);
 }
-
 
 /* ======================================================
    TITULO SELECCIÓN
@@ -214,19 +151,16 @@
 .np-heading {
   max-width: 760px;
 
-  margin:
-    10px auto 38px;
+  margin: 10px auto 38px;
 
   text-align: center;
 }
-
 
 .np-plus {
   width: 58px;
   height: 58px;
 
-  margin:
-    0 auto 18px;
+  margin: 0 auto 18px;
 
   display: flex;
 
@@ -236,37 +170,26 @@
 
   border-radius: 16px;
 
-  background:
-    linear-gradient(
-      135deg,
-      #eeeaff,
-      #dbd3ff
-    );
+  background: linear-gradient(135deg, #eeeaff, #dbd3ff);
 
   color: #6e55ee;
 
   font-size: 2.15rem;
 
-  box-shadow:
-    0 10px 28px
-    rgba(106, 82, 235, 0.18);
+  box-shadow: 0 10px 28px rgba(106, 82, 235, 0.18);
 }
 
-
 .np-heading h1 {
-  margin:
-    0 0 10px;
+  margin: 0 0 10px;
 
   font-size: 2.2rem;
 
   font-weight: 800;
 
-  letter-spacing:
-    -0.045em;
+  letter-spacing: -0.045em;
 
   color: #14152f;
 }
-
 
 .np-heading p {
   margin: 0;
@@ -278,7 +201,6 @@
   line-height: 1.55;
 }
 
-
 /* ======================================================
    TARJETAS
 ====================================================== */
@@ -288,25 +210,19 @@
 
   display: grid;
 
-  grid-template-columns:
-    repeat(
-      2,
-      minmax(0, 1fr)
-    );
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 
   gap: 30px;
 
   margin-top: 38px;
 }
 
-
 .np-tipo-card {
   padding: 0;
 
   overflow: hidden;
 
-  border:
-    1px solid #e3e0f2;
+  border: 1px solid #e3e0f2;
 
   border-radius: 26px;
 
@@ -318,9 +234,7 @@
 
   cursor: pointer;
 
-  box-shadow:
-    0 14px 35px
-    rgba(60, 44, 125, 0.10);
+  box-shadow: 0 14px 35px rgba(60, 44, 125, 0.1);
 
   transition:
     transform 0.28s ease,
@@ -328,19 +242,13 @@
     border-color 0.28s ease;
 }
 
-
 .np-tipo-card:hover {
-  transform:
-    translateY(-7px);
+  transform: translateY(-7px);
 
-  border-color:
-    #9d8df2;
+  border-color: #9d8df2;
 
-  box-shadow:
-    0 24px 48px
-    rgba(72, 54, 150, 0.18);
+  box-shadow: 0 24px 48px rgba(72, 54, 150, 0.18);
 }
-
 
 /* ======================================================
    FOTO
@@ -356,7 +264,6 @@
   overflow: hidden;
 }
 
-
 .np-horse-image {
   width: 100%;
 
@@ -371,30 +278,19 @@
     filter 0.45s ease;
 }
 
+.np-tipo-card:hover .np-horse-image {
+  transform: scale(1.045);
 
-.np-tipo-card:hover
-.np-horse-image {
-  transform:
-    scale(1.045);
-
-  filter:
-    brightness(1.04);
+  filter: brightness(1.04);
 }
 
-
-.np-yegua
-.np-horse-image {
-  object-position:
-    center 38%;
+.np-yegua .np-horse-image {
+  object-position: center 38%;
 }
 
-
-.np-caballo
-.np-horse-image {
-  object-position:
-    center 42%;
+.np-caballo .np-horse-image {
+  object-position: center 42%;
 }
-
 
 /* ======================================================
    SEXO
@@ -419,13 +315,7 @@
 
   border-radius: 50%;
 
-  background:
-    rgba(
-      255,
-      255,
-      255,
-      0.94
-    );
+  background: rgba(255, 255, 255, 0.94);
 
   font-size: 1.65rem;
 
@@ -433,21 +323,16 @@
 
   z-index: 5;
 
-  box-shadow:
-    0 7px 20px
-    rgba(20, 20, 45, 0.12);
+  box-shadow: 0 7px 20px rgba(20, 20, 45, 0.12);
 }
-
 
 .np-sex-icon.female {
   color: #ec55ad;
 }
 
-
 .np-sex-icon.male {
   color: #527cf5;
 }
-
 
 /* ======================================================
    CONTENIDO TARJETA
@@ -458,46 +343,32 @@
 
   align-items: center;
 
-  justify-content:
-    space-between;
+  justify-content: space-between;
 
   gap: 18px;
 
-  padding:
-    23px
-    28px
-    27px;
+  padding: 23px 28px 27px;
 
-  background:
-    #ffffff;
+  background: #ffffff;
 }
-
 
 .np-card-content h2 {
-  margin:
-    0 0 7px;
+  margin: 0 0 7px;
 
-  color:
-    #17172e;
+  color: #17172e;
 
-  font-size:
-    1.55rem;
+  font-size: 1.55rem;
 
-  font-weight:
-    800;
+  font-weight: 800;
 }
-
 
 .np-card-content p {
   margin: 0;
 
-  color:
-    #82839e;
+  color: #82839e;
 
-  font-size:
-    0.95rem;
+  font-size: 0.95rem;
 }
-
 
 .np-arrow {
   flex-shrink: 0;
@@ -514,16 +385,12 @@
 
   border-radius: 50%;
 
-  background:
-    #ebe6ff;
+  background: #ebe6ff;
 
-  color:
-    #6550ed;
+  color: #6550ed;
 
-  font-size:
-    1.5rem;
+  font-size: 1.5rem;
 }
-
 
 /* ======================================================
    FORMULARIO CENTRADO
@@ -536,56 +403,38 @@
 
   margin: 0 auto;
 
-  padding:
-    12px
-    10px
-    40px;
+  padding: 12px 10px 40px;
 
-  box-sizing:
-    border-box;
+  box-sizing: border-box;
 }
-
 
 .np-change {
-  margin-bottom:
-    22px;
+  margin-bottom: 22px;
 }
-
 
 .np-form-heading {
-  margin-bottom:
-    32px;
+  margin-bottom: 32px;
 }
-
 
 .np-form-heading h1 {
-  margin:
-    0 0 12px;
+  margin: 0 0 12px;
 
-  font-size:
-    2.7rem;
+  font-size: 2.7rem;
 
-  font-weight:
-    800;
+  font-weight: 800;
 
-  letter-spacing:
-    -0.045em;
+  letter-spacing: -0.045em;
 
-  color:
-    #151631;
+  color: #151631;
 }
-
 
 .np-form-heading p {
   margin: 0;
 
-  color:
-    #77789c;
+  color: #77789c;
 
-  font-size:
-    1.05rem;
+  font-size: 1.05rem;
 }
-
 
 /* ======================================================
    GRID FORMULARIO
@@ -596,35 +445,24 @@
 
   display: grid;
 
-  grid-template-columns:
-    repeat(
-      2,
-      minmax(0, 1fr)
-    );
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 
-  gap:
-    24px 26px;
+  gap: 24px 26px;
 }
-
 
 .np-form label {
   display: flex;
 
-  flex-direction:
-    column;
+  flex-direction: column;
 
   gap: 9px;
 
-  color:
-    #292a4d;
+  color: #292a4d;
 
-  font-size:
-    0.95rem;
+  font-size: 0.95rem;
 
-  font-weight:
-    700;
+  font-weight: 700;
 }
-
 
 /* ======================================================
    INPUT
@@ -635,82 +473,45 @@
 .np-form textarea {
   width: 100%;
 
-  box-sizing:
-    border-box;
+  box-sizing: border-box;
 
-  border:
-    1px solid
-    rgba(
-      110,
-      91,
-      213,
-      0.16
-    );
+  border: 1px solid rgba(110, 91, 213, 0.16);
 
-  border-radius:
-    16px;
+  border-radius: 16px;
 
-  background:
-    rgba(
-      255,
-      255,
-      255,
-      0.78
-    );
+  background: rgba(255, 255, 255, 0.78);
 
-  padding:
-    15px 17px;
+  padding: 15px 17px;
 
-  font-family:
-    inherit;
+  font-family: inherit;
 
-  font-size:
-    0.96rem;
+  font-size: 0.96rem;
 
-  color:
-    #252642;
+  color: #252642;
 
-  outline:
-    none;
+  outline: none;
 
   transition:
-    border-color
-    0.2s ease,
-    box-shadow
-    0.2s ease,
-    background
-    0.2s ease;
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease;
 }
-
 
 .np-form input:focus,
 .np-form select:focus,
 .np-form textarea:focus {
-  border-color:
-    #7968ed;
+  border-color: #7968ed;
 
-  background:
-    #ffffff;
+  background: #ffffff;
 
-  box-shadow:
-    0 0 0 4px
-    rgba(
-      121,
-      104,
-      237,
-      0.10
-    );
+  box-shadow: 0 0 0 4px rgba(121, 104, 237, 0.1);
 }
-
 
 .np-form textarea {
-  min-height:
-    145px;
+  min-height: 145px;
 
-  resize:
-    vertical;
+  resize: vertical;
 }
-
 
 /* ======================================================
    PRECIO
@@ -722,7 +523,6 @@
   width: 100%;
 }
 
-
 .np-price-input span {
   position: absolute;
 
@@ -730,50 +530,38 @@
 
   top: 50%;
 
-  transform:
-    translateY(-50%);
+  transform: translateY(-50%);
 
-  color:
-    #6856e6;
+  color: #6856e6;
 
-  font-weight:
-    800;
+  font-weight: 800;
 
   z-index: 2;
 }
 
-
 .np-price-input input {
-  padding-left:
-    36px;
+  padding-left: 36px;
 }
-
 
 /* ======================================================
    CAMPOS COMPLETOS
 ====================================================== */
 
 .np-full {
-  grid-column:
-    1 / -1;
+  grid-column: 1 / -1;
 }
-
 
 /* ======================================================
    HINT
 ====================================================== */
 
 .np-hint {
-  color:
-    #9393aa;
+  color: #9393aa;
 
-  font-size:
-    0.77rem;
+  font-size: 0.77rem;
 
-  font-weight:
-    400;
+  font-weight: 400;
 }
-
 
 /* ======================================================
    ERROR
@@ -782,22 +570,31 @@
 .np-error {
   margin: 0;
 
-  padding:
-    12px 14px;
+  padding: 12px 14px;
 
-  border-radius:
-    12px;
+  border-radius: 12px;
 
-  background:
-    #fff0f0;
+  background: #fff0f0;
 
-  color:
-    #c43a3a;
+  color: #c43a3a;
 
-  font-size:
-    0.88rem;
+  font-size: 0.88rem;
 }
 
+/*agregar imagen*/
+
+.dh-field input[type='file'] {
+  padding: 8px;
+  border: 1px dashed var(--dh-purple, #6a4dff);
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.dh-hint {
+  font-size: 0.85rem;
+  color: #666;
+  margin-top: 4px;
+}
 
 /* ======================================================
    PUBLICAR
@@ -806,121 +603,199 @@
 .np-submit {
   border: none;
 
-  border-radius:
-    16px;
+  border-radius: 16px;
 
-  padding:
-    16px 20px;
+  padding: 16px 20px;
 
-  background:
-    linear-gradient(
-      90deg,
-      #6651e7,
-      #8169f4
-    );
+  background: linear-gradient(90deg, #6651e7, #8169f4);
 
-  color:
-    #ffffff;
+  color: #ffffff;
 
-  font-family:
-    inherit;
+  font-family: inherit;
 
-  font-size:
-    1rem;
+  font-size: 1rem;
 
-  font-weight:
-    700;
+  font-weight: 700;
 
-  cursor:
-    pointer;
+  cursor: pointer;
 
-  box-shadow:
-    0 10px 24px
-    rgba(
-      102,
-      81,
-      231,
-      0.24
-    );
+  box-shadow: 0 10px 24px rgba(102, 81, 231, 0.24);
 
   transition:
-    transform
-    0.2s ease,
-    box-shadow
-    0.2s ease;
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 }
-
 
 .np-submit:hover:not(:disabled) {
-  transform:
-    translateY(-2px);
+  transform: translateY(-2px);
 
-  box-shadow:
-    0 15px 30px
-    rgba(
-      102,
-      81,
-      231,
-      0.30
-    );
+  box-shadow: 0 15px 30px rgba(102, 81, 231, 0.3);
 }
-
 
 .np-submit:disabled {
   opacity: 0.55;
 
-  cursor:
-    not-allowed;
+  cursor: not-allowed;
 }
-
 
 /* ======================================================
    TABLET / MÓVIL
 ====================================================== */
 
 @media (max-width: 900px) {
-
   .np-page {
-    padding:
-      28px
-      20px
-      50px;
+    padding: 28px 20px 50px;
   }
-
 
   .np-tipo-opciones {
-    grid-template-columns:
-      1fr;
+    grid-template-columns: 1fr;
   }
-
 
   .np-form {
-    grid-template-columns:
-      1fr;
+    grid-template-columns: 1fr;
   }
-
 
   .np-full {
-    grid-column:
-      auto;
+    grid-column: auto;
   }
-
 
   .np-form-heading h1 {
-    font-size:
-      2rem;
+    font-size: 2rem;
   }
-
 
   .np-card-media {
-    height:
-      280px;
+    height: 280px;
   }
-
 
   :host::before,
   :host::after {
-    display:
-      none;
+    display: none;
   }
+}
+/* ======================================================
+   CAMPO DE FOTOS
+====================================================== */
+
+.np-fotos-field {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  padding: 18px;
+
+  border: 1px solid #e7e7ed;
+  border-radius: 14px;
+
+  background: #fafafc;
+}
+
+.np-fotos-head {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.np-fotos-title {
+  font-weight: 700;
+  font-size: 0.9rem;
+
+  color: #1d1d22;
+}
+
+.np-fotos-hint {
+  font-size: 0.78rem;
+
+  color: #777783;
+}
+
+.np-fotos-btn {
+  align-self: flex-start;
+
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+
+  padding: 10px 18px;
+
+  border: 1px dashed #6548e8;
+  border-radius: 10px;
+
+  background: #f4f1ff;
+  color: #6548e8;
+
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease;
+}
+
+.np-fotos-btn:hover {
+  background: #ebe8ff;
+
+  transform: translateY(-1px);
+}
+
+.np-fotos-list {
+  list-style: none;
+
+  margin: 0;
+  padding: 0;
+
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.np-foto-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 8px 12px;
+
+  background: white;
+
+  border: 1px solid #e7e7ed;
+  border-radius: 8px;
+
+  font-size: 0.82rem;
+
+  color: #33333b;
+}
+
+.np-foto-name {
+  max-width: 80%;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.np-foto-remove {
+  width: 24px;
+  height: 24px;
+
+  border: none;
+  border-radius: 50%;
+
+  background: transparent;
+
+  color: #c0392b;
+
+  font-size: 1.1rem;
+  font-weight: 700;
+  line-height: 1;
+
+  cursor: pointer;
+
+  transition: background 0.2s ease;
+}
+
+.np-foto-remove:hover {
+  background: #fdecea;
 }

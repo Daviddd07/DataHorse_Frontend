@@ -14,6 +14,7 @@ interface CaballoMock {
   calificacion: number;
   verificado: boolean;
   color: string;
+  fotoPrincipal: string | null;
 }
 
 // El nombre viene de GET /auth/me (sesión real), y las publicaciones ahora
@@ -87,6 +88,7 @@ export class MarketplaceComponent {
           calificacion: 0,
           verificado: false,
           color: 'var(--dh-purple)',
+          fotoPrincipal: p.foto_principal ? `http://localhost:8000${p.foto_principal}` : null,
         }));
         this.caballos.set(mapeados);
       },

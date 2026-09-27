@@ -49,6 +49,7 @@ export interface PublicacionListItem {
   precio_referencia: number;
   estado: string;
   fecha_publicacion: string;
+  foto_principal?: string | null;
 }
 
 @Injectable({
@@ -79,4 +80,18 @@ export class CaballoService {
   crear(datos: NuevaPublicacion): Observable<Caballo> {
     return this.http.post<Caballo>(`${this.apiUrl}/caballos`, datos, { withCredentials: true });
   }
+  subirFotos(idCaballo: number, archivos: File[]): Observable<FotoCaballo[]> {
+    const formData = new FormData();
+    archivos.forEach((a) => formData.append('files', a));
+    return this.http.post<FotoCaballo[]>(`${this.apiUrl}/caballos/${idCaballo}/fotos`, formData, {
+      withCredentials: true,
+    });
+  }
+}
+export interface FotoCaballo {
+  id_foto: number;
+  ruta: string;
+  es_principal: boolean;
+  orden: number;
+  fecha_subida?: string;
 }
