@@ -1,7 +1,15 @@
 <div class="dh-page">
+
   <header class="dh-header">
+
     <div class="dh-logo">
-      <svg class="dh-logo-icon" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+
+      <svg
+        class="dh-logo-icon"
+        viewBox="0 0 32 32"
+        fill="none"
+        aria-hidden="true"
+      >
         <path
           d="M9 24c0-7 3-13 7-13s7 6 7 13"
           stroke="currentColor"
@@ -9,15 +17,42 @@
           stroke-linecap="round"
         />
       </svg>
-      <span>DataHorse</span>
+
+      <span>
+        DataHorse
+      </span>
+
     </div>
+
 
     <div class="dh-search">
-      <input type="text" placeholder="Buscar por nombre, raza o ubicación" />
+
+      <input
+        type="text"
+        placeholder="Buscar por nombre, raza o ubicación"
+        [value]="busqueda()"
+        (input)="
+          busqueda.set(
+            $any($event.target).value
+          )
+        "
+      />
+
     </div>
 
+
     <div class="dh-header-actions">
-      <button class="dh-icon-btn" type="button" aria-label="Favoritos">♥</button>
+
+      <button
+        class="dh-icon-btn"
+        type="button"
+        aria-label="Favoritos"
+        (click)="categoriaActiva.set('Favoritos')"
+      >
+        ♥
+      </button>
+
+
       <button
         class="dh-icon-btn"
         type="button"
@@ -26,119 +61,405 @@
       >
         +
       </button>
-      <div class="dh-avatar">{{ inicial() }}</div>
+
+
+      <div class="dh-avatar">
+
+        {{ inicial() }}
+
+      </div>
+
     </div>
+
   </header>
 
+
   <div class="dh-greeting">
-    <h1>Hola, {{ nombreUsuario() }}</h1>
-    <p>Estos caballos coinciden con lo que has buscado antes.</p>
+
+    <h1>
+      Hola, {{ nombreUsuario() }}
+    </h1>
+
+    <p>
+      Explora los ejemplares publicados en DataHorse.
+    </p>
+
   </div>
 
+
   <nav class="dh-categories">
+
     <button
       *ngFor="let categoria of categorias"
       type="button"
-      [class.active]="categoriaActiva() === categoria"
-      (click)="categoriaActiva.set(categoria)"
+      [class.active]="
+        categoriaActiva() === categoria
+      "
+      (click)="
+        categoriaActiva.set(
+          categoria
+        )
+      "
     >
       {{ categoria }}
     </button>
+
   </nav>
 
+
   <div class="dh-body">
+
+
     <aside class="dh-filters">
+
       <div class="dh-filter-group">
-        <h3>Precio de referencia</h3>
+
+        <h3>
+          Precio de referencia
+        </h3>
+
         <input
           type="range"
-          min="10000000"
+          min="0"
           max="60000000"
           step="1000000"
           [value]="precioMax()"
-          (input)="precioMax.set(+$any($event.target).value)"
+          (input)="
+            precioMax.set(
+              +$any($event.target).value
+            )
+          "
         />
+
         <p class="dh-filter-value">
-          Hasta {{ precioMax() | currency: 'COP' : 'symbol' : '1.0-0' }}
+
+          Hasta
+
+          {{
+            precioMax()
+              | currency:
+                  'COP':
+                  'symbol':
+                  '1.0-0'
+          }}
+
         </p>
+
       </div>
 
+
       <div class="dh-filter-group">
-        <h3>Raza</h3>
-        <label *ngFor="let raza of razas" class="dh-checkbox">
+
+        <h3>
+          Raza
+        </h3>
+
+        <label
+          *ngFor="let raza of razas()"
+          class="dh-checkbox"
+        >
+
           <input
             type="checkbox"
-            [checked]="razasSeleccionadas().includes(raza)"
-            (change)="toggleRaza(raza)"
+            [checked]="
+              razasSeleccionadas()
+                .includes(raza)
+            "
+            (change)="
+              toggleRaza(raza)
+            "
           />
+
           {{ raza }}
+
         </label>
+
       </div>
 
+
       <div class="dh-filter-group">
+
         <label class="dh-checkbox">
+
           <input
             type="checkbox"
             [checked]="soloVerificados()"
-            (change)="soloVerificados.set(!soloVerificados())"
+            (change)="
+              soloVerificados.set(
+                !soloVerificados()
+              )
+            "
           />
+
           Solo con pedigrí verificado
+
         </label>
+
       </div>
+
     </aside>
 
+
     <section class="dh-grid">
-      <article class="dh-card dh-card--featured" *ngIf="destacado() as h">
-        <div class="dh-card-media" [style.background]="h.color">
-          <svg class="dh-horse-mark" viewBox="0 0 32 32" fill="none" aria-hidden="true">
-            <path
-              d="M9 24c0-7 3-13 7-13s7 6 7 13"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-            />
-          </svg>
-          <span class="dh-badge" *ngIf="h.verificado">Pedigrí verificado</span>
-          <button class="dh-fav" type="button" aria-label="Guardar en favoritos">♥</button>
-        </div>
-        <div class="dh-card-body">
-          <p class="dh-card-tag">{{ h.raza }} · {{ h.sexo }}</p>
-          <h3>{{ h.nombre }}</h3>
-          <p class="dh-card-loc">{{ h.ubicacion }}</p>
-          <div class="dh-card-footer">
-            <span class="dh-price">{{ h.precio | currency: 'COP' : 'symbol' : '1.0-0' }}</span>
-            <span class="dh-rating">★ {{ h.calificacion }}</span>
-          </div>
-        </div>
-      </article>
 
-      <article class="dh-card" *ngFor="let h of caballosFiltrados()">
-        <div class="dh-card-media" [style.background]="h.color">
-          <svg class="dh-horse-mark" viewBox="0 0 32 32" fill="none" aria-hidden="true">
-            <path
-              d="M9 24c0-7 3-13 7-13s7 6 7 13"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-            />
-          </svg>
-          <span class="dh-badge" *ngIf="h.verificado">Pedigrí verificado</span>
-          <button class="dh-fav" type="button" aria-label="Guardar en favoritos">♥</button>
-        </div>
-        <div class="dh-card-body">
-          <p class="dh-card-tag">{{ h.raza }} · {{ h.sexo }}</p>
-          <h3>{{ h.nombre }}</h3>
-          <p class="dh-card-loc">{{ h.ubicacion }}</p>
-          <div class="dh-card-footer">
-            <span class="dh-price">{{ h.precio | currency: 'COP' : 'symbol' : '1.0-0' }}</span>
-            <span class="dh-rating">★ {{ h.calificacion }}</span>
-          </div>
-        </div>
-      </article>
 
-      <p class="dh-empty" *ngIf="caballosFiltrados().length === 0">
-        Todavía no hay publicaciones registradas.
+      <p
+        class="dh-empty"
+        *ngIf="cargando()"
+      >
+        Cargando publicaciones...
       </p>
+
+
+      <!-- DESTACADO -->
+
+      <article
+        class="dh-card dh-card--featured"
+        *ngIf="
+          !cargando()
+          &&
+          destacado() as h
+        "
+      >
+
+        <div
+          class="dh-card-media"
+          [style.background]="h.fondo"
+        >
+
+          <svg
+            class="dh-horse-mark"
+            viewBox="0 0 32 32"
+            fill="none"
+            aria-hidden="true"
+          >
+            <path
+              d="M9 24c0-7 3-13 7-13s7 6 7 13"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+            />
+          </svg>
+
+
+          <span
+            class="dh-badge"
+            *ngIf="h.esMia"
+          >
+            Tuyo
+          </span>
+
+
+          <button
+            class="dh-fav"
+            type="button"
+            [class.active]="h.esFavorito"
+            [attr.aria-label]="
+              h.esFavorito
+                ? 'Quitar de favoritos'
+                : 'Agregar a favoritos'
+            "
+            (click)="toggleFavorito(h)"
+          >
+
+            {{
+              h.esFavorito
+                ? '♥'
+                : '♡'
+            }}
+
+          </button>
+
+        </div>
+
+
+        <div class="dh-card-body">
+
+          <p class="dh-card-tag">
+
+            {{ h.raza }}
+            ·
+            {{ h.sexo }}
+
+          </p>
+
+
+          <h3>
+            {{ h.nombre }}
+          </h3>
+
+
+          <p class="dh-card-loc">
+            {{ h.ubicacion }}
+          </p>
+
+
+          <div class="dh-card-footer">
+
+            <span
+              class="dh-price"
+              *ngIf="h.precio !== null"
+            >
+
+              {{
+                h.precio
+                  | currency:
+                      'COP':
+                      'symbol':
+                      '1.0-0'
+              }}
+
+            </span>
+
+
+            <span
+              class="dh-price"
+              *ngIf="h.precio === null"
+            >
+              Sin precio
+            </span>
+
+          </div>
+
+        </div>
+
+      </article>
+
+
+      <!-- RESTO -->
+
+      <article
+        class="dh-card"
+        *ngFor="
+          let h of caballosFiltrados()
+        "
+      >
+
+        <div
+          class="dh-card-media"
+          [style.background]="h.fondo"
+        >
+
+          <svg
+            class="dh-horse-mark"
+            viewBox="0 0 32 32"
+            fill="none"
+            aria-hidden="true"
+          >
+            <path
+              d="M9 24c0-7 3-13 7-13s7 6 7 13"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+            />
+          </svg>
+
+
+          <span
+            class="dh-badge"
+            *ngIf="h.esMia"
+          >
+            Tuyo
+          </span>
+
+
+          <button
+            class="dh-fav"
+            type="button"
+            [class.active]="h.esFavorito"
+            [attr.aria-label]="
+              h.esFavorito
+                ? 'Quitar de favoritos'
+                : 'Agregar a favoritos'
+            "
+            (click)="toggleFavorito(h)"
+          >
+
+            {{
+              h.esFavorito
+                ? '♥'
+                : '♡'
+            }}
+
+          </button>
+
+        </div>
+
+
+        <div class="dh-card-body">
+
+          <p class="dh-card-tag">
+
+            {{ h.raza }}
+            ·
+            {{ h.sexo }}
+
+          </p>
+
+
+          <h3>
+            {{ h.nombre }}
+          </h3>
+
+
+          <p class="dh-card-loc">
+            {{ h.ubicacion }}
+          </p>
+
+
+          <div class="dh-card-footer">
+
+            <span
+              class="dh-price"
+              *ngIf="h.precio !== null"
+            >
+
+              {{
+                h.precio
+                  | currency:
+                      'COP':
+                      'symbol':
+                      '1.0-0'
+              }}
+
+            </span>
+
+
+            <span
+              class="dh-price"
+              *ngIf="h.precio === null"
+            >
+              Sin precio
+            </span>
+
+          </div>
+
+        </div>
+
+      </article>
+
+
+      <!-- SIN RESULTADOS -->
+
+      <p
+        class="dh-empty"
+        *ngIf="
+          !cargando()
+          &&
+          publicacionesFiltradas().length === 0
+        "
+      >
+
+        {{
+          categoriaActiva() === 'Favoritos'
+            ? 'Todavía no tienes publicaciones favoritas.'
+            : 'No hay publicaciones que coincidan con los filtros.'
+        }}
+
+      </p>
+
     </section>
+
   </div>
+
 </div>

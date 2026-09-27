@@ -1,27 +1,105 @@
-import { Routes } from '@angular/router';
-import { Login } from './pages/login/login';
-import { authGuard } from './auth.guard';
+import {
+  Routes
+} from '@angular/router';
+
+import {
+  Login
+} from './pages/login/login';
+
+import {
+  authGuard
+} from './auth.guard';
+
 
 export const routes: Routes = [
-  { path: '', redirectTo: 'login', pathMatch: 'full' },
-  { path: 'login', component: Login },
+
+  {
+    path: '',
+    redirectTo: 'login',
+    pathMatch: 'full'
+  },
+
+
+  {
+    path: 'login',
+    component: Login
+  },
+
+
   {
     path: 'registrar',
+
     loadComponent: () =>
-      import('./pages/registrar/Registrar.component').then((m) => m.RegistrarComponent),
+      import(
+        './pages/registrar/Registrar.component'
+      )
+      .then(
+        m =>
+          m.RegistrarComponent
+      )
   },
+
+
+  {
+    path: 'verificar-correo',
+
+    loadComponent: () =>
+      import(
+        './pages/verificar-correo/verificar-correo.component'
+      )
+      .then(
+        m =>
+          m.VerificarCorreoComponent
+      )
+  },
+
+
+  {
+    path: 'recuperar-password',
+
+    loadComponent: () =>
+      import(
+        './pages/recuperar-password/recuperar-password.component'
+      )
+      .then(
+        m =>
+          m.RecuperarPasswordComponent
+      )
+  },
+
+
   {
     path: 'marketplace',
+
     loadComponent: () =>
-      import('./pages/marketplace/marketplace.component').then((m) => m.MarketplaceComponent),
-    canActivate: [authGuard],
+      import(
+        './pages/marketplace/marketplace.component'
+      )
+      .then(
+        m =>
+          m.MarketplaceComponent
+      ),
+
+    canActivate: [
+      authGuard
+    ]
   },
+
+
   {
     path: 'publicaciones/nueva',
+
     loadComponent: () =>
-      import('./pages/marketplace/nueva-publicacion/nueva-publicacion.component').then(
-        (m) => m.NuevaPublicacionComponent,
+      import(
+        './pages/marketplace/nueva-publicacion/nueva-publicacion.component'
+      )
+      .then(
+        m =>
+          m.NuevaPublicacionComponent
       ),
-    canActivate: [authGuard],
-  },
+
+    canActivate: [
+      authGuard
+    ]
+  }
 ];
