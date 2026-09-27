@@ -50,7 +50,7 @@
   <div class="dh-greeting">
     <h1>Hola, {{ nombreUsuario() }}</h1>
 
-    <p>Explora los ejemplares publicados en DataHorse.</p>
+    <p>Explora los ejemplares para la reproduccion publicados en DataHorse.</p>
   </div>
 
   <nav class="dh-categories">
@@ -117,7 +117,12 @@
 
       <!-- DESTACADO -->
 
-      <article class="dh-card dh-card--featured" *ngIf="!cargando() && destacado() as h">
+      <article
+        class="dh-card dh-card--featured"
+        *ngIf="!cargando() && destacado() as h"
+        (click)="irADetalle(h)"
+        style="cursor: pointer"
+      >
         <div class="dh-card-media" [style.background]="h.fondo">
           <!-- 👇 FOTO: si hay foto, se muestra; si no, el SVG de placeholder -->
           <img
@@ -144,7 +149,7 @@
             type="button"
             [class.active]="h.esFavorito"
             [attr.aria-label]="h.esFavorito ? 'Quitar de favoritos' : 'Agregar a favoritos'"
-            (click)="toggleFavorito(h)"
+            (click)="$event.stopPropagation(); toggleFavorito(h)"
           >
             {{ h.esFavorito ? '♥' : '♡' }}
           </button>
@@ -177,7 +182,12 @@
 
       <!-- RESTO -->
 
-      <article class="dh-card" *ngFor="let h of caballosFiltrados()">
+      <article
+        class="dh-card"
+        *ngFor="let h of caballosFiltrados()"
+        (click)="irADetalle(h)"
+        style="cursor: pointer"
+      >
         <div class="dh-card-media" [style.background]="h.fondo">
           <!-- 👇 FOTO: si hay foto, se muestra; si no, el SVG de placeholder -->
           <img
@@ -205,6 +215,7 @@
             [class.active]="h.esFavorito"
             [attr.aria-label]="h.esFavorito ? 'Quitar de favoritos' : 'Agregar a favoritos'"
             (click)="toggleFavorito(h)"
+            (click)="$event.stopPropagation(); toggleFavorito(h)"
           >
             {{ h.esFavorito ? '♥' : '♡' }}
           </button>

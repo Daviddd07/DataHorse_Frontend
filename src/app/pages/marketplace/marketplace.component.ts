@@ -338,4 +338,11 @@ export class MarketplaceComponent {
   agregarPublicacion(): void {
     this.router.navigate(['/publicaciones/nueva']);
   }
+  // ======================================================
+  // IR AL DETALLE DE LA PUBLICACIÓN
+  // ======================================================
+
+  irADetalle(caballo: CaballoMarketplace): void {
+    this.router.navigate(['/publicaciones', caballo.id]);
+  }
 }

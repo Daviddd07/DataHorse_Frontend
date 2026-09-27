@@ -1,0 +1,172 @@
+<div class="dh-page">
+  <button class="dh-back" type="button" (click)="volver()">← Volver al marketplace</button>
+
+  <p class="dh-empty" *ngIf="cargando()">Cargando publicación...</p>
+
+  <p class="dh-error" *ngIf="!cargando() && error()">
+    {{ error() }}
+  </p>
+
+  <ng-container *ngIf="!cargando() && publicacion() as p">
+    <div class="dp-grid">
+      <!-- ======================================================
+           GALERÍA
+      ====================================================== -->
+
+      <section class="dp-galeria">
+        <div class="dp-galeria-principal">
+          <img
+            *ngIf="p.fotos.length > 0"
+            [src]="'http://localhost:8000' + p.fotos[fotoActiva()].ruta"
+            [alt]="p.nombre"
+          />
+
+          <div *ngIf="p.fotos.length === 0" class="dp-galeria-placeholder">
+            <svg viewBox="0 0 32 32" fill="none" aria-hidden="true">
+              <path
+                d="M9 24c0-7 3-13 7-13s7 6 7 13"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+              />
+            </svg>
+          </div>
+
+          <button
+            *ngIf="p.fotos.length > 1"
+            class="dp-galeria-nav dp-galeria-prev"
+            type="button"
+            (click)="anteriorFoto()"
+            aria-label="Foto anterior"
+          >
+            ‹
+          </button>
+
+          <button
+            *ngIf="p.fotos.length > 1"
+            class="dp-galeria-nav dp-galeria-next"
+            type="button"
+            (click)="siguienteFoto()"
+            aria-label="Foto siguiente"
+          >
+            ›
+          </button>
+        </div>
+
+        <!-- MINIATURAS -->
+
+        <div class="dp-galeria-miniaturas" *ngIf="p.fotos.length > 1">
+          <button
+            type="button"
+            class="dp-miniatura"
+            *ngFor="let foto of p.fotos; let i = index"
+            [class.active]="i === fotoActiva()"
+            (click)="cambiarFoto(i)"
+          >
+            <img
+              [src]="'http://localhost:8000' + foto.ruta"
+              [alt]="p.nombre + ' foto ' + (i + 1)"
+            />
+          </button>
+        </div>
+      </section>
+
+      <!-- ======================================================
+           INFORMACIÓN
+      ====================================================== -->
+
+      <section class="dp-info">
+        <span class="dp-badge" *ngIf="p.es_mia"> Tuyo </span>
+
+        <h1 class="dp-nombre">
+          {{ p.nombre }}
+        </h1>
+
+        <p class="dp-meta">
+          {{ p.raza }}
+          ·
+          {{ p.sexo }}
+          ·
+          {{ edad() }}
+        </p>
+
+        <!-- DATOS RÁPIDOS -->
+
+        <div class="dp-datos">
+          <div class="dp-dato">
+            <span class="dp-dato-label">Ubicación</span>
+            <span class="dp-dato-valor">📍 {{ p.ubicacion }}</span>
+          </div>
+
+          <div class="dp-dato">
+            <span class="dp-dato-label">Altura</span>
+            <span class="dp-dato-valor">📏 {{ p.altura }} m</span>
+          </div>
+
+          <div class="dp-dato">
+            <span class="dp-dato-label">Color</span>
+            <span class="dp-dato-valor">🎨 {{ p.color }}</span>
+          </div>
+
+          <div class="dp-dato">
+            <span class="dp-dato-label">Disponibilidad</span>
+            <span class="dp-dato-valor">✅ {{ p.disponibilidad }}</span>
+          </div>
+
+          <div class="dp-dato">
+            <span class="dp-dato-label">Publicado</span>
+            <span class="dp-dato-valor"> 📅 {{ p.fecha_publicacion | date: 'longDate' }} </span>
+          </div>
+
+          <div class="dp-dato">
+            <span class="dp-dato-label">Propietario</span>
+            <span class="dp-dato-valor">👤 {{ p.propietario }}</span>
+          </div>
+        </div>
+
+        <!-- PRECIO DEL SALTO -->
+
+        <div class="dp-precio" *ngIf="p.precio !== null">
+          <span class="dp-precio-label"> Precio del salto </span>
+
+          <span class="dp-precio-valor">
+            {{ p.precio | currency: 'COP' : 'symbol' : '1.0-0' }}
+          </span>
+        </div>
+
+        <div class="dp-precio dp-precio--sin" *ngIf="p.precio === null">
+          <span class="dp-precio-label"> Precio del salto </span>
+
+          <span class="dp-precio-valor"> No especificado </span>
+        </div>
+
+        <!-- DESCRIPCIÓN -->
+
+        <div class="dp-descripcion">
+          <h2>Descripción</h2>
+
+          <p>
+            {{ p.descripcion }}
+          </p>
+        </div>
+
+        <!-- ACCIONES -->
+
+        <div class="dp-acciones">
+          <button
+            type="button"
+            class="dp-btn dp-btn-fav"
+            [class.active]="p.es_favorita"
+            (click)="toggleFavorito()"
+          >
+            {{ p.es_favorita ? '♥ En favoritos' : '♡ Agregar a favoritos' }}
+          </button>
+
+          <button type="button" class="dp-btn dp-btn-chat" (click)="chatearConVendedor()">
+            💬 Chatear con el vendedor
+          </button>
+        </div>
+      </section>
+    </div>
+  </ng-container>
+</div>

@@ -103,8 +103,48 @@ export interface Publicacion {
 
   es_favorita: boolean;
 
-  // 👇 NUEVO: la foto principal (viene del backend con el LEFT JOIN)
   foto_principal?: string | null;
+}
+
+export interface FotoDetalle {
+  id_foto: number;
+  ruta: string;
+  es_principal: boolean;
+  orden: number;
+}
+
+export interface PublicacionDetalle {
+  id_publicacion: number;
+  id_caballo: number;
+  id_usuario: number;
+
+  titulo: string;
+  descripcion: string;
+  fecha_publicacion: string;
+  estado: string;
+
+  nombre: string;
+  sexo: 'Macho' | 'Hembra';
+  fecha_nacimiento: string;
+  altura: number;
+  color: string;
+  ubicacion: string;
+  disponibilidad: string;
+
+  id_raza: number;
+  raza: string;
+  raza_descripcion: string | null;
+
+  propietario: string;
+  propietario_ubicacion: string | null;
+  propietario_telefono: string | null;
+
+  precio: number | null;
+
+  es_mia: boolean;
+  es_favorita: boolean;
+
+  fotos: FotoDetalle[];
 }
 
 /* =====================================================
@@ -179,6 +219,12 @@ export class CaballoService {
         withCredentials: true,
       },
     );
+  }
+
+  obtenerPublicacion(idPublicacion: number): Observable<PublicacionDetalle> {
+    return this.http.get<PublicacionDetalle>(`${this.apiUrl}/publicaciones/${idPublicacion}`, {
+      withCredentials: true,
+    });
   }
 
   // =====================================================

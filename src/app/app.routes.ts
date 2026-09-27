@@ -60,4 +60,14 @@ export const routes: Routes = [
 
     canActivate: [authGuard],
   },
+  {
+    path: 'publicaciones/:id',
+
+    loadComponent: () =>
+      import('./pages/publicaciones/detalle-publicacion/detalle-publicacion.component').then(
+        (m) => m.DetallePublicacionComponent,
+      ),
+
+    canActivate: [authGuard],
+  },
 ];
