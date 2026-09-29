@@ -1,33 +1,22 @@
 import {
   AfterViewInit,
+  ChangeDetectorRef,
   Component,
   ElementRef,
   NgZone,
   ViewChild,
-  inject
+  inject,
 } from '@angular/core';
 
-import {
-  CommonModule
-} from '@angular/common';
+import { CommonModule } from '@angular/common';
 
-import {
-  FormsModule
-} from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 
-import {
-  Router,
-  RouterLink
-} from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 
-import {
-  HttpErrorResponse
-} from '@angular/common/http';
+import { HttpErrorResponse } from '@angular/common/http';
 
-import {
-  AuthService
-} from '../../Services/auth.service';
-
+import { AuthService } from '../../Services/auth.service';
 
 declare global {
   interface Window {
@@ -35,44 +24,30 @@ declare global {
   }
 }
 
-
-const GOOGLE_CLIENT_ID =
-  '698630764703-nsr0e739j8qnt2b6lkqg2uft417n5jl3.apps.googleusercontent.com';
-
+const GOOGLE_CLIENT_ID = '698630764703-nsr0e739j8qnt2b6lkqg2uft417n5jl3.apps.googleusercontent.com';
 
 @Component({
   selector: 'app-login',
 
   standalone: true,
 
-  imports: [
-    FormsModule,
-    CommonModule,
-    RouterLink
-  ],
+  imports: [FormsModule, CommonModule, RouterLink],
 
   templateUrl: './login.html',
 
-  styleUrl: './login.css'
+  styleUrl: './login.css',
 })
-export class Login
-  implements AfterViewInit {
-
-
+export class Login implements AfterViewInit {
   @ViewChild('googleButton')
-  googleButton!:
-    ElementRef<HTMLDivElement>;
+  googleButton!: ElementRef<HTMLDivElement>;
 
+  private auth = inject(AuthService);
 
-  private auth =
-    inject(AuthService);
+  private router = inject(Router);
 
-  private router =
-    inject(Router);
+  private zone = inject(NgZone);
 
-  private zone =
-    inject(NgZone);
-
+  private cdr = inject(ChangeDetectorRef);
 
   correo = '';
 
@@ -86,175 +61,110 @@ export class Login
 
   necesitaVerificacion = false;
 
-
   ngAfterViewInit(): void {
-
     this.inicializarGoogle();
   }
 
-
-  private inicializarGoogle(
-    intento = 0
-  ): void {
-
-    if (
-      !window.google?.accounts?.id
-    ) {
-
+  private inicializarGoogle(intento = 0): void {
+    if (!window.google?.accounts?.id) {
       if (intento < 30) {
-
-        setTimeout(
-          () =>
-            this.inicializarGoogle(
-              intento + 1
-            ),
-          250
-        );
+        setTimeout(() => this.inicializarGoogle(intento + 1), 250);
       }
 
       return;
     }
 
-
     window.google.accounts.id.initialize({
+      client_id: GOOGLE_CLIENT_ID,
 
-      client_id:
-        GOOGLE_CLIENT_ID,
-
-      callback:
-        (respuesta: any) => {
-
-          this.zone.run(
-            () =>
-              this.iniciarConGoogle(
-                respuesta.credential
-              )
-          );
-        }
+      callback: (respuesta: any) => {
+        this.zone.run(() => this.iniciarConGoogle(respuesta.credential));
+      },
     });
 
-
-    window.google.accounts.id.renderButton(
-      this.googleButton.nativeElement,
-      {
-        theme: 'outline',
-        size: 'large',
-        text: 'continue_with',
-        shape: 'rectangular',
-        width: 320
-      }
-    );
+    window.google.accounts.id.renderButton(this.googleButton.nativeElement, {
+      theme: 'outline',
+      size: 'large',
+      text: 'continue_with',
+      shape: 'rectangular',
+      width: 320,
+    });
   }
 
-
-  iniciarConGoogle(
-    credential: string
-  ): void {
-
-    if (!credential)
-      return;
-
+  iniciarConGoogle(credential: string): void {
+    if (!credential) return;
 
     this.mensaje = '';
 
     this.cargandoGoogle = true;
 
+    this.auth.google(credential).subscribe({
+      next: () => {
+        this.cargandoGoogle = false;
 
-    this.auth
-      .google(credential)
-      .subscribe({
+        this.router.navigate(['/marketplace']);
+      },
 
-        next: () => {
+      error: (e: HttpErrorResponse) => {
+        this.cargandoGoogle = false;
 
-          this.cargandoGoogle = false;
+        this.mensaje = e.error?.detail || 'No fue posible iniciar sesión con Google.';
 
-          this.router.navigate([
-            '/marketplace'
-          ]);
-        },
-
-
-        error: (
-          e: HttpErrorResponse
-        ) => {
-
-          this.cargandoGoogle = false;
-
-          this.mensaje =
-            e.error?.detail ||
-            'No fue posible iniciar sesión con Google.';
-        }
-      });
+        this.cdr.detectChanges();
+      },
+    });
   }
 
-
   iniciarSesion(): void {
+    if (!this.correo || !this.password) {
+      this.mensaje = 'Debe ingresar correo y contraseña.';
 
-    if (
-      !this.correo ||
-      !this.password
-    ) {
-
-      this.mensaje =
-        'Debe ingresar correo y contraseña.';
+      this.cdr.detectChanges();
 
       return;
     }
 
-
     this.mensaje = '';
 
-    this.necesitaVerificacion =
-      false;
+    this.necesitaVerificacion = false;
 
-    this.cargando =
-      true;
+    this.cargando = true;
 
+    this.auth.login(this.correo.trim().toLowerCase(), this.password).subscribe({
+      next: () => {
+        this.cargando = false;
 
-    this.auth
-      .login(
-        this.correo.trim().toLowerCase(),
-        this.password
-      )
-      .subscribe({
+        this.router.navigate(['/marketplace']);
+      },
 
-        next: () => {
+      error: (e: HttpErrorResponse) => {
+        this.cargando = false;
 
-          this.cargando = false;
+        if (e.status === 403) {
+          this.mensaje = 'Debes verificar tu correo antes de iniciar sesión.';
 
-          this.router.navigate([
-            '/marketplace'
-          ]);
-        },
+          this.necesitaVerificacion = true;
 
+          this.cdr.detectChanges();
 
-        error: (
-          e: HttpErrorResponse
-        ) => {
-
-          this.cargando = false;
-
-
-          if (e.status === 403) {
-
-            this.mensaje =
-              'Debes verificar tu correo antes de iniciar sesión.';
-
-            this.necesitaVerificacion =
-              true;
-
-            return;
-          }
-
-
-          this.mensaje =
-            e.status === 401
-              ? 'Correo o contraseña incorrectos.'
-              : (
-                  e.error?.detail ||
-                  'No pudimos iniciar sesión.'
-                );
+          return;
         }
-      });
+
+        this.mensaje =
+          e.status === 401
+            ? 'Correo o contraseña incorrectos.'
+            : e.error?.detail || 'No pudimos iniciar sesión.';
+
+        this.cdr.detectChanges();
+      },
+    });
+  }
+
+  limpiarMensaje(): void {
+    if (this.mensaje) {
+      this.mensaje = '';
+
+      this.necesitaVerificacion = false;
+    }
   }
 }

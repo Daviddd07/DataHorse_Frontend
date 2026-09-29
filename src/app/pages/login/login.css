@@ -133,3 +133,33 @@ button:focus-visible {
 .register-text a:hover {
   text-decoration: underline;
 }
+
+/* ======================================================
+   MENSAJE DE ERROR
+====================================================== */
+
+.error-message {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  background-color: #fef2f2;
+  color: #b91c1c;
+
+  border: 1px solid #fecaca;
+  border-radius: 6px;
+
+  padding: 10px 14px;
+  margin: 0 0 16px;
+
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.error-message::before {
+  content: '⚠';
+  font-size: 15px;
+  line-height: 1;
+  flex-shrink: 0;
+}

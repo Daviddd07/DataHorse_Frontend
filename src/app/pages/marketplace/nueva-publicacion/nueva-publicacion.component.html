@@ -9,7 +9,7 @@
     <div class="np-heading">
       <div class="np-plus">+</div>
 
-      <h1>Publica un nuevo ejemplar</h1>
+      <h1>Registra un nuevo ejemplar</h1>
 
       <p>Selecciona el tipo de ejemplar que deseas registrar.</p>
     </div>
@@ -32,7 +32,7 @@
           <div>
             <h2>Yegua</h2>
 
-            <p>Publicar un ejemplar hembra</p>
+            <p>Registrar un ejemplar hembra</p>
           </div>
 
           <span class="np-arrow"> → </span>
@@ -100,6 +100,8 @@
           Raza
 
           <select (change)="onRazaChange($any($event.target).value)">
+            <option value="" disabled selected>Selecciona una raza</option>
+
             <option *ngFor="let r of razas()" [value]="r.id_raza">
               {{ r.nombre }}
             </option>

@@ -1,168 +1,84 @@
 <div class="login-container">
-
   <div class="login-card">
+    <h1>DataHorse</h1>
 
-    <h1>
-      DataHorse
-    </h1>
+    <p class="subtitle">Inicia sesión en tu cuenta</p>
 
-    <p class="subtitle">
-      Inicia sesión en tu cuenta
-    </p>
-
-
-    <form
-      (ngSubmit)="iniciarSesion()"
-    >
-
+    <form (ngSubmit)="iniciarSesion()">
       <div class="form-group">
-
-        <label for="correo">
-          Correo electrónico
-        </label>
+        <label for="correo"> Correo electrónico </label>
 
         <input
           type="email"
           id="correo"
           name="correo"
           [(ngModel)]="correo"
+          (input)="limpiarMensaje()"
           placeholder="Ingresa tu correo"
           required
           autocomplete="username"
         />
-
       </div>
 
-
       <div class="form-group">
-
-        <label for="password">
-          Contraseña
-        </label>
+        <label for="password"> Contraseña </label>
 
         <input
           type="password"
           id="password"
           name="password"
           [(ngModel)]="password"
+          (input)="limpiarMensaje()"
           placeholder="Ingresa tu contraseña"
           required
           autocomplete="current-password"
         />
-
       </div>
 
-
-      <div
-        style="
-          text-align:right;
-          margin-bottom:16px;
-        "
-      >
-        <a routerLink="/recuperar-password">
-          ¿Olvidaste tu contraseña?
-        </a>
+      <div style="text-align: right; margin-bottom: 16px">
+        <a routerLink="/recuperar-password"> ¿Olvidaste tu contraseña? </a>
       </div>
 
-
-      <p
-        *ngIf="mensaje"
-        class="error-message"
-      >
+      <p *ngIf="mensaje" class="error-message">
         {{ mensaje }}
       </p>
 
-
-      <p
-        *ngIf="necesitaVerificacion"
-      >
+      <p *ngIf="necesitaVerificacion">
         <a
           routerLink="/verificar-correo"
           [queryParams]="{
-            correo: correo
+            correo: correo,
           }"
         >
           Verificar mi correo
         </a>
       </p>
 
-
-      <button
-        type="submit"
-        [disabled]="cargando"
-      >
-        {{
-          cargando
-            ? 'Ingresando...'
-            : 'Iniciar sesión'
-        }}
+      <button type="submit" [disabled]="cargando">
+        {{ cargando ? 'Ingresando...' : 'Iniciar sesión' }}
       </button>
-
     </form>
 
+    <div style="display: flex; align-items: center; gap: 12px; margin: 22px 0; color: #888">
+      <span style="flex: 1; height: 1px; background: #ddd"></span>
 
-    <div
-      style="
-        display:flex;
-        align-items:center;
-        gap:12px;
-        margin:22px 0;
-        color:#888;
-      "
-    >
+      <span> o </span>
 
-      <span
-        style="
-          flex:1;
-          height:1px;
-          background:#ddd;
-        "
-      ></span>
-
-      <span>
-        o
-      </span>
-
-      <span
-        style="
-          flex:1;
-          height:1px;
-          background:#ddd;
-        "
-      ></span>
-
+      <span style="flex: 1; height: 1px; background: #ddd"></span>
     </div>
 
-
-    <div
-      style="
-        display:flex;
-        justify-content:center;
-      "
-    >
+    <div style="display: flex; justify-content: center">
       <div #googleButton></div>
     </div>
 
-
-    <p
-      *ngIf="cargandoGoogle"
-      style="
-        text-align:center;
-        margin-top:10px;
-      "
-    >
+    <p *ngIf="cargandoGoogle" style="text-align: center; margin-top: 10px">
       Conectando con Google...
     </p>
-
 
     <p>
       ¿No tienes cuenta?
 
-      <a routerLink="/registrar">
-        Regístrate
-      </a>
+      <a routerLink="/registrar"> Regístrate </a>
     </p>
-
   </div>
-
 </div>
