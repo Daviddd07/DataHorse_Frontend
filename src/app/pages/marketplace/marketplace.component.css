@@ -718,3 +718,267 @@
     font-size: 1.45rem;
   }
 }
+/* ======================================================
+   MENÚ DE USUARIO
+====================================================== */
+
+.dh-user-menu-wrap {
+  position: relative;
+}
+
+button.dh-avatar {
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  font-family: inherit;
+}
+
+button.dh-avatar:hover {
+  transform: translateY(-1px);
+  transition: transform 0.2s ease;
+}
+
+.dh-avatar--lg {
+  width: 46px;
+  height: 46px;
+  font-size: 1rem;
+  cursor: default;
+  flex-shrink: 0;
+}
+
+.dh-user-menu {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+
+  width: 270px;
+
+  background: white;
+  border: 1px solid #e7e7ed;
+  border-radius: 14px;
+
+  box-shadow: 0 20px 45px rgba(23, 23, 28, 0.14);
+
+  padding: 8px 0;
+
+  z-index: 50;
+
+  animation: dh-menu-in 0.14s ease;
+}
+
+@keyframes dh-menu-in {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.dh-user-menu-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px 14px;
+}
+
+.dh-user-menu-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.dh-user-menu-info strong {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #1d1d22;
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dh-user-menu-info span {
+  font-size: 0.75rem;
+  color: #93939d;
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dh-user-menu-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.dh-user-menu-list li {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.dh-user-menu-list button {
+  width: 100%;
+
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  padding: 10px 16px;
+
+  border: none;
+  background: transparent;
+
+  font-family: inherit;
+  font-size: 0.85rem;
+  color: #33333b;
+
+  text-align: left;
+  cursor: pointer;
+
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
+}
+
+.dh-user-menu-list button:hover {
+  background: var(--dh-purple-soft);
+  color: var(--dh-purple);
+}
+
+.dh-menu-ico {
+  width: 20px;
+  font-size: 1rem;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.dh-user-menu-divider {
+  height: 1px;
+  background: #f0f0f3;
+  margin: 8px 0;
+}
+
+.dh-user-menu-logout {
+  width: 100%;
+
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  padding: 11px 16px;
+
+  border: none;
+  background: transparent;
+
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #c0392b;
+
+  text-align: left;
+  cursor: pointer;
+
+  transition: background 0.15s ease;
+}
+
+.dh-user-menu-logout:hover {
+  background: #fdecea;
+}
+/* ======================================================
+   LOGO IZQUIERDO (imagen)
+====================================================== */
+
+.dh-logo-img {
+  width: 28px;
+  height: 28px;
+
+  object-fit: contain;
+
+  display: block;
+}
+/* ======================================================
+   LOGO ESQUINA DERECHA (imagen)
+====================================================== */
+
+.dh-logo-right {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  margin-right: 8px;
+}
+
+.dh-logo-right-img {
+  width: 28px;
+  height: 28px;
+
+  object-fit: contain;
+
+  display: block;
+}
+@keyframes fadeSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.dh-page,
+.mc-page,
+.ec-page,
+.dp-page {
+  animation: fadeSlideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+/* Animación base para las tarjetas */
+@keyframes cardEntrance {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.dh-card {
+  /* Mantén tus estilos actuales y agrega esto: */
+  animation: cardEntrance 0.4s ease-out forwards;
+  opacity: 0; /* Empieza invisible hasta que arranque la animación */
+}
+
+/* Efecto cascada (retraso progresivo) para las tarjetas */
+.dh-card:nth-child(1) {
+  animation-delay: 0.05s;
+}
+.dh-card:nth-child(2) {
+  animation-delay: 0.1s;
+}
+.dh-card:nth-child(3) {
+  animation-delay: 0.15s;
+}
+.dh-card:nth-child(4) {
+  animation-delay: 0.2s;
+}
+.dh-card:nth-child(5) {
+  animation-delay: 0.25s;
+}
+.dh-card:nth-child(6) {
+  animation-delay: 0.3s;
+}
+
+/* Hover más pro (ya tienes uno, pero podemos hacerlo más suave) */
+.dh-card:hover {
+  transform: translateY(-6px) scale(1.01);
+  box-shadow: 0 15px 35px rgba(34, 19, 84, 0.15);
+  z-index: 10;
+}

@@ -6,6 +6,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 
 import { CaballoService, PublicacionDetalle } from '../../../Services/caballo.service';
 
+import { environment } from '../../../../environments/environment';
+
 @Component({
   selector: 'app-detalle-publicacion',
   standalone: true,
@@ -17,6 +19,7 @@ import { CaballoService, PublicacionDetalle } from '../../../Services/caballo.se
   styleUrl: './detalle-publicacion.component.css',
 })
 export class DetallePublicacionComponent {
+  environment = environment;
   private route = inject(ActivatedRoute);
 
   private router = inject(Router);

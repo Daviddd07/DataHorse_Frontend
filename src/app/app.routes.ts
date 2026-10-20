@@ -60,12 +60,33 @@ export const routes: Routes = [
 
     canActivate: [authGuard],
   },
+
   {
     path: 'publicaciones/:id',
 
     loadComponent: () =>
       import('./pages/publicaciones/detalle-publicacion/detalle-publicacion.component').then(
         (m) => m.DetallePublicacionComponent,
+      ),
+
+    canActivate: [authGuard],
+  },
+
+  {
+    path: 'mis-caballos',
+
+    loadComponent: () =>
+      import('./pages/mis-caballos/mis-caballos.component').then((m) => m.MisCaballosComponent),
+
+    canActivate: [authGuard],
+  },
+
+  {
+    path: 'mis-caballos/editar/:id',
+
+    loadComponent: () =>
+      import('./pages/editar-caballo/editar-caballo.component').then(
+        (m) => m.EditarCaballoComponent,
       ),
 
     canActivate: [authGuard],

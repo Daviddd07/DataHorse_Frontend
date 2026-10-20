@@ -1,6 +1,7 @@
 <div class="login-container">
   <div class="login-card">
     <h1>DataHorse</h1>
+    <img src="Logo.png" alt="DataHorse" class="login-logo" />
 
     <p class="subtitle">Inicia sesión en tu cuenta</p>
 
@@ -78,7 +79,7 @@
     <p>
       ¿No tienes cuenta?
 
-      <a routerLink="/registrar"> Regístrate </a>
+      <a href="/registrar" (click)="irARegistro($event)"> Regístrate </a>
     </p>
   </div>
 </div>

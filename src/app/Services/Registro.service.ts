@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-
+import { environment } from '../../environments/environment';
 
 export interface RegistroRequest {
   nombre: string;
@@ -10,7 +10,6 @@ export interface RegistroRequest {
   telefono: string | null;
   ubicacion: string | null;
 }
-
 
 export interface RegistroResponse {
   id: number;
@@ -22,71 +21,51 @@ export interface RegistroResponse {
   mensaje: string;
 }
 
-
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class RegistroService {
-
   private http = inject(HttpClient);
 
-  private readonly apiUrl =
-    'http://localhost:8000/auth';
+  private readonly apiUrl = `${environment.apiUrl}/auth`;
 
-
-  registrar(
-    datos: RegistroRequest
-  ): Observable<RegistroResponse> {
-
-    const {
-      contrasena,
-      ...resto
-    } = datos;
-
+  registrar(datos: RegistroRequest): Observable<RegistroResponse> {
+    const { contrasena, ...resto } = datos;
 
     return this.http.post<RegistroResponse>(
       `${this.apiUrl}/register`,
       {
         ...resto,
-        password: contrasena
+        password: contrasena,
       },
       {
-        withCredentials: true
-      }
+        withCredentials: true,
+      },
     );
   }
 
-
-  verificarCorreo(
-    correo: string,
-    codigo: string
-  ): Observable<{ mensaje: string }> {
-
+  verificarCorreo(correo: string, codigo: string): Observable<{ mensaje: string }> {
     return this.http.post<{ mensaje: string }>(
       `${this.apiUrl}/verify-email`,
       {
         correo,
-        codigo
+        codigo,
       },
       {
-        withCredentials: true
-      }
+        withCredentials: true,
+      },
     );
   }
 
-
-  reenviarCodigo(
-    correo: string
-  ): Observable<{ mensaje: string }> {
-
+  reenviarCodigo(correo: string): Observable<{ mensaje: string }> {
     return this.http.post<{ mensaje: string }>(
       `${this.apiUrl}/resend-code`,
       {
-        correo
+        correo,
       },
       {
-        withCredentials: true
-      }
+        withCredentials: true,
+      },
     );
   }
 }

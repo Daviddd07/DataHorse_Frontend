@@ -29,13 +29,13 @@ import { RegistroService } from '../../Services/Registro.service';
 
 import { AuthService } from '../../Services/auth.service';
 
+import { environment } from '../../../environments/environment';
+
 declare global {
   interface Window {
     google: any;
   }
 }
-
-const GOOGLE_CLIENT_ID = '698630764703-nsr0e739j8qnt2b6lkqg2uft417n5jl3.apps.googleusercontent.com';
 
 const contrasenaSegura: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
   const valor: string = control.value ?? '';
@@ -60,7 +60,7 @@ type Campo = 'nombre' | 'correo' | 'contrasena' | 'confirmar' | 'telefono' | 'ub
 
   templateUrl: './registrar.component.html',
 
-  styleUrl: './registrar.component.css',
+  styleUrls: ['./registrar.component.css', './registrar.animations.css'],
 })
 export class RegistrarComponent implements AfterViewInit {
   @ViewChild('googleButton')
@@ -75,6 +75,8 @@ export class RegistrarComponent implements AfterViewInit {
   private router = inject(Router);
 
   private zone = inject(NgZone);
+
+  private googleInitialized = false;
 
   cargando = signal(false);
 
@@ -138,9 +140,13 @@ export class RegistrarComponent implements AfterViewInit {
       return;
     }
 
-    window.google.accounts.id.initialize({
-      client_id: GOOGLE_CLIENT_ID,
+    if (this.googleInitialized) {
+      return;
+    }
+    this.googleInitialized = true;
 
+    window.google.accounts.id.initialize({
+      client_id: environment.googleClientId,
       callback: (respuesta: any) => {
         this.zone.run(() => this.loginGoogle(respuesta.credential));
       },
@@ -246,7 +252,7 @@ export class RegistrarComponent implements AfterViewInit {
 
     if (this.form.invalid) {
       this.form.markAllAsTouched();
-
+      console.log('Campos inválidos:', this.form.controls);
       this.mensaje.set({
         tipo: 'error',
         texto: 'Revisa los campos marcados.',

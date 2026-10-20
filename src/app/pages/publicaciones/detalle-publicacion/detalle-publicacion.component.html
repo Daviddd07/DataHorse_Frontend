@@ -17,7 +17,7 @@
         <div class="dp-galeria-principal">
           <img
             *ngIf="p.fotos.length > 0"
-            [src]="'http://localhost:8000' + p.fotos[fotoActiva()].ruta"
+            [src]="environment.uploadsUrl + p.fotos[fotoActiva()].ruta"
             [alt]="p.nombre"
           />
 
@@ -63,10 +63,7 @@
             [class.active]="i === fotoActiva()"
             (click)="cambiarFoto(i)"
           >
-            <img
-              [src]="'http://localhost:8000' + foto.ruta"
-              [alt]="p.nombre + ' foto ' + (i + 1)"
-            />
+            <img [src]="environment.uploadsUrl + foto.ruta" [alt]="p.nombre + ' foto ' + (i + 1)" />
           </button>
         </div>
       </section>

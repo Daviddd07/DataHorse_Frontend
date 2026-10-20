@@ -1,13 +1,10 @@
 import { Injectable } from '@angular/core';
 
-import {
-  HttpClient
-} from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 
-import {
-  Observable
-} from 'rxjs';
+import { Observable } from 'rxjs';
 
+import { environment } from '../../environments/environment';
 
 export interface UsuarioSesion {
   id: number;
@@ -15,9 +12,7 @@ export interface UsuarioSesion {
   nombre: string;
 }
 
-
 export interface GoogleAuthResponse {
-
   mensaje: string;
 
   usuario: {
@@ -27,88 +22,68 @@ export interface GoogleAuthResponse {
   };
 }
 
-
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AuthService {
+  private readonly apiUrl = environment.apiUrl;
 
-  private readonly apiUrl =
-    'http://localhost:8000';
-
-
-  constructor(
-    private http: HttpClient
-  ) {}
-
+  constructor(private http: HttpClient) {}
 
   // =====================================================
   // LOGIN NORMAL
   // =====================================================
 
-  login(
-    correo: string,
-    contrasena: string
-  ): Observable<{ mensaje: string }> {
-
+  login(correo: string, contrasena: string): Observable<{ mensaje: string }> {
     return this.http.post<{ mensaje: string }>(
       `${this.apiUrl}/auth/login`,
 
       {
         correo: correo,
-        password: contrasena
+        password: contrasena,
       },
 
       {
-        withCredentials: true
-      }
+        withCredentials: true,
+      },
     );
   }
-
 
   // =====================================================
   // LOGIN / REGISTRO CON GOOGLE
   // =====================================================
 
-  google(
-    credential: string
-  ): Observable<GoogleAuthResponse> {
-
+  google(credential: string): Observable<GoogleAuthResponse> {
     return this.http.post<GoogleAuthResponse>(
       `${this.apiUrl}/auth/google`,
 
       {
-        credential: credential
+        credential: credential,
       },
 
       {
-        withCredentials: true
-      }
+        withCredentials: true,
+      },
     );
   }
-
 
   // =====================================================
   // OLVIDÉ MI CONTRASEÑA
   // =====================================================
 
-  forgotPassword(
-    correo: string
-  ): Observable<{ mensaje: string }> {
-
+  forgotPassword(correo: string): Observable<{ mensaje: string }> {
     return this.http.post<{ mensaje: string }>(
       `${this.apiUrl}/auth/forgot-password`,
 
       {
-        correo: correo
+        correo: correo,
       },
 
       {
-        withCredentials: true
-      }
+        withCredentials: true,
+      },
     );
   }
-
 
   // =====================================================
   // RESTABLECER / CREAR CONTRASEÑA
@@ -117,55 +92,50 @@ export class AuthService {
   resetPassword(
     correo: string,
     codigo: string,
-    nuevaPassword: string
+    nuevaPassword: string,
   ): Observable<{ mensaje: string }> {
-
     return this.http.post<{ mensaje: string }>(
       `${this.apiUrl}/auth/reset-password`,
 
       {
         correo: correo,
         codigo: codigo,
-        nueva_password: nuevaPassword
+        nueva_password: nuevaPassword,
       },
 
       {
-        withCredentials: true
-      }
+        withCredentials: true,
+      },
     );
   }
-
 
   // =====================================================
   // USUARIO ACTUAL
   // =====================================================
 
   me(): Observable<UsuarioSesion> {
-
     return this.http.get<UsuarioSesion>(
       `${this.apiUrl}/auth/me`,
 
       {
-        withCredentials: true
-      }
+        withCredentials: true,
+      },
     );
   }
-
 
   // =====================================================
   // CERRAR SESIÓN
   // =====================================================
 
   logout(): Observable<{ mensaje: string }> {
-
     return this.http.post<{ mensaje: string }>(
       `${this.apiUrl}/auth/logout`,
 
       {},
 
       {
-        withCredentials: true
-      }
+        withCredentials: true,
+      },
     );
   }
 }

@@ -1,79 +1,29 @@
 <main class="card">
+  <h1>Crea tu cuenta</h1>
 
-  <h1>
-    Crea tu cuenta
-  </h1>
+  <img src="Logo.png" alt="DataHorse" class="registrar-logo" />
 
-  <p class="sub">
-    Los campos con * son obligatorios.
-  </p>
+  <p class="sub">Los campos con * son obligatorios.</p>
 
-
-  <div
-    style="
-      display:flex;
-      justify-content:center;
-      margin:20px 0;
-    "
-  >
+  <div style="display: flex; justify-content: center; margin: 20px 0">
     <div #googleButton></div>
   </div>
 
-
   @if (cargandoGoogle()) {
-    <p
-      style="
-        text-align:center;
-        color:#666;
-      "
-    >
-      Conectando con Google...
-    </p>
+    <p style="text-align: center; color: #666">Conectando con Google...</p>
   }
 
+  <div style="display: flex; align-items: center; gap: 12px; margin: 22px 0; color: #888">
+    <span style="height: 1px; background: #ddd; flex: 1"></span>
 
-  <div
-    style="
-      display:flex;
-      align-items:center;
-      gap:12px;
-      margin:22px 0;
-      color:#888;
-    "
-  >
-    <span
-      style="
-        height:1px;
-        background:#ddd;
-        flex:1;
-      "
-    ></span>
+    <span> o regístrate con correo </span>
 
-    <span>
-      o regístrate con correo
-    </span>
-
-    <span
-      style="
-        height:1px;
-        background:#ddd;
-        flex:1;
-      "
-    ></span>
+    <span style="height: 1px; background: #ddd; flex: 1"></span>
   </div>
 
-
-  <form
-    [formGroup]="form"
-    (ngSubmit)="enviar()"
-    novalidate
-  >
-
+  <form [formGroup]="form" (ngSubmit)="enviar()" novalidate>
     <div class="campo">
-
-      <label for="nombre">
-        Nombre completo *
-      </label>
+      <label for="nombre"> Nombre completo * </label>
 
       <input
         id="nombre"
@@ -87,15 +37,10 @@
       <small class="error">
         {{ error('nombre') }}
       </small>
-
     </div>
 
-
     <div class="campo">
-
-      <label for="correo">
-        Correo electrónico *
-      </label>
+      <label for="correo"> Correo electrónico * </label>
 
       <input
         id="correo"
@@ -109,25 +54,15 @@
       <small class="error">
         {{ error('correo') }}
       </small>
-
     </div>
 
-
     <div class="campo">
-
-      <label for="contrasena">
-        Contraseña *
-      </label>
+      <label for="contrasena"> Contraseña * </label>
 
       <div class="con-boton">
-
         <input
           id="contrasena"
-          [type]="
-            verPass()
-              ? 'text'
-              : 'password'
-          "
+          [type]="verPass() ? 'text' : 'password'"
           formControlName="contrasena"
           maxlength="64"
           autocomplete="new-password"
@@ -137,96 +72,113 @@
         <button
           type="button"
           class="ver"
-          (click)="
-            verPass.set(
-              !verPass()
-            )
-          "
+          (click)="verPass.set(!verPass())"
+          [attr.aria-label]="verPass() ? 'Ocultar contraseña' : 'Mostrar contraseña'"
         >
-          {{
-            verPass()
-              ? 'Ocultar'
-              : 'Mostrar'
-          }}
+          @if (verPass()) {
+            <!-- Ojito tachado (Ocultar) -->
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path
+                d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"
+              ></path>
+              <line x1="1" y1="1" x2="23" y2="23"></line>
+            </svg>
+          } @else {
+            <!-- Ojito abierto (Mostrar) -->
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+              <circle cx="12" cy="12" r="3"></circle>
+            </svg>
+          }
         </button>
-
       </div>
 
-
-      <small class="ayuda">
-        Mínimo 8 caracteres, con mayúscula,
-        minúscula y número.
-      </small>
-
+      <small class="ayuda"> Mínimo 8 caracteres, con mayúscula, minúscula y número. </small>
 
       <div class="fuerza">
-
         <span
           [style.width.%]="fuerza * 20"
           [class.media]="fuerza === 3"
           [class.alta]="fuerza >= 4"
         ></span>
-
       </div>
 
       <small class="error">
         {{ error('contrasena') }}
       </small>
-
     </div>
 
-
     <div class="campo">
-
-      <label for="confirmar">
-        Confirmar contraseña *
-      </label>
+      <label for="confirmar"> Confirmar contraseña * </label>
 
       <div class="con-boton">
-
         <input
-          id="confirmar"
-          [type]="
-            verConfirmar()
-              ? 'text'
-              : 'password'
-          "
+          id="contrasena"
+          [type]="verPass() ? 'text' : 'password'"
           formControlName="confirmar"
           maxlength="64"
           autocomplete="new-password"
-          [class.invalido]="error('confirmar')"
+          [class.invalido]="error('contrasena')"
         />
 
         <button
           type="button"
           class="ver"
-          (click)="
-            verConfirmar.set(
-              !verConfirmar()
-            )
-          "
+          (click)="verPass.set(!verPass())"
+          [attr.aria-label]="verPass() ? 'Ocultar contraseña' : 'Mostrar contraseña'"
         >
-          {{
-            verConfirmar()
-              ? 'Ocultar'
-              : 'Mostrar'
-          }}
+          @if (verPass()) {
+            <!-- Ojito tachado (Ocultar) -->
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path
+                d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"
+              ></path>
+              <line x1="1" y1="1" x2="23" y2="23"></line>
+            </svg>
+          } @else {
+            <!-- Ojito abierto (Mostrar) -->
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+              <circle cx="12" cy="12" r="3"></circle>
+            </svg>
+          }
         </button>
-
       </div>
-
       <small class="error">
         {{ error('confirmar') }}
       </small>
-
     </div>
 
-
     <div class="campo">
-
-      <label for="telefono">
-        Teléfono
-      </label>
+      <label for="telefono"> Teléfono </label>
 
       <input
         id="telefono"
@@ -240,15 +192,10 @@
       <small class="error">
         {{ error('telefono') }}
       </small>
-
     </div>
 
-
     <div class="campo">
-
-      <label for="ubicacion">
-        Ubicación
-      </label>
+      <label for="ubicacion"> Ubicación </label>
 
       <input
         id="ubicacion"
@@ -262,50 +209,22 @@
       <small class="error">
         {{ error('ubicacion') }}
       </small>
-
     </div>
 
-
     @if (mensaje(); as m) {
-
-      <p
-        class="mensaje"
-        [class.ok-msg]="
-          m.tipo === 'ok'
-        "
-        [class.error-msg]="
-          m.tipo === 'error'
-        "
-      >
+      <p class="mensaje" [class.ok-msg]="m.tipo === 'ok'" [class.error-msg]="m.tipo === 'error'">
         {{ m.texto }}
       </p>
-
     }
 
-
-    <button
-      type="submit"
-      class="primario"
-      [disabled]="cargando()"
-    >
-      {{
-        cargando()
-          ? 'Creando cuenta…'
-          : 'Crear cuenta'
-      }}
+    <button type="submit" class="primario" [disabled]="cargando()">
+      {{ cargando() ? 'Creando cuenta…' : 'Crear cuenta' }}
     </button>
-
   </form>
 
-
   <p class="pie">
-
     ¿Ya tienes cuenta?
 
-    <a routerLink="/login">
-      Inicia sesión
-    </a>
-
+    <a routerLink="/login"> Inicia sesión </a>
   </p>
-
 </main>

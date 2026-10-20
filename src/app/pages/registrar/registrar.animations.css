@@ -1,0 +1,576 @@
+/* ======================================================================
+   registrar.animations.css
+   Las mismas animaciones del login adaptadas al registro. Solo CSS y
+   100% aditivo: no cambia el HTML, el TS ni registrar.component.css.
+   Se carga con
+       styleUrls: ['./registrar.component.css', './registrar.animations.css']
+   ====================================================================== */
+
+/* Ángulo animable para el borde luminoso de la tarjeta */
+@property --glow-angle {
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 0deg;
+}
+
+/* ----------------------------------------------------------------------
+   0. ENTRADA: normal, o con giro cuando se llega desde el login.
+      login.ts pone la clase "giro-entrando" en <body> al navegar.
+      --anim vale 1 en la entrada normal y 0 cuando se llega con giro:
+        - con giro, la tarjeta completa el giro (cardFlipIn) y el resto
+          aparece ya visible, sin entrada escalonada;
+        - sin giro, la tarjeta y sus elementos entran uno tras otro.
+      Las listas de animación son siempre las mismas; solo cambian las
+      duraciones, así que quitar la clase no reinicia nada.
+   ---------------------------------------------------------------------- */
+:host {
+  --anim: 1;
+}
+
+:host-context(body.giro-entrando) {
+  --anim: 0;
+}
+
+/* ----------------------------------------------------------------------
+   1. FONDO: aurora suave + malla de puntos que se desvanece hacia los bordes
+   ---------------------------------------------------------------------- */
+:host {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+:host::before,
+:host::after {
+  content: '';
+  position: absolute;
+  pointer-events: none;
+}
+
+:host::before {
+  inset: -25%;
+  z-index: -2;
+  background:
+    radial-gradient(38% 34% at 18% 28%, rgba(99, 102, 241, 0.38), transparent 70%),
+    radial-gradient(34% 38% at 82% 22%, rgba(34, 211, 238, 0.2), transparent 70%),
+    radial-gradient(44% 40% at 66% 86%, rgba(168, 85, 247, 0.3), transparent 70%);
+  animation: auroraDrift 24s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+:host::after {
+  inset: 0;
+  z-index: -1;
+  background-image: radial-gradient(rgba(148, 163, 184, 0.22) 1px, transparent 1.4px);
+  background-size: 28px 28px;
+  -webkit-mask-image: radial-gradient(60% 55% at 50% 50%, #000 15%, transparent 78%);
+  mask-image: radial-gradient(60% 55% at 50% 50%, #000 15%, transparent 78%);
+  animation: gridDrift 40s linear infinite;
+}
+
+@keyframes auroraDrift {
+  from {
+    transform: translate3d(-4%, -3%, 0) rotate(0deg) scale(1);
+  }
+  to {
+    transform: translate3d(4%, 3%, 0) rotate(10deg) scale(1.15);
+  }
+}
+
+@keyframes gridDrift {
+  to {
+    background-position: 28px 28px;
+  }
+}
+
+/* ----------------------------------------------------------------------
+   2. TARJETA: entrada (suave o con giro) + borde luminoso que recorre el
+      contorno al pasar el mouse o al escribir
+   ---------------------------------------------------------------------- */
+.card {
+  position: relative;
+  transition: box-shadow 0.4s ease;
+  animation:
+    cardIn calc(0.8s * var(--anim)) cubic-bezier(0.16, 1, 0.3, 1) backwards,
+    cardFlipIn calc(0.5s * (1 - var(--anim))) cubic-bezier(0, 0, 0.5, 1) backwards,
+    cardLiftIn calc(0.5s * (1 - var(--anim))) ease-out backwards;
+}
+
+.card:focus-within {
+  box-shadow:
+    0 1px 2px rgba(15, 23, 42, 0.04),
+    0 20px 40px -12px rgba(15, 23, 42, 0.35),
+    0 0 70px -12px rgba(99, 102, 241, 0.55);
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  padding: 1.5px;
+  border-radius: 11px;
+  background: conic-gradient(
+    from var(--glow-angle),
+    transparent 0 55%,
+    #6366f1 72%,
+    #22d3ee 86%,
+    transparent 100%
+  );
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.35s ease;
+  animation: glowSpin 3.5s linear infinite;
+  pointer-events: none;
+}
+
+.card:hover::before,
+.card:focus-within::before {
+  opacity: 1;
+}
+
+@keyframes cardIn {
+  from {
+    opacity: 0;
+    transform: translateY(28px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Segunda mitad del giro que empieza en el login (ver login.animations.css) */
+@keyframes cardFlipIn {
+  from {
+    transform: perspective(1400px) rotateY(-90deg);
+  }
+  to {
+    transform: perspective(1400px) rotateY(0deg);
+  }
+}
+
+@keyframes cardLiftIn {
+  from {
+    scale: 1.06;
+  }
+}
+
+@keyframes glowSpin {
+  to {
+    --glow-angle: 360deg;
+  }
+}
+
+/* ----------------------------------------------------------------------
+   3. ENTRADA ESCALONADA de los elementos de la tarjeta
+      (hijos directos: h1, logo, subtítulo, google, separador, form, pie)
+   ---------------------------------------------------------------------- */
+.card > :not(.registrar-logo) {
+  animation: riseIn calc(0.6s * var(--anim)) cubic-bezier(0.16, 1, 0.3, 1) calc(0.55s * var(--anim))
+    backwards;
+}
+.card > :nth-child(1) {
+  animation-delay: calc(0.1s * var(--anim));
+}
+.card > :nth-child(3) {
+  animation-delay: calc(0.2s * var(--anim));
+}
+.card > :nth-child(4) {
+  animation-delay: calc(0.27s * var(--anim));
+}
+.card > :nth-child(5) {
+  animation-delay: calc(0.33s * var(--anim));
+}
+.card > :nth-child(6) {
+  animation-delay: calc(0.38s * var(--anim));
+}
+.card > :nth-child(7) {
+  animation-delay: calc(0.5s * var(--anim));
+}
+
+@keyframes riseIn {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ----------------------------------------------------------------------
+   4. LOGO (tu caballo): flota, brilla y reacciona a lo que haces.
+      Usa las propiedades individuales translate / rotate / scale para que
+      el flotado y las reacciones se sumen sin pisarse.
+      La lista base (pop, float, glow) se repite IGUAL en cada estado y las
+      reacciones solo agregan una animación al final: así, al cambiar de
+      estado, el logo no vuelve a "aparecer" ni reinicia el flotado.
+      El color del brillo cambia con la variable --glow.
+   ---------------------------------------------------------------------- */
+.registrar-logo {
+  --glow: 79, 70, 229;
+  filter: drop-shadow(0 6px 14px rgba(var(--glow), 0.32));
+  transition:
+    scale 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
+    rotate 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.card > .registrar-logo {
+  animation:
+    logoPop calc(0.9s * var(--anim)) cubic-bezier(0.34, 1.56, 0.64, 1) calc(0.15s * var(--anim))
+      backwards,
+    logoFloat 4.5s ease-in-out 1s infinite,
+    logoGlow 2.25s ease-in-out 1s infinite alternate;
+}
+
+.registrar-logo:hover {
+  scale: 1.08;
+  rotate: -4deg;
+}
+
+/* Curioso al escribir nombre, correo, teléfono o ubicación */
+.card:has(#nombre:focus, #correo:focus, #telefono:focus, #ubicacion:focus) .registrar-logo {
+  scale: 1.06;
+  rotate: -3deg;
+}
+
+/* Tímido al escribir las contraseñas */
+.card:has(#contrasena:focus, #confirmar:focus) .registrar-logo {
+  scale: 0.93;
+  rotate: 7deg;
+}
+
+/* Negación con la cabeza y brillo rojo cuando hay error */
+.card:has(.mensaje.error-msg) .registrar-logo {
+  --glow: 239, 68, 68;
+  animation:
+    logoPop calc(0.9s * var(--anim)) cubic-bezier(0.34, 1.56, 0.64, 1) calc(0.15s * var(--anim))
+      backwards,
+    logoFloat 4.5s ease-in-out 1s infinite,
+    logoGlow 2.25s ease-in-out 1s infinite alternate,
+    logoNo 0.55s ease 1;
+}
+
+/* Late mientras se crea la cuenta */
+.card:has(.primario:disabled) .registrar-logo {
+  --glow: 99, 102, 241;
+  animation:
+    logoPop calc(0.9s * var(--anim)) cubic-bezier(0.34, 1.56, 0.64, 1) calc(0.15s * var(--anim))
+      backwards,
+    logoFloat 4.5s ease-in-out 1s infinite,
+    logoGlow 2.25s ease-in-out 1s infinite alternate,
+    logoPulse 0.9s ease-in-out infinite;
+}
+
+/* Salta de alegría y brilla en verde cuando sale bien */
+.card:has(.mensaje.ok-msg) .registrar-logo {
+  --glow: 16, 185, 129;
+  animation:
+    logoPop calc(0.9s * var(--anim)) cubic-bezier(0.34, 1.56, 0.64, 1) calc(0.15s * var(--anim))
+      backwards,
+    logoFloat 4.5s ease-in-out 1s infinite,
+    logoGlow 2.25s ease-in-out 1s infinite alternate,
+    logoHop 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) 1;
+}
+
+@keyframes logoPop {
+  from {
+    opacity: 0;
+    scale: 0.5;
+    rotate: -14deg;
+  }
+  to {
+    opacity: 1;
+    scale: 1;
+    rotate: 0deg;
+  }
+}
+
+@keyframes logoFloat {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+  50% {
+    translate: 0 -6px;
+  }
+}
+
+@keyframes logoGlow {
+  from {
+    filter: drop-shadow(0 6px 14px rgba(var(--glow), 0.3));
+  }
+  to {
+    filter: drop-shadow(0 10px 24px rgba(var(--glow), 0.6));
+  }
+}
+
+@keyframes logoNo {
+  0%,
+  100% {
+    rotate: 0deg;
+  }
+  20% {
+    rotate: -14deg;
+  }
+  40% {
+    rotate: 12deg;
+  }
+  60% {
+    rotate: -8deg;
+  }
+  80% {
+    rotate: 5deg;
+  }
+}
+
+@keyframes logoPulse {
+  0%,
+  100% {
+    scale: 1;
+  }
+  50% {
+    scale: 1.1;
+  }
+}
+
+@keyframes logoHop {
+  0%,
+  100% {
+    scale: 1;
+  }
+  40% {
+    scale: 1.18;
+    rotate: -6deg;
+  }
+  70% {
+    scale: 0.96;
+    rotate: 4deg;
+  }
+}
+
+/* ----------------------------------------------------------------------
+   5. CAMPOS: la etiqueta se ilumina, el anillo de foco "late" una vez y
+      los campos con error se sacuden
+   ---------------------------------------------------------------------- */
+.campo label {
+  transition: color 0.2s ease;
+}
+
+.campo:focus-within label {
+  color: #4f46e5;
+}
+
+.campo input:focus {
+  animation: focusPulse 0.5s ease-out;
+}
+
+.campo input.invalido {
+  animation: fieldShake 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97);
+}
+
+@keyframes focusPulse {
+  from {
+    box-shadow: 0 0 0 0 rgba(79, 70, 229, 0.45);
+  }
+  60% {
+    box-shadow: 0 0 0 7px rgba(79, 70, 229, 0.12);
+  }
+  to {
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+  }
+}
+
+@keyframes fieldShake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  20% {
+    transform: translateX(-5px);
+  }
+  40% {
+    transform: translateX(4px);
+  }
+  60% {
+    transform: translateX(-3px);
+  }
+  80% {
+    transform: translateX(2px);
+  }
+}
+
+/* ----------------------------------------------------------------------
+   6. FUERZA DE CONTRASEÑA: la barra crece con rebote y brilla
+   ---------------------------------------------------------------------- */
+.card .fuerza span {
+  position: relative;
+  overflow: hidden;
+  transition:
+    width 0.4s cubic-bezier(0.34, 1.4, 0.64, 1),
+    background 0.3s ease;
+}
+
+.card .fuerza span::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.5), transparent);
+  transform: translateX(-100%);
+  animation: barShine 1.8s ease-in-out infinite;
+}
+
+@keyframes barShine {
+  to {
+    transform: translateX(100%);
+  }
+}
+
+/* ----------------------------------------------------------------------
+   7. BOTÓN PRINCIPAL: elevación, destello al pasar el mouse y spinner
+   ---------------------------------------------------------------------- */
+.card .primario {
+  position: relative;
+  overflow: hidden;
+  transition:
+    background-color 0.15s ease,
+    transform 0.2s ease,
+    box-shadow 0.25s ease;
+}
+
+.card .primario:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 22px -8px rgba(79, 70, 229, 0.65);
+}
+
+.card .primario:active:not(:disabled) {
+  transform: translateY(1px) scale(0.99);
+  box-shadow: none;
+}
+
+.card .primario::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    110deg,
+    transparent 35%,
+    rgba(255, 255, 255, 0.28) 50%,
+    transparent 65%
+  );
+  transform: translateX(-120%);
+  pointer-events: none;
+}
+
+.card .primario:hover:not(:disabled)::after {
+  animation: shine 0.8s ease;
+}
+
+.card .primario:disabled {
+  cursor: progress;
+  opacity: 0.9;
+}
+
+.card .primario:disabled::before {
+  content: '';
+  display: inline-block;
+  width: 13px;
+  height: 13px;
+  margin-right: 8px;
+  vertical-align: -2px;
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes shine {
+  to {
+    transform: translateX(120%);
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ----------------------------------------------------------------------
+   8. MENSAJES: el error cae y se sacude; el de éxito aparece con rebote
+   ---------------------------------------------------------------------- */
+.mensaje.error-msg {
+  animation: errorIn 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97) backwards;
+}
+
+.mensaje.ok-msg {
+  animation: okIn 0.45s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+}
+
+@keyframes errorIn {
+  0% {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  30% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  45% {
+    transform: translateX(-6px);
+  }
+  60% {
+    transform: translateX(5px);
+  }
+  75% {
+    transform: translateX(-3px);
+  }
+  90% {
+    transform: translateX(2px);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+@keyframes okIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ----------------------------------------------------------------------
+   9. ACCESIBILIDAD: sin movimiento si el usuario lo pide
+      (el spinner de carga se mantiene como indicador)
+   ---------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  :host::before,
+  :host::after,
+  .card,
+  .card::before,
+  .card > *,
+  .card > .registrar-logo,
+  .card:has(.mensaje.error-msg) .registrar-logo,
+  .card:has(.primario:disabled) .registrar-logo,
+  .card:has(.mensaje.ok-msg) .registrar-logo,
+  .campo input:focus,
+  .campo input.invalido,
+  .card .fuerza span::after,
+  .card .primario:hover::after,
+  .mensaje {
+    animation: none !important;
+  }
+}

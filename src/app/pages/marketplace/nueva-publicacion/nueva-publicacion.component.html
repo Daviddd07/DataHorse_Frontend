@@ -85,6 +85,12 @@
         </p>
       </div>
 
+      <!-- AVISO: yegua no se publica en el marketplace -->
+      <div class="np-aviso-yegua" *ngIf="sexo() === 'Hembra'">
+        Estás registrando una <strong>yegua</strong>. Se guardará en tu perfil y estará disponible
+        en <strong>"Mis caballos"</strong>, pero no se publicará en el marketplace.
+      </div>
+
       <form class="np-form">
         <!-- NOMBRE -->
 
@@ -221,6 +227,16 @@
           {{ error() }}
         </p>
 
+        <!-- ÉXITO -->
+
+        <div class="np-exito np-full" *ngIf="exito()">
+          <span>✅ {{ exito() }}</span>
+
+          <button type="button" class="np-exito-btn" (click)="irAlMarketplace()">
+            Ir al marketplace
+          </button>
+        </div>
+
         <!-- FOTOS -->
 
         <div class="np-fotos-field np-full">
@@ -273,7 +289,13 @@
         <!-- BOTÓN PUBLICAR -->
 
         <button class="np-submit np-full" type="button" [disabled]="enviando()" (click)="guardar()">
-          {{ enviando() ? 'Guardando...' : 'Publicar ejemplar' }}
+          {{
+            enviando()
+              ? 'Guardando...'
+              : sexo() === 'Hembra'
+                ? 'Registrar yegua'
+                : 'Publicar ejemplar'
+          }}
         </button>
       </form>
     </div>

@@ -18,13 +18,12 @@ import { HttpErrorResponse } from '@angular/common/http';
 
 import { AuthService } from '../../Services/auth.service';
 
+import { environment } from '../../../environments/environment';
 declare global {
   interface Window {
     google: any;
   }
 }
-
-const GOOGLE_CLIENT_ID = '698630764703-nsr0e739j8qnt2b6lkqg2uft417n5jl3.apps.googleusercontent.com';
 
 @Component({
   selector: 'app-login',
@@ -35,7 +34,7 @@ const GOOGLE_CLIENT_ID = '698630764703-nsr0e739j8qnt2b6lkqg2uft417n5jl3.apps.goo
 
   templateUrl: './login.html',
 
-  styleUrl: './login.css',
+  styleUrls: ['./login.css', './login.animations.css'],
 })
 export class Login implements AfterViewInit {
   @ViewChild('googleButton')
@@ -48,7 +47,7 @@ export class Login implements AfterViewInit {
   private zone = inject(NgZone);
 
   private cdr = inject(ChangeDetectorRef);
-
+  private googleInitialized = false;
   correo = '';
 
   password = '';
@@ -73,10 +72,14 @@ export class Login implements AfterViewInit {
 
       return;
     }
+    if (this.googleInitialized) {
+      return;
+    }
+    this.googleInitialized = true;
+    // 👆 FIN DEL CAMBIO 👆
 
     window.google.accounts.id.initialize({
-      client_id: GOOGLE_CLIENT_ID,
-
+      client_id: environment.googleClientId,
       callback: (respuesta: any) => {
         this.zone.run(() => this.iniciarConGoogle(respuesta.credential));
       },
@@ -116,18 +119,14 @@ export class Login implements AfterViewInit {
   }
 
   iniciarSesion(): void {
-    if (!this.correo || !this.password) {
-      this.mensaje = 'Debe ingresar correo y contraseña.';
-
-      this.cdr.detectChanges();
-
+    // 1. Validación en el frontend (campos vacíos o contraseña muy corta)
+    if (!this.correo || !this.password || this.password.length < 8) {
+      this.mensaje = 'Contraseña o correo incorrecto.';
       return;
     }
 
     this.mensaje = '';
-
     this.necesitaVerificacion = false;
-
     this.cargando = true;
 
     this.auth.login(this.correo.trim().toLowerCase(), this.password).subscribe({
@@ -140,22 +139,15 @@ export class Login implements AfterViewInit {
       error: (e: HttpErrorResponse) => {
         this.cargando = false;
 
+        // 2. Excepción: Si el correo no está verificado, mostramos el aviso
         if (e.status === 403) {
           this.mensaje = 'Debes verificar tu correo antes de iniciar sesión.';
-
           this.necesitaVerificacion = true;
-
-          this.cdr.detectChanges();
-
           return;
         }
 
-        this.mensaje =
-          e.status === 401
-            ? 'Correo o contraseña incorrectos.'
-            : e.error?.detail || 'No pudimos iniciar sesión.';
-
-        this.cdr.detectChanges();
+        // 3. Cualquier otro error (401, 500, etc.) mostramos el mensaje genérico
+        this.mensaje = 'Contraseña o correo incorrecto.';
       },
     });
   }
@@ -166,5 +158,28 @@ export class Login implements AfterViewInit {
 
       this.necesitaVerificacion = false;
     }
+  }
+  irARegistro(event: Event): void {
+    event.preventDefault();
+
+    const tarjeta = (event.currentTarget as HTMLElement).closest('.login-card');
+    const sinMovimiento = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    if (!tarjeta || sinMovimiento) {
+      this.router.navigate(['/registrar']);
+      return;
+    }
+
+    (document.activeElement as HTMLElement | null)?.blur();
+    tarjeta.classList.add('volteando');
+    document.body.classList.add('giro-entrando');
+
+    setTimeout(() => {
+      this.router.navigate(['/registrar']).then((ok) => {
+        if (!ok) tarjeta.classList.remove('volteando');
+      });
+    }, 500);
+
+    setTimeout(() => document.body.classList.remove('giro-entrando'), 1600);
   }
 }

@@ -77,6 +77,8 @@ export class NuevaPublicacionComponent {
 
   error = signal('');
 
+  exito = signal('');
+
   fotosSeleccionadas = signal<File[]>([]);
 
   // ======================================================
@@ -105,6 +107,9 @@ export class NuevaPublicacionComponent {
 
   elegirTipo(sexo: 'Macho' | 'Hembra'): void {
     this.sexo.set(sexo);
+
+    this.error.set('');
+    this.exito.set('');
 
     // Las yeguas no manejan precio
     if (sexo === 'Hembra') {
@@ -353,24 +358,31 @@ export class NuevaPublicacionComponent {
 
         const fotos = this.fotosSeleccionadas();
 
-        if (fotos.length === 0) {
+        // Si es yegua, NO redirigir: mostrar banner de éxito
+        const esYegua = this.sexo() === 'Hembra';
+
+        // ============================================
+        // SUBIR FOTOS (si hay)
+        // ============================================
+
+        const finalizar = (): void => {
           this.enviando.set(false);
 
-          this.router.navigate(['/marketplace']);
+          if (esYegua) {
+            this.exito.set('Yegua registrada. Estará disponible en "Mis caballos".');
+          } else {
+            this.router.navigate(['/marketplace']);
+          }
+        };
+
+        if (fotos.length === 0) {
+          finalizar();
 
           return;
         }
 
-        // ============================================
-        // SUBIR FOTOS
-        // ============================================
-
         this.caballoService.subirFotos(respuesta.id_caballo, fotos).subscribe({
-          next: () => {
-            this.enviando.set(false);
-
-            this.router.navigate(['/marketplace']);
-          },
+          next: () => finalizar(),
 
           error: (err) => {
             console.error('ERROR SUBIENDO FOTOS:', err);
@@ -396,5 +408,8 @@ export class NuevaPublicacionComponent {
         }
       },
     });
+  }
+  irAlMarketplace(): void {
+    this.router.navigate(['/marketplace']);
   }
 }

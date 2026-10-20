@@ -8,6 +8,8 @@ import { AuthService } from '../../Services/auth.service';
 
 import { CaballoService, Publicacion } from '../../Services/caballo.service';
 
+import { environment } from '../../../environments/environment';
+
 interface CaballoMarketplace {
   id: number;
 
@@ -41,8 +43,12 @@ interface CaballoMarketplace {
 
   fondo: string;
 
-  // 👇 NUEVO: la ruta completa de la foto principal (o null)
+  // NUEVO: la ruta completa de la foto principal (o null)
   fotoPrincipal: string | null;
+
+  edad: number;
+
+  altura: number;
 }
 
 @Component({
@@ -69,7 +75,7 @@ export class MarketplaceComponent {
 
   busqueda = signal('');
 
-  categorias = ['Todos', 'En venta', 'Compatibilidad', 'Pedigrí', 'Favoritos'];
+  categorias = ['Todos', 'Edad', 'Altura', 'Compatibilidad', 'Pedigrí', 'Favoritos'];
 
   categoriaActiva = signal('Todos');
 
@@ -79,25 +85,25 @@ export class MarketplaceComponent {
 
   precioMax = signal(60_000_000);
 
+  edadMax = signal(20); // años
+
   caballos = signal<CaballoMarketplace[]>([]);
 
   cargando = signal(true);
 
+  menuAbierto = signal(false);
+
+  correoUsuario = signal('');
+
   error = signal('');
+
+  alturaAscendente = signal(false);
 
   // ======================================================
   // RAZAS DISPONIBLES
   // ======================================================
 
-  razas = computed(() => {
-    const nombres = this.caballos()
-
-      .map((caballo) => caballo.raza)
-
-      .filter((raza) => raza.trim().length > 0);
-
-    return [...new Set(nombres)].sort();
-  });
+  razas = signal<string[]>([]);
 
   // ======================================================
   // FILTRADO
@@ -110,11 +116,13 @@ export class MarketplaceComponent {
 
     const precioMaximo = this.precioMax();
 
+    const edadMaxima = this.edadMax();
+
     const texto = this.busqueda().trim().toLowerCase();
 
     const categoria = this.categoriaActiva();
 
-    return this.caballos()
+    const filtrados = this.caballos()
 
       .filter((caballo) => {
         if (!texto) {
@@ -134,6 +142,8 @@ export class MarketplaceComponent {
 
       .filter((caballo) => caballo.precio === null || caballo.precio <= precioMaximo)
 
+      .filter((caballo) => caballo.edad <= edadMaxima)
+
       .filter((caballo) => {
         if (categoria === 'Favoritos') {
           return caballo.esFavorito;
@@ -149,6 +159,17 @@ export class MarketplaceComponent {
 
         return true;
       });
+
+    // Ordenar por altura cuando la categoría es Altura
+    if (categoria === 'Altura') {
+      const ascendente = this.alturaAscendente();
+
+      return [...filtrados].sort((a, b) =>
+        ascendente ? a.altura - b.altura : b.altura - a.altura,
+      );
+    }
+
+    return filtrados;
   });
 
   // ======================================================
@@ -177,7 +198,7 @@ export class MarketplaceComponent {
 
   constructor() {
     this.cargarUsuario();
-
+    this.cargarRazas();
     this.cargarPublicaciones();
   }
 
@@ -191,12 +212,30 @@ export class MarketplaceComponent {
         const primerNombre = usuario.nombre.trim().split(/\s+/)[0];
 
         this.nombreUsuario.set(primerNombre);
+
+        this.correoUsuario.set(usuario.correo);
       },
 
       error: (err) => {
         console.error('Error cargando usuario:', err);
 
         this.nombreUsuario.set('');
+      },
+    });
+  }
+
+  // ======================================================
+  // CARGAR RAZAS
+  // ======================================================
+  private cargarRazas(): void {
+    this.caballoService.listarRazas().subscribe({
+      next: (razas) => {
+        this.razas.set(razas.map((r) => r.nombre).sort());
+      },
+
+      error: (err) => {
+        console.error('Error cargando razas:', err);
+        this.razas.set([]);
       },
     });
   }
@@ -249,8 +288,12 @@ export class MarketplaceComponent {
                 ? 'linear-gradient(135deg, #ddd8ff 0%, #c6d5ff 100%)'
                 : 'linear-gradient(135deg, #f7d9ee 0%, #ded7ff 100%)',
 
-            // 👇 NUEVO: construimos la URL completa de la foto
-            fotoPrincipal: p.foto_principal ? `http://localhost:8000${p.foto_principal}` : null,
+            // NUEVO: construimos la URL completa de la foto
+            fotoPrincipal: p.foto_principal ? `${environment.uploadsUrl}${p.foto_principal}` : null,
+
+            edad: this.calcularEdad(p.fecha_nacimiento),
+
+            altura: p.altura,
           };
 
           return caballo;
@@ -344,5 +387,76 @@ export class MarketplaceComponent {
 
   irADetalle(caballo: CaballoMarketplace): void {
     this.router.navigate(['/publicaciones', caballo.id]);
+  }
+
+  // ======================================================
+  // MENÚ DE USUARIO
+  // ======================================================
+
+  toggleMenu(): void {
+    this.menuAbierto.update((v) => !v);
+  }
+
+  irAMisCaballos(): void {
+    this.menuAbierto.set(false);
+    this.router.navigate(['/mis-caballos']);
+  }
+
+  cerrarMenu(): void {
+    this.menuAbierto.set(false);
+  }
+
+  cerrarSesion(): void {
+    this.auth.logout().subscribe({
+      next: () => {
+        this.menuAbierto.set(false);
+        this.router.navigate(['/login']);
+      },
+      error: () => {
+        // Aunque el backend falle, igual sacamos al usuario
+        this.menuAbierto.set(false);
+        this.router.navigate(['/login']);
+      },
+    });
+  }
+  // ======================================================
+  // CALCULAR EDAD
+  // ======================================================
+
+  private calcularEdad(fechaNacimiento: string): number {
+    if (!fechaNacimiento) {
+      return 0;
+    }
+
+    const nacimiento = new Date(fechaNacimiento);
+    const hoy = new Date();
+
+    let edad = hoy.getFullYear() - nacimiento.getFullYear();
+
+    const mes = hoy.getMonth() - nacimiento.getMonth();
+
+    if (mes < 0 || (mes === 0 && hoy.getDate() < nacimiento.getDate())) {
+      edad--;
+    }
+
+    return Math.max(0, edad);
+  }
+  // ======================================================
+  // SELECCIONAR CATEGORÍA (altura)
+  // ======================================================
+
+  seleccionarCategoria(categoria: string): void {
+    // Si vuelven a hacer clic en "Altura", cambiar dirección
+    if (categoria === 'Altura' && this.categoriaActiva() === 'Altura') {
+      this.alturaAscendente.update((v) => !v);
+      return;
+    }
+
+    // Si es una categoría distinta, resetear la dirección
+    if (categoria !== 'Altura') {
+      this.alturaAscendente.set(false);
+    }
+
+    this.categoriaActiva.set(categoria);
   }
 }

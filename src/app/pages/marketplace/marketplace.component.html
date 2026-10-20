@@ -1,14 +1,7 @@
 <div class="dh-page">
   <header class="dh-header">
     <div class="dh-logo">
-      <svg class="dh-logo-icon" viewBox="0 0 32 32" fill="none" aria-hidden="true">
-        <path
-          d="M9 24c0-7 3-13 7-13s7 6 7 13"
-          stroke="currentColor"
-          stroke-width="2.5"
-          stroke-linecap="round"
-        />
-      </svg>
+      <img src="Logo.png" alt="DataHorse" class="dh-logo-img" />
 
       <span> DataHorse </span>
     </div>
@@ -41,8 +34,80 @@
         +
       </button>
 
-      <div class="dh-avatar">
-        {{ inicial() }}
+      <div class="dh-user-menu-wrap">
+        <button
+          class="dh-avatar"
+          type="button"
+          (click)="toggleMenu()"
+          [attr.aria-expanded]="menuAbierto()"
+          aria-label="Menú de usuario"
+        >
+          {{ inicial() }}
+        </button>
+
+        <div class="dh-user-menu" *ngIf="menuAbierto()">
+          <div class="dh-user-menu-head">
+            <div class="dh-avatar dh-avatar--lg">
+              {{ inicial() }}
+            </div>
+            <div class="dh-user-menu-info">
+              <strong>{{ nombreUsuario() }}</strong>
+              <span>{{ correoUsuario() }}</span>
+            </div>
+          </div>
+
+          <ul class="dh-user-menu-list">
+            <li>
+              <button type="button" (click)="cerrarMenu()">
+                <span class="dh-menu-ico"></span>
+                Mi cuenta
+              </button>
+            </li>
+            <li>
+              <button type="button" (click)="irAMisCaballos()">
+                <span class="dh-menu-ico"></span>
+                Mis caballos
+              </button>
+            </li>
+            <li>
+              <button type="button" (click)="cerrarMenu()">
+                <span class="dh-menu-ico"></span>
+                Mis publicaciones
+              </button>
+            </li>
+            <li>
+              <button type="button" (click)="cerrarMenu()">
+                <span class="dh-menu-ico"></span>
+                Favoritos
+              </button>
+            </li>
+            <li>
+              <button type="button" (click)="cerrarMenu()">
+                <span class="dh-menu-ico"></span>
+                Mensajes
+              </button>
+            </li>
+            <li>
+              <button type="button" (click)="cerrarMenu()">
+                <span class="dh-menu-ico"></span>
+                Pedigrí y documentos
+              </button>
+            </li>
+            <li>
+              <button type="button" (click)="cerrarMenu()">
+                <span class="dh-menu-ico"></span>
+                Configuración
+              </button>
+            </li>
+          </ul>
+
+          <div class="dh-user-menu-divider"></div>
+
+          <button type="button" class="dh-user-menu-logout" (click)="cerrarSesion()">
+            <span class="dh-menu-ico"></span>
+            Cerrar sesión
+          </button>
+        </div>
       </div>
     </div>
   </header>
@@ -58,7 +123,7 @@
       *ngFor="let categoria of categorias"
       type="button"
       [class.active]="categoriaActiva() === categoria"
-      (click)="categoriaActiva.set(categoria)"
+      (click)="seleccionarCategoria(categoria)"
     >
       {{ categoria }}
     </button>
@@ -66,7 +131,12 @@
 
   <div class="dh-body">
     <aside class="dh-filters">
-      <div class="dh-filter-group">
+      <!-- SLIDER DE PRECIO (solo para Todos / Compatibilidad / Pedigrí / Favoritos) -->
+
+      <div
+        class="dh-filter-group"
+        *ngIf="categoriaActiva() !== 'Edad' && categoriaActiva() !== 'Altura'"
+      >
         <h3>Precio de referencia</h3>
 
         <input
@@ -83,6 +153,37 @@
 
           {{ precioMax() | currency: 'COP' : 'symbol' : '1.0-0' }}
         </p>
+      </div>
+
+      <!-- AVISO ALTURA (solo cuando la categoría es Altura) -->
+
+      <div class="dh-filter-group" *ngIf="categoriaActiva() === 'Altura'">
+        <h3>Altura</h3>
+
+        <p class="dh-filter-value">
+          {{
+            alturaAscendente()
+              ? 'Ordenados del más bajo al más alto. ↓'
+              : 'Ordenados del más alto al más bajo. ↑'
+          }}
+        </p>
+      </div>
+
+      <!-- SLIDER DE EDAD (solo cuando la categoría es Edad) -->
+
+      <div class="dh-filter-group" *ngIf="categoriaActiva() === 'Edad'">
+        <h3>Edad</h3>
+
+        <input
+          type="range"
+          min="1"
+          max="20"
+          step="1"
+          [value]="edadMax()"
+          (input)="edadMax.set(+$any($event.target).value)"
+        />
+
+        <p class="dh-filter-value">Hasta {{ edadMax() }} {{ edadMax() === 1 ? 'año' : 'años' }}</p>
       </div>
 
       <div class="dh-filter-group">
@@ -124,7 +225,7 @@
         style="cursor: pointer"
       >
         <div class="dh-card-media" [style.background]="h.fondo">
-          <!-- 👇 FOTO: si hay foto, se muestra; si no, el SVG de placeholder -->
+          <!-- FOTO: si hay foto, se muestra; si no, el SVG de placeholder -->
           <img
             *ngIf="h.fotoPrincipal; else placeholderDestacado"
             [src]="h.fotoPrincipal"
@@ -189,7 +290,7 @@
         style="cursor: pointer"
       >
         <div class="dh-card-media" [style.background]="h.fondo">
-          <!-- 👇 FOTO: si hay foto, se muestra; si no, el SVG de placeholder -->
+          <!--  FOTO: si hay foto, se muestra; si no, el SVG de placeholder -->
           <img
             *ngIf="h.fotoPrincipal; else placeholderCard"
             [src]="h.fotoPrincipal"

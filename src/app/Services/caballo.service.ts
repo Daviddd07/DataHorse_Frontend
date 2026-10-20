@@ -4,6 +4,8 @@ import { HttpClient } from '@angular/common/http';
 
 import { Observable } from 'rxjs';
 
+import { environment } from '../../environments/environment';
+
 /* =====================================================
    RAZA
 ===================================================== */
@@ -95,6 +97,10 @@ export interface Publicacion {
 
   fecha_publicacion: string;
 
+  fecha_nacimiento: string;
+
+  altura: number;
+
   precio: number | null;
 
   propietario: string;
@@ -167,7 +173,7 @@ export interface FotoCaballo {
   providedIn: 'root',
 })
 export class CaballoService {
-  private readonly apiUrl = 'http://localhost:8000';
+  private readonly apiUrl = environment.apiUrl;
 
   constructor(private http: HttpClient) {}
 
@@ -184,6 +190,40 @@ export class CaballoService {
       {
         withCredentials: true,
       },
+    );
+  }
+
+  obtenerCaballo(idCaballo: number): Observable<CaballoDetalle> {
+    return this.http.get<CaballoDetalle>(`${this.apiUrl}/api/v1/caballos/${idCaballo}`, {
+      withCredentials: true,
+    });
+  }
+
+  actualizarCaballo(
+    idCaballo: number,
+    datos: CaballoUpdatePayload,
+  ): Observable<{ mensaje: string; id_caballo: number }> {
+    return this.http.put<{ mensaje: string; id_caballo: number }>(
+      `${this.apiUrl}/api/v1/caballos/${idCaballo}`,
+      datos,
+      { withCredentials: true },
+    );
+  }
+
+  eliminarCaballo(idCaballo: number): Observable<{ mensaje: string; id_caballo: number }> {
+    return this.http.delete<{ mensaje: string; id_caballo: number }>(
+      `${this.apiUrl}/api/v1/caballos/${idCaballo}`,
+      { withCredentials: true },
+    );
+  }
+
+  eliminarFoto(
+    idCaballo: number,
+    idFoto: number,
+  ): Observable<{ mensaje: string; id_foto: number }> {
+    return this.http.delete<{ mensaje: string; id_foto: number }>(
+      `${this.apiUrl}/api/v1/caballos/${idCaballo}/fotos/${idFoto}`,
+      { withCredentials: true },
     );
   }
 
@@ -284,4 +324,69 @@ export class CaballoService {
       },
     );
   }
+  listarMisCaballos(): Observable<CaballoMio[]> {
+    return this.http.get<CaballoMio[]>(`${this.apiUrl}/api/v1/caballos/mios`, {
+      withCredentials: true,
+    });
+  }
+}
+
+export interface CaballoMio {
+  id_caballo: number;
+  nombre: string;
+  sexo: 'Macho' | 'Hembra';
+  fecha_nacimiento: string;
+  altura: number;
+  color: string;
+  ubicacion: string;
+  descripcion: string;
+  disponibilidad: string;
+
+  id_raza: number;
+  raza: string;
+
+  foto_principal: string | null;
+
+  id_publicacion: number | null;
+  precio: number | null;
+  publicado: boolean;
+}
+export interface FotoCaballoDetalle {
+  id_foto: number;
+  ruta: string;
+  es_principal: boolean;
+  orden: number;
+}
+
+export interface CaballoDetalle {
+  id_caballo: number;
+  nombre: string;
+  sexo: 'Macho' | 'Hembra';
+  fecha_nacimiento: string;
+  altura: number;
+  color: string;
+  ubicacion: string;
+  descripcion: string;
+  disponibilidad: string;
+
+  id_raza: number;
+  raza: string;
+
+  id_publicacion: number | null;
+  precio: number | null;
+
+  fotos: FotoCaballoDetalle[];
+}
+
+export interface CaballoUpdatePayload {
+  id_raza?: number;
+  raza_personalizada?: string;
+  nombre: string;
+  fecha_nacimiento: string;
+  altura: number;
+  color: string;
+  ubicacion: string;
+  descripcion: string;
+  disponibilidad: 'Disponible' | 'No disponible';
+  precio?: number | null;
 }

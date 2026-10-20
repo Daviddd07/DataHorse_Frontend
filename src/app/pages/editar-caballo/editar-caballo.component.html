@@ -1,0 +1,332 @@
+<div class="ec-page">
+  <!-- HEADER -->
+
+  <header class="ec-header">
+    <div class="ec-logo">
+      <img src="Logo.png" alt="DataHorse" class="dh-logo-img" />
+      <span>DataHorse</span>
+    </div>
+
+    <div class="ec-search">
+      <input type="text" placeholder="Buscar por nombre, raza o ubicación" />
+    </div>
+
+    <div class="ec-header-actions">
+      <button class="ec-icon-btn" type="button" aria-label="Favoritos" (click)="cancelar()">
+        ♥
+      </button>
+      <button
+        class="ec-icon-btn"
+        type="button"
+        aria-label="Agregar publicación"
+        (click)="cancelar()"
+      >
+        +
+      </button>
+
+      <div class="ec-user-wrap">
+        <button class="ec-avatar" type="button" (click)="toggleMenu()" aria-label="Menú de usuario">
+          {{ inicial() }}
+        </button>
+
+        <div class="ec-user-menu" *ngIf="menuAbierto()">
+          <div class="ec-user-head">
+            <div class="ec-avatar ec-avatar--lg">{{ inicial() }}</div>
+            <div class="ec-user-info">
+              <strong>{{ nombreUsuario() }}</strong>
+              <span>{{ correoUsuario() }}</span>
+            </div>
+          </div>
+
+          <ul class="ec-user-list">
+            <li>
+              <button type="button" (click)="irAMisCaballos()">
+                <span class="ec-menu-ico"></span>
+                Mis caballos
+              </button>
+            </li>
+          </ul>
+
+          <div class="ec-user-divider"></div>
+
+          <button type="button" class="ec-user-logout" (click)="cerrarSesion()">
+            <span class="ec-menu-ico">↪</span>
+            Cerrar sesión
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ESTADOS -->
+
+  <p class="ec-empty" *ngIf="cargando()">Cargando...</p>
+
+  <p class="ec-error-block" *ngIf="!cargando() && error() && !caballo()">
+    {{ error() }}
+  </p>
+
+  <!-- FORMULARIO -->
+
+  <div class="ec-content" *ngIf="!cargando() && caballo() as c">
+    <!-- MIGAS -->
+
+    <div class="ec-breadcrumb">
+      <span class="ec-link" (click)="irAMisCaballos()">Mi cuenta</span>
+      <span class="ec-sep">/</span>
+      <span class="ec-link" (click)="irAMisCaballos()">Mis caballos</span>
+      <span class="ec-sep">/</span>
+      <span>Editar</span>
+    </div>
+
+    <!-- TÍTULO -->
+
+    <div class="ec-heading">
+      <h1>Editar a {{ c.nombre }}</h1>
+      <p>
+        Actualiza la información de tu ejemplar. Los cambios se verán en el marketplace al guardar.
+      </p>
+    </div>
+
+    <p class="ec-tipo">
+      Tipo seleccionado: <strong>{{ c.sexo }}</strong>
+    </p>
+
+    <!-- FORM -->
+
+    <form class="ec-form" (ngSubmit)="guardar()">
+      <!-- NOMBRE -->
+
+      <label>
+        Nombre
+        <input type="text" [value]="nombre()" (input)="nombre.set($any($event.target).value)" />
+      </label>
+
+      <!-- RAZA -->
+
+      <label>
+        Raza
+        <select (change)="onRazaChange($any($event.target).value)">
+          <option
+            *ngFor="let r of razas()"
+            [value]="r.id_raza"
+            [selected]="r.id_raza === idRazaSeleccionada()"
+          >
+            {{ r.nombre }}
+          </option>
+          <option value="-1">Otro</option>
+        </select>
+      </label>
+
+      <label *ngIf="razaEsOtro()">
+        ¿Cuál raza?
+        <input
+          type="text"
+          placeholder="Escribe la raza"
+          [value]="razaPersonalizada()"
+          (input)="razaPersonalizada.set($any($event.target).value)"
+        />
+      </label>
+
+      <!-- FECHA -->
+
+      <label>
+        Fecha de nacimiento
+        <input
+          type="date"
+          [value]="fechaNacimiento()"
+          (input)="fechaNacimiento.set($any($event.target).value)"
+        />
+        <span class="ec-hint">Si no conoces la fecha exacta, puedes ingresar una aproximada.</span>
+      </label>
+
+      <!-- ALTURA -->
+
+      <label>
+        Altura (metros)
+        <input
+          type="number"
+          min="0"
+          step="0.01"
+          [value]="altura() ?? ''"
+          (input)="onAlturaChange($any($event.target).value)"
+        />
+      </label>
+
+      <!-- COLOR -->
+
+      <label>
+        Color
+        <input type="text" [value]="color()" (input)="color.set($any($event.target).value)" />
+      </label>
+
+      <!-- UBICACIÓN -->
+
+      <label>
+        Ubicación
+        <input
+          type="text"
+          [value]="ubicacion()"
+          (input)="ubicacion.set($any($event.target).value)"
+        />
+      </label>
+
+      <!-- PRECIO (solo machos) -->
+
+      <label *ngIf="c.sexo === 'Macho'">
+        Precio
+        <div class="ec-price-input">
+          <span>$</span>
+          <input
+            type="number"
+            min="1"
+            step="1000"
+            [value]="precio() ?? ''"
+            (input)="onPrecioChange($any($event.target).value)"
+          />
+        </div>
+      </label>
+
+      <!-- DESCRIPCIÓN -->
+
+      <label class="ec-full">
+        Descripción
+        <textarea
+          [value]="descripcion()"
+          (input)="descripcion.set($any($event.target).value)"
+        ></textarea>
+      </label>
+
+      <!-- DISPONIBILIDAD -->
+
+      <label>
+        Disponibilidad
+        <select (change)="onDisponibilidadChange($any($event.target).value)">
+          <option value="Disponible" [selected]="disponibilidad() === 'Disponible'">
+            Disponible
+          </option>
+          <option value="No disponible" [selected]="disponibilidad() === 'No disponible'">
+            No disponible
+          </option>
+        </select>
+      </label>
+
+      <!-- FOTOS -->
+
+      <div class="ec-fotos-field ec-full">
+        <div class="ec-fotos-head">
+          <span class="ec-fotos-title">Fotos del ejemplar</span>
+          <span class="ec-fotos-hint">Hasta 5 MB por foto. La primera será la principal.</span>
+        </div>
+
+        <!-- Fotos existentes -->
+
+        <div class="ec-fotos-grid" *ngIf="fotos().length > 0">
+          <div class="ec-foto-item" *ngFor="let f of fotos()">
+            <img [src]="f.urlCompleta" [alt]="'Foto de ' + c.nombre" />
+
+            <span class="ec-foto-principal" *ngIf="f.es_principal">Principal</span>
+
+            <button
+              type="button"
+              class="ec-foto-remove"
+              (click)="pedirEliminarFoto(f.id_foto)"
+              aria-label="Eliminar foto"
+            >
+              ×
+            </button>
+          </div>
+        </div>
+
+        <!-- Fotos nuevas -->
+
+        <div class="ec-fotos-nuevas" *ngIf="fotosNuevas().length > 0">
+          <p class="ec-fotos-nuevas-title">Nuevas por subir ({{ fotosNuevas().length }})</p>
+
+          <ul class="ec-fotos-nuevas-list">
+            <li *ngFor="let f of fotosNuevas(); let i = index">
+              <span>{{ f.name }}</span>
+              <button type="button" (click)="quitarFotoNueva(i)">×</button>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Input de archivos -->
+
+        <input
+          #fileInputEditar
+          type="file"
+          accept="image/jpeg,image/png,image/webp"
+          multiple
+          (change)="onFotosSeleccionadas($event)"
+          hidden
+        />
+
+        <button type="button" class="ec-fotos-btn" (click)="fileInputEditar.click()">
+          + Añadir fotos
+        </button>
+      </div>
+
+      <!-- ERRORES Y ÉXITOS -->
+
+      <p class="ec-error ec-full" *ngIf="error()">
+        {{ error() }}
+      </p>
+
+      <!-- BOTONES -->
+
+      <div class="ec-actions ec-full">
+        <button type="submit" class="ec-btn ec-btn-primary" [disabled]="guardando()">
+          {{ guardando() ? 'Guardando...' : 'Guardar cambios' }}
+        </button>
+
+        <button type="button" class="ec-btn ec-btn-secondary" (click)="cancelar()">Cancelar</button>
+
+        <button type="button" class="ec-btn ec-btn-danger" (click)="pedirEliminarCaballo()">
+          Eliminar caballo
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- MODAL: ELIMINAR FOTO -->
+
+  <div class="ec-modal-bg" *ngIf="modalEliminarFotoAbierto()">
+    <div class="ec-modal">
+      <h2>Eliminar foto</h2>
+
+      <p>¿Seguro que quieres eliminar esta foto? Esta acción no se puede deshacer.</p>
+
+      <div class="ec-modal-actions">
+        <button type="button" class="ec-btn ec-btn-secondary" (click)="cancelarEliminarFoto()">
+          Cancelar
+        </button>
+        <button type="button" class="ec-btn ec-btn-danger" (click)="confirmarEliminarFoto()">
+          Sí, eliminar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: ELIMINAR CABALLO -->
+
+  <div class="ec-modal-bg" *ngIf="modalEliminarCaballoAbierto()">
+    <div class="ec-modal">
+      <h2>Eliminar caballo</h2>
+
+      <p>
+        ¿Seguro que quieres eliminar este caballo? Ya no aparecerá en el marketplace ni en "Mis
+        caballos".
+      </p>
+
+      <div class="ec-modal-actions">
+        <button type="button" class="ec-btn ec-btn-secondary" (click)="cancelarEliminarCaballo()">
+          Cancelar
+        </button>
+        <button type="button" class="ec-btn ec-btn-danger" (click)="confirmarEliminarCaballo()">
+          Sí, eliminar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

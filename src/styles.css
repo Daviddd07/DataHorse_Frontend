@@ -1,1 +1,37 @@
 /* You can add global styles to this file, and also import other style files */
+/* Efecto global para todos los botones */
+button {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Efecto al hacer clic (excluyendo los ojitos y botones de ícono) */
+button:active:not(.ver):not(.dh-icon-btn):not(.ec-icon-btn) {
+  transform: scale(0.96) translateY(1px) !important;
+}
+
+/* Botones primarios (morados) con brillo */
+.np-submit,
+.mc-btn-primary,
+.dp-btn-chat {
+  position: relative;
+  overflow: hidden;
+}
+
+.np-submit::after,
+.mc-btn-primary::after,
+.dp-btn-chat::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s ease;
+}
+
+.np-submit:hover::after,
+.mc-btn-primary:hover::after,
+.dp-btn-chat:hover::after {
+  left: 100%;
+}
