@@ -135,7 +135,11 @@
 
       <div
         class="dh-filter-group"
-        *ngIf="categoriaActiva() !== 'Edad' && categoriaActiva() !== 'Altura'"
+        *ngIf="
+          categoriaActiva() !== 'Edad' &&
+          categoriaActiva() !== 'Altura' &&
+          categoriaActiva() !== 'Proximidad'
+        "
       >
         <h3>Precio de referencia</h3>
 
@@ -184,6 +188,41 @@
         />
 
         <p class="dh-filter-value">Hasta {{ edadMax() }} {{ edadMax() === 1 ? 'año' : 'años' }}</p>
+      </div>
+
+      <!-- FILTRO DE PROXIMIDAD -->
+
+      <div class="dh-filter-group" *ngIf="categoriaActiva() === 'Proximidad'">
+        <h3>Cerca de mí</h3>
+
+        <button
+          type="button"
+          class="dh-btn-location"
+          (click)="pedirUbicacion()"
+          [disabled]="cargandoUbicacion()"
+        >
+          {{ cargandoUbicacion() ? 'Buscando...' : 'Usar mi ubicación' }}
+        </button>
+
+        <!-- Mensaje de error si el usuario niega el permiso -->
+        @if (errorUbicacion()) {
+          <p class="dh-error-text">{{ errorUbicacion() }}</p>
+        }
+
+        <!-- Slider para elegir el radio de búsqueda -->
+        @if (userLat() && userLng()) {
+          <div style="margin-top: 15px">
+            <input
+              type="range"
+              min="5"
+              max="500"
+              step="5"
+              [value]="radioMax()"
+              (input)="radioMax.set(+$any($event.target).value)"
+            />
+            <p class="dh-filter-value">En un radio de {{ radioMax() }} km</p>
+          </div>
+        }
       </div>
 
       <div class="dh-filter-group">

@@ -88,6 +88,11 @@ export interface Publicacion {
   sexo: 'Macho' | 'Hembra';
 
   ubicacion: string;
+  ubicacion_texto?: string;
+  ciudad?: string;
+  departamento?: string;
+  ubicacion_lat?: number | null;
+  ubicacion_lng?: number | null;
 
   color: string;
 

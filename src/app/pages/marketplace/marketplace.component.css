@@ -982,3 +982,38 @@ button.dh-avatar:hover {
   box-shadow: 0 15px 35px rgba(34, 19, 84, 0.15);
   z-index: 10;
 }
+/* ======================================================
+   FILTRO DE PROXIMIDAD
+====================================================== */
+
+.dh-btn-location {
+  width: 100%;
+  padding: 10px;
+  border: 1px dashed var(--dh-purple);
+  border-radius: 10px;
+  background: #f4f1ff;
+  color: var(--dh-purple);
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    transform 0.1s ease;
+}
+
+.dh-btn-location:hover:not(:disabled) {
+  background: #ebe8ff;
+  transform: translateY(-1px);
+}
+
+.dh-btn-location:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.dh-error-text {
+  margin: 8px 0 0;
+  font-size: 0.75rem;
+  color: #dc2626;
+}

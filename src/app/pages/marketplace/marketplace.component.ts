@@ -49,6 +49,9 @@ interface CaballoMarketplace {
   edad: number;
 
   altura: number;
+
+  lat: number | null;
+  lng: number | null;
 }
 
 @Component({
@@ -75,7 +78,7 @@ export class MarketplaceComponent {
 
   busqueda = signal('');
 
-  categorias = ['Todos', 'Edad', 'Altura', 'Compatibilidad', 'Pedigrí', 'Favoritos'];
+  categorias = ['Todos', 'Edad', 'Altura', 'Proximidad', 'Compatibilidad', 'Pedigrí', 'Favoritos'];
 
   categoriaActiva = signal('Todos');
 
@@ -104,6 +107,13 @@ export class MarketplaceComponent {
   // ======================================================
 
   razas = signal<string[]>([]);
+
+  // NUEVAS SEÑALES PARA PROXIMIDAD
+  radioMax = signal(50); // 50 km por defecto
+  userLat = signal<number | null>(null);
+  userLng = signal<number | null>(null);
+  cargandoUbicacion = signal(false);
+  errorUbicacion = signal('');
 
   // ======================================================
   // FILTRADO
@@ -157,8 +167,31 @@ export class MarketplaceComponent {
           return caballo.verificado;
         }
 
+        // AGREGA ESTE BLOQUE
+        if (categoria === 'Proximidad') {
+          const lat = this.userLat();
+          const lng = this.userLng();
+
+          // Si no hay ubicación o el caballo no tiene coordenadas, lo ocultamos
+          if (!lat || !lng || !caballo.lat || !caballo.lng) return false;
+
+          const distancia = this.calcularDistancia(lat, lng, caballo.lat, caballo.lng);
+          return distancia <= this.radioMax();
+        }
+        // FIN DEL BLOQUE
+
         return true;
       });
+
+    // ORDENAR POR PROXIMIDAD
+    if (categoria === 'Proximidad' && this.userLat() && this.userLng()) {
+      return [...filtrados].sort((a, b) => {
+        const distA = this.calcularDistancia(this.userLat()!, this.userLng()!, a.lat!, a.lng!);
+        const distB = this.calcularDistancia(this.userLat()!, this.userLng()!, b.lat!, b.lng!);
+        return distA - distB; // El más cercano primero
+      });
+    }
+    //  FIN DEL ORDENAMIENTO
 
     // Ordenar por altura cuando la categoría es Altura
     if (categoria === 'Altura') {
@@ -294,6 +327,9 @@ export class MarketplaceComponent {
             edad: this.calcularEdad(p.fecha_nacimiento),
 
             altura: p.altura,
+
+            lat: p.ubicacion_lat ?? null,
+            lng: p.ubicacion_lng ?? null,
           };
 
           return caballo;
@@ -458,5 +494,45 @@ export class MarketplaceComponent {
     }
 
     this.categoriaActiva.set(categoria);
+  }
+  // ======================================================
+  // PROXIMIDAD (FÓRMULA DE HAVERSINE)
+  // ======================================================
+
+  pedirUbicacion(): void {
+    if (!navigator.geolocation) {
+      this.errorUbicacion.set('Tu navegador no soporta geolocalización.');
+      return;
+    }
+
+    this.cargandoUbicacion.set(true);
+    this.errorUbicacion.set('');
+
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        this.userLat.set(pos.coords.latitude);
+        this.userLng.set(pos.coords.longitude);
+        this.cargandoUbicacion.set(false);
+      },
+      (err) => {
+        console.error('Error obteniendo ubicación:', err);
+        this.errorUbicacion.set('Permiso denegado o no disponible.');
+        this.cargandoUbicacion.set(false);
+      },
+    );
+  }
+
+  calcularDistancia(lat1: number, lon1: number, lat2: number, lon2: number): number {
+    const R = 6371; // Radio de la Tierra en km
+    const dLat = (lat2 - lat1) * (Math.PI / 180);
+    const dLon = (lon2 - lon1) * (Math.PI / 180);
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(lat1 * (Math.PI / 180)) *
+        Math.cos(lat2 * (Math.PI / 180)) *
+        Math.sin(dLon / 2) *
+        Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c;
   }
 }
