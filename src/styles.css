@@ -1,11 +1,12 @@
 /* You can add global styles to this file, and also import other style files */
+
 /* Efecto global para todos los botones */
 button {
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* Efecto al hacer clic (excluyendo los ojitos y botones de ícono) */
-button:active:not(.ver):not(.dh-icon-btn):not(.ec-icon-btn) {
+button:active:not(.ver):not(.dh-icon-btn):not(.ec-icon-btn):not(.btn-ojo) {
   transform: scale(0.96) translateY(1px) !important;
 }
 

@@ -1,1019 +1,543 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
+html {
+  scrollbar-gutter: stable;
+}
+
 :host {
   --dh-bg: #f7f7fa;
   --dh-surface: #ffffff;
-  --dh-surface-soft: #f1f1f4;
-
   --dh-ink: #17171c;
   --dh-ink-soft: #777783;
-
-  --dh-line: #e7e7ed;
-
   --dh-purple: #6548e8;
-  --dh-purple-dark: #5539d7;
   --dh-purple-soft: #eeeaff;
-
   --dh-yellow: #ffd93d;
 
   display: block;
   min-height: 100vh;
-
   font-family: 'Inter', sans-serif;
   color: var(--dh-ink);
-
   background:
     radial-gradient(circle at 15% 20%, rgba(141, 120, 255, 0.95), transparent 35%),
     radial-gradient(circle at 85% 80%, rgba(104, 63, 220, 0.95), transparent 40%),
     linear-gradient(135deg, #758de9 0%, #9b78f2 45%, #633de0 100%);
-
-  padding: 38px;
+  padding: 16px;
   box-sizing: border-box;
 }
 
 /* ======================================================
-   CONTENEDOR GENERAL
+   HEADER Y CONTENEDOR
 ====================================================== */
-
 .dh-page {
   max-width: 1280px;
   margin: 0 auto;
-
-  padding: 22px 24px 34px;
-
+  padding: 24px 32px;
   background: rgba(255, 255, 255, 0.97);
-
-  border-radius: 28px;
-
+  border-radius: 12px;
   box-shadow: 0 30px 70px rgba(34, 19, 84, 0.25);
-
-  min-height: calc(100vh - 76px);
+  min-height: calc(100vh - 32px);
 }
-
-/* ======================================================
-   HEADER
-====================================================== */
 
 .dh-header {
   display: flex;
   align-items: center;
-
   gap: 18px;
-
   padding: 4px 0 18px;
-
   border-bottom: 1px solid #f0f0f3;
+  position: sticky;
+  top: 0;
+  background: rgba(255, 255, 255, 0.97);
+  backdrop-filter: blur(10px);
+  z-index: 100;
+  border-radius: 12px 12px 0 0;
 }
-
-/* LOGO */
 
 .dh-logo {
   display: flex;
   align-items: center;
-
   gap: 8px;
-
   min-width: 145px;
-
   font-weight: 800;
   font-size: 1.35rem;
-
-  letter-spacing: -0.04em;
-
   color: #16161c;
 }
-
-.dh-logo-icon {
-  width: 25px;
-  height: 25px;
-
-  color: var(--dh-purple);
+.dh-logo-img {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
 }
-
-/* BUSCADOR */
-
 .dh-search {
   flex: 1;
   max-width: 480px;
 }
-
 .dh-search input {
   width: 100%;
-
   box-sizing: border-box;
-
   border: none;
-
   background: #f1f1f5;
-
-  border-radius: 999px;
-
+  border-radius: 8px;
   padding: 11px 18px;
-
   font-family: inherit;
   font-size: 0.88rem;
-
-  color: var(--dh-ink);
-
   outline: none;
-
-  transition:
-    background 0.2s ease,
-    box-shadow 0.2s ease;
+  transition: 0.2s;
 }
-
 .dh-search input:focus {
   background: white;
-
   box-shadow: 0 0 0 2px var(--dh-purple);
 }
 
-.dh-search input::placeholder {
-  color: #a0a0aa;
-}
-
-/* ACCIONES HEADER */
-
 .dh-header-actions {
   margin-left: auto;
-
   display: flex;
   align-items: center;
-
   gap: 9px;
 }
-
 .dh-icon-btn {
   border: none;
-
   background: transparent;
-
-  border-radius: 999px;
-
+  border-radius: 8px;
   min-width: 40px;
   height: 40px;
-
-  padding: 0 12px;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
   cursor: pointer;
-
   font-size: 1rem;
-
   color: #33333b;
-
-  transition:
-    background 0.2s ease,
-    transform 0.2s ease;
 }
-
 .dh-icon-btn:hover {
   background: var(--dh-purple-soft);
   color: var(--dh-purple);
-
-  transform: translateY(-1px);
 }
-
 .dh-avatar {
   width: 39px;
   height: 39px;
-
   border-radius: 50%;
-
   background: linear-gradient(135deg, var(--dh-purple), #9278ff);
-
   color: white;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
-  font-size: 0.9rem;
   font-weight: 700;
-
-  box-shadow: 0 5px 15px rgba(101, 72, 232, 0.28);
 }
 
 /* ======================================================
-   SALUDO
+   SALUDO Y PESTAÑAS
 ====================================================== */
-
 .dh-greeting {
   padding: 22px 0 8px;
 }
-
 .dh-greeting h1 {
   margin: 0 0 5px;
-
   font-size: 1.7rem;
   font-weight: 700;
-
-  letter-spacing: -0.04em;
-
   color: #18181d;
 }
-
 .dh-greeting p {
   margin: 0;
-
   font-size: 0.9rem;
-
   color: var(--dh-ink-soft);
 }
 
-/* ======================================================
-   CATEGORÍAS
-====================================================== */
-
 .dh-categories {
   display: flex;
-
-  gap: 8px;
-
+  gap: 24px;
   overflow-x: auto;
-
-  padding: 17px 0 22px;
-
+  padding: 0;
+  margin-bottom: 24px;
+  border-bottom: 1px solid #e5e5ea;
   scrollbar-width: none;
+  align-items: center;
 }
-
-.dh-categories::-webkit-scrollbar {
-  display: none;
-}
-
 .dh-categories button {
+  position: relative;
   border: none;
-
-  background: #f2f2f5;
-
-  border-radius: 999px;
-
-  padding: 9px 17px;
-
+  background: transparent;
+  padding: 14px 4px;
   font-family: inherit;
-  font-size: 0.78rem;
+  font-size: 0.95rem;
   font-weight: 500;
-
-  color: #44444c;
-
+  color: #5f6368;
   cursor: pointer;
-
   white-space: nowrap;
-
-  transition:
-    background 0.2s ease,
-    color 0.2s ease,
-    transform 0.2s ease,
-    box-shadow 0.2s ease;
+  transition: 0.2s;
 }
-
-.dh-categories button:hover {
-  background: #ebe8ff;
+.dh-categories button:hover,
+.dh-categories button.active {
   color: var(--dh-purple);
 }
-
 .dh-categories button.active {
-  background: var(--dh-purple);
+  font-weight: 700;
+}
+.dh-categories button.active::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background-color: var(--dh-purple);
+  border-radius: 3px 3px 0 0;
+}
 
-  color: white;
-
-  box-shadow: 0 6px 15px rgba(101, 72, 232, 0.25);
+.dh-btn-mobile-filters {
+  display: none; /* Oculto en PC */
+  background: var(--dh-purple-soft) !important;
+  color: var(--dh-purple) !important;
+  padding: 8px 16px !important;
+  border-radius: 8px;
+  font-weight: 700 !important;
+  margin-left: auto; /* Lo empuja a la derecha solo en celular */
 }
 
 /* ======================================================
-   LAYOUT
+   LAYOUT: BARRA LATERAL (IZQUIERDA) Y TARJETAS (DERECHA)
 ====================================================== */
-
 .dh-body {
   display: grid;
-
-  grid-template-columns: 215px 1fr;
-
-  gap: 18px;
-
+  grid-template-columns: 260px 1fr;
+  gap: 24px;
   align-items: start;
 }
 
-/* ======================================================
-   FILTROS
-====================================================== */
-
+/* BARRA LATERAL */
 .dh-filters {
-  background: #f7f7f9;
-
-  border: none;
-
-  border-radius: 16px;
-
-  padding: 18px;
-
+  background: white;
+  border-radius: 8px;
+  padding: 24px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+  border: 1px solid #eeeef2;
   position: sticky;
-
-  top: 20px;
+  top: 90px;
 }
 
 .dh-filter-group {
-  padding-bottom: 18px;
-
-  margin-bottom: 18px;
-
-  border-bottom: 1px solid #e5e5ea;
+  padding-bottom: 20px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #f0f0f3;
 }
-
 .dh-filter-group:last-child {
   border-bottom: none;
-
   margin-bottom: 0;
   padding-bottom: 0;
 }
-
 .dh-filter-group h3 {
   margin: 0 0 12px;
-
-  font-size: 0.82rem;
+  font-size: 0.9rem;
   font-weight: 700;
-
-  color: #292930;
+  color: #1d1d22;
 }
-
-/* RANGE */
-
 .dh-filter-group input[type='range'] {
   width: 100%;
-
   accent-color: var(--dh-purple);
-
   cursor: pointer;
 }
-
 .dh-filter-value {
   margin: 8px 0 0;
-
-  font-size: 0.75rem;
+  font-size: 0.8rem;
   font-weight: 600;
-
   color: var(--dh-purple);
 }
 
-/* CHECKBOX */
-
 .dh-checkbox {
   display: flex;
-
   align-items: center;
-
   gap: 8px;
-
   padding: 6px 0;
-
-  font-size: 0.78rem;
-
+  font-size: 0.85rem;
   cursor: pointer;
-
   color: #565660;
 }
-
 .dh-checkbox input {
   accent-color: var(--dh-purple);
-
-  width: 15px;
-  height: 15px;
-
+  width: 16px;
+  height: 16px;
   cursor: pointer;
 }
 
 /* ======================================================
-   GRID
+   GRILLA DE TARJETAS
 ====================================================== */
-
 .dh-grid {
   display: grid;
-
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-
-  gap: 12px;
+  /* En PC se adapta a 2, 3 o 4 columnas */
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 20px;
 }
-
-/* ======================================================
-   TARJETAS
-====================================================== */
 
 .dh-card {
   background: white;
-
   border: 1px solid #eeeef2;
-
-  border-radius: 15px;
-
+  border-radius: 8px;
   overflow: hidden;
-
   display: flex;
   flex-direction: column;
-
-  min-width: 0;
-
-  box-shadow: 0 4px 14px rgba(23, 23, 28, 0.04);
-
   transition:
     transform 0.2s ease,
     box-shadow 0.2s ease;
 }
-
 .dh-card:hover {
   transform: translateY(-4px);
-
-  box-shadow: 0 12px 25px rgba(39, 28, 86, 0.12);
+  box-shadow: 0 12px 25px rgba(34, 19, 84, 0.15);
 }
-
-/* DESTACADO */
-
-.dh-card--featured {
-  grid-column: span 2;
-  grid-row: span 1;
-}
-
-.dh-card--featured .dh-card-media {
-  min-height: 200px;
-}
-
-/* ======================================================
-   MEDIA DE TARJETA
-====================================================== */
 
 .dh-card-media {
   position: relative;
-  min-height: 170px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 7px;
-  border-radius: 12px;
+  min-height: 180px;
   overflow: hidden;
   background: #eeeef1;
 }
-
 .dh-card-img {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  display: block;
 }
-
-.dh-horse-mark {
-  width: 54px;
-  height: 54px;
-
-  color: rgba(255, 255, 255, 0.72);
-}
-
-/* ======================================================
-   BADGE
-====================================================== */
 
 .dh-badge {
   position: absolute;
-
   top: 10px;
   left: 10px;
-
   background: var(--dh-yellow);
-
   color: #292414;
-
-  border-radius: 999px;
-
-  padding: 5px 9px;
-
-  font-size: 0.66rem;
+  border-radius: 6px;
+  padding: 4px 8px;
+  font-size: 0.65rem;
   font-weight: 700;
-
-  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
 }
-
-/* ======================================================
-   FAVORITO
-====================================================== */
-
 .dh-fav {
   position: absolute;
-
-  top: 9px;
-  right: 9px;
-
-  width: 31px;
-  height: 31px;
-
+  top: 10px;
+  right: 10px;
+  width: 30px;
+  height: 30px;
   border: none;
-
   border-radius: 50%;
-
-  background: rgba(255, 255, 255, 0.93);
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
+  background: rgba(255, 255, 255, 0.95);
   cursor: pointer;
-
   color: var(--dh-purple);
-
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-
-  transition:
-    transform 0.2s ease,
-    background 0.2s ease;
 }
-
-.dh-fav:hover {
-  transform: scale(1.08);
-
-  background: white;
-}
-
-/* ======================================================
-   INFORMACIÓN TARJETA
-====================================================== */
 
 .dh-card-body {
-  padding: 7px 13px 14px;
+  padding: 12px 14px;
 }
-
 .dh-card-tag {
   margin: 0 0 5px;
-
-  font-size: 0.68rem;
-
+  font-size: 0.7rem;
   color: #93939d;
 }
-
 .dh-card-body h3 {
   margin: 0 0 5px;
-
-  font-size: 0.9rem;
-  font-weight: 650;
-
-  line-height: 1.25;
-
+  font-size: 1rem;
+  font-weight: 700;
   color: #1d1d22;
-
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
-
 .dh-card-loc {
-  margin: 0 0 11px;
-
-  font-size: 0.7rem;
-
+  margin: 0 0 12px;
+  font-size: 0.75rem;
   color: #93939d;
 }
-
-.dh-card-footer {
-  display: flex;
-
-  align-items: center;
-
-  justify-content: space-between;
-
-  gap: 8px;
-}
-
-/* PRECIO */
-
 .dh-price {
   background: var(--dh-purple-soft);
-
   color: var(--dh-purple);
-
   border: 1px solid #ddd6ff;
-
-  border-radius: 999px;
-
+  border-radius: 6px;
   padding: 4px 8px;
-
-  font-size: 0.7rem;
-
+  font-size: 0.8rem;
   font-weight: 700;
 }
-
-/* CALIFICACIÓN */
-
-.dh-rating {
-  font-size: 0.72rem;
-
-  color: #574b18;
-
-  background: #fff8cf;
-
-  border-radius: 999px;
-
-  padding: 4px 7px;
-
-  font-weight: 700;
-}
-
-/* ======================================================
-   VACÍO
-====================================================== */
-
 .dh-empty {
   grid-column: 1 / -1;
-
   text-align: center;
-
-  color: var(--dh-ink-soft);
-
-  background: #f7f7f9;
-
-  border-radius: 15px;
-
-  padding: 45px 20px;
-
-  font-size: 0.85rem;
+  padding: 45px;
+  color: #777;
 }
 
-/* ======================================================
-   RESPONSIVE
-====================================================== */
-
-@media (max-width: 980px) {
-  :host {
-    padding: 20px;
-  }
-
-  .dh-page {
-    min-height: calc(100vh - 40px);
-  }
-
-  .dh-body {
-    grid-template-columns: 190px 1fr;
-  }
-
-  .dh-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .dh-card--featured {
-    grid-column: span 2;
-    grid-row: span 1;
-  }
-}
-
-@media (max-width: 760px) {
-  :host {
-    padding: 10px;
-  }
-
-  .dh-page {
-    border-radius: 20px;
-
-    padding: 16px;
-  }
-
-  .dh-header {
-    flex-wrap: wrap;
-  }
-
-  .dh-logo {
-    min-width: auto;
-  }
-
-  .dh-search {
-    order: 3;
-
-    max-width: none;
-
-    flex-basis: 100%;
-  }
-
-  .dh-body {
-    grid-template-columns: 1fr;
-  }
-
-  .dh-filters {
-    position: static;
-  }
-}
-
-@media (max-width: 520px) {
-  .dh-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .dh-card--featured {
-    grid-column: span 1;
-  }
-
-  .dh-card--featured .dh-card-media {
-    min-height: 190px;
-  }
-
-  .dh-greeting h1 {
-    font-size: 1.45rem;
-  }
-}
 /* ======================================================
    MENÚ DE USUARIO
 ====================================================== */
-
 .dh-user-menu-wrap {
   position: relative;
 }
-
-button.dh-avatar {
-  border: none;
-  cursor: pointer;
-  padding: 0;
-  font-family: inherit;
-}
-
-button.dh-avatar:hover {
-  transform: translateY(-1px);
-  transition: transform 0.2s ease;
-}
-
-.dh-avatar--lg {
-  width: 46px;
-  height: 46px;
-  font-size: 1rem;
-  cursor: default;
-  flex-shrink: 0;
-}
-
 .dh-user-menu {
   position: absolute;
   top: calc(100% + 10px);
   right: 0;
-
-  width: 270px;
-
+  width: 250px;
   background: white;
   border: 1px solid #e7e7ed;
-  border-radius: 14px;
-
-  box-shadow: 0 20px 45px rgba(23, 23, 28, 0.14);
-
+  border-radius: 8px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
   padding: 8px 0;
-
   z-index: 50;
-
-  animation: dh-menu-in 0.14s ease;
 }
-
-@keyframes dh-menu-in {
-  from {
-    opacity: 0;
-    transform: translateY(-6px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
 .dh-user-menu-head {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 10px 16px 14px;
+  padding: 10px 16px;
+  border-bottom: 1px solid #eee;
 }
-
-.dh-user-menu-info {
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-}
-
 .dh-user-menu-info strong {
+  display: block;
   font-size: 0.9rem;
-  font-weight: 700;
   color: #1d1d22;
-
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
-
 .dh-user-menu-info span {
   font-size: 0.75rem;
   color: #93939d;
-
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
-
 .dh-user-menu-list {
   list-style: none;
   margin: 0;
-  padding: 0;
+  padding: 8px 0;
 }
-
-.dh-user-menu-list li {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-
 .dh-user-menu-list button {
   width: 100%;
-
   display: flex;
   align-items: center;
-  gap: 12px;
-
+  gap: 10px;
   padding: 10px 16px;
-
   border: none;
   background: transparent;
-
-  font-family: inherit;
-  font-size: 0.85rem;
-  color: #33333b;
-
   text-align: left;
   cursor: pointer;
-
-  transition:
-    background 0.15s ease,
-    color 0.15s ease;
+  font-size: 0.85rem;
 }
-
 .dh-user-menu-list button:hover {
-  background: var(--dh-purple-soft);
-  color: var(--dh-purple);
+  background: #f5f5f7;
 }
-
-.dh-menu-ico {
-  width: 20px;
-  font-size: 1rem;
-  text-align: center;
-  flex-shrink: 0;
-}
-
-.dh-user-menu-divider {
-  height: 1px;
-  background: #f0f0f3;
-  margin: 8px 0;
-}
-
 .dh-user-menu-logout {
   width: 100%;
-
-  display: flex;
-  align-items: center;
-  gap: 12px;
-
-  padding: 11px 16px;
-
+  padding: 12px 16px;
   border: none;
   background: transparent;
-
-  font-family: inherit;
-  font-size: 0.85rem;
-  font-weight: 600;
   color: #c0392b;
-
+  font-weight: 600;
   text-align: left;
   cursor: pointer;
-
-  transition: background 0.15s ease;
+  border-top: 1px solid #eee;
 }
 
-.dh-user-menu-logout:hover {
-  background: #fdecea;
-}
 /* ======================================================
-   LOGO IZQUIERDO (imagen)
+   RESPONSIVE (CELULARES)
 ====================================================== */
-
-.dh-logo-img {
-  width: 28px;
-  height: 28px;
-
-  object-fit: contain;
-
-  display: block;
-}
-/* ======================================================
-   LOGO ESQUINA DERECHA (imagen)
-====================================================== */
-
-.dh-logo-right {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  margin-right: 8px;
-}
-
-.dh-logo-right-img {
-  width: 28px;
-  height: 28px;
-
-  object-fit: contain;
-
-  display: block;
-}
-@keyframes fadeSlideUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
+@media (max-width: 900px) {
+  .dh-page {
+    padding: 12px;
   }
-  to {
-    opacity: 1;
+  .dh-header {
+    flex-wrap: wrap;
+  }
+  .dh-search {
+    order: 3;
+    flex-basis: 100%;
+    max-width: 100%;
+    margin-top: 10px;
+  }
+
+  /* En celular mostramos el botón de filtros a la derecha de las pestañas */
+  .dh-btn-mobile-filters {
+    display: block;
+  }
+
+  .dh-body {
+    display: block;
+  }
+
+  /* BARRA LATERAL CONVERTIDA EN BOTTOM SHEET (CELULAR) */
+  .dh-filters {
+    position: fixed;
+    top: auto;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 9999;
+    border-radius: 20px 20px 0 0;
+    max-height: 85vh;
+    overflow-y: auto;
+    transform: translateY(100%);
+    transition: transform 0.3s ease;
+    padding: 0;
+    border: none;
+  }
+  .dh-filters.open {
     transform: translateY(0);
   }
-}
 
-.dh-page,
-.mc-page,
-.ec-page,
-.dp-page {
-  animation: fadeSlideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-/* Animación base para las tarjetas */
-@keyframes cardEntrance {
-  from {
-    opacity: 0;
-    transform: translateY(20px) scale(0.98);
+  .dh-mobile-close-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    border-bottom: 1px solid #eee;
+    background: white;
+    position: sticky;
+    top: 0;
+    z-index: 10;
   }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
+  .dh-close-filters {
+    background: #eee;
+    border: none;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    font-weight: bold;
+  }
+
+  .dh-filter-group {
+    padding: 20px;
+    margin: 0;
+  }
+
+  /* Fondo oscuro */
+  .dh-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(2px);
+    z-index: 9998;
+  }
+
+  /* GRILLA DE 2 COLUMNAS EN CELULAR */
+  .dh-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 10px;
+  }
+
+  .dh-card-media {
+    min-height: 120px;
+  }
+  .dh-card-body {
+    padding: 8px;
+  }
+  .dh-card-body h3 {
+    font-size: 0.85rem;
+  }
+  .dh-card-loc {
+    font-size: 0.65rem;
+    margin-bottom: 8px;
+  }
+  .dh-price {
+    font-size: 0.65rem;
+    padding: 3px 6px;
+  }
+  .dh-fav {
+    width: 26px;
+    height: 26px;
+    top: 6px;
+    right: 6px;
+  }
+  .dh-badge {
+    font-size: 0.55rem;
+    top: 6px;
+    left: 6px;
   }
 }
 
-.dh-card {
-  /* Mantén tus estilos actuales y agrega esto: */
-  animation: cardEntrance 0.4s ease-out forwards;
-  opacity: 0; /* Empieza invisible hasta que arranque la animación */
-}
-
-/* Efecto cascada (retraso progresivo) para las tarjetas */
-.dh-card:nth-child(1) {
-  animation-delay: 0.05s;
-}
-.dh-card:nth-child(2) {
-  animation-delay: 0.1s;
-}
-.dh-card:nth-child(3) {
-  animation-delay: 0.15s;
-}
-.dh-card:nth-child(4) {
-  animation-delay: 0.2s;
-}
-.dh-card:nth-child(5) {
-  animation-delay: 0.25s;
-}
-.dh-card:nth-child(6) {
-  animation-delay: 0.3s;
-}
-
-/* Hover más pro (ya tienes uno, pero podemos hacerlo más suave) */
-.dh-card:hover {
-  transform: translateY(-6px) scale(1.01);
-  box-shadow: 0 15px 35px rgba(34, 19, 84, 0.15);
-  z-index: 10;
-}
-/* ======================================================
-   FILTRO DE PROXIMIDAD
-====================================================== */
-
-.dh-btn-location {
-  width: 100%;
-  padding: 10px;
-  border: 1px dashed var(--dh-purple);
-  border-radius: 10px;
-  background: #f4f1ff;
-  color: var(--dh-purple);
-  font-family: inherit;
-  font-size: 0.85rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition:
-    background 0.2s ease,
-    transform 0.1s ease;
-}
-
-.dh-btn-location:hover:not(:disabled) {
-  background: #ebe8ff;
-  transform: translateY(-1px);
-}
-
-.dh-btn-location:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-.dh-error-text {
-  margin: 8px 0 0;
-  font-size: 0.75rem;
-  color: #dc2626;
+/* Ocultar barra de cerrar en PC */
+.dh-mobile-close-bar {
+  display: none;
 }

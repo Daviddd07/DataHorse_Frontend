@@ -189,3 +189,92 @@ button:focus-visible {
 .dp-page {
   animation: fadeSlideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
+/* ======================================================
+   INPUT CON OJITO
+====================================================== */
+/* El contenedor del input */
+.input-password-wrapper {
+  position: relative;
+  display: block;
+  width: 100%;
+}
+
+/* El input */
+.input-password-wrapper input {
+  width: 100%;
+  padding-right: 44px; /* Espacio para el ojito */
+  box-sizing: border-box;
+}
+
+/* El botón del ojito */
+.btn-ojo {
+  position: absolute;
+  right: 8px;
+  top: 50%; /* 👈 Volvemos al top 50% */
+  transform: translateY(-50%); /* 👈 Y lo centramos con transform */
+
+  width: 32px;
+  height: 32px;
+  margin: 0; /* 👈 Quitamos cualquier margen que interfiera */
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: none;
+  background: transparent;
+  color: #64748b;
+
+  cursor: pointer;
+  padding: 0;
+  border-radius: 50%;
+
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.btn-ojo:hover {
+  background-color: #e2e8f0;
+  color: #0f172a;
+}
+
+/* 🚨 LA CLAVE ESTÁ AQUÍ 🚨 */
+/* Al hacer clic, mantenemos el translateY(-50%) y solo lo encogemos */
+.btn-ojo:active {
+  transform: translateY(-50%) scale(0.9) !important;
+}
+
+.btn-ojo svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* Mantenemos el hover y el active (para que no salte) */
+.btn-ojo:hover {
+  background-color: #e2e8f0;
+  color: #0f172a;
+}
+
+.btn-ojo:active {
+  transform: scale(0.9) !important;
+}
+
+.btn-ojo svg {
+  width: 20px;
+  height: 20px;
+}
+
+.btn-ojo:active {
+  transform: translateY(-50%) scale(0.9) !important;
+}
+
+.btn-ojo:hover {
+  background-color: #e2e8f0; /* Círculo gris al pasar el mouse */
+  color: #0f172a;
+}
+
+.btn-ojo svg {
+  width: 20px;
+  height: 20px;
+}

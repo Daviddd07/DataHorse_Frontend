@@ -102,6 +102,11 @@ export class MarketplaceComponent {
 
   alturaAscendente = signal(false);
 
+  filtrosAbiertos = signal(false);
+
+  toggleFiltros() {
+    this.filtrosAbiertos.update((v) => !v);
+  }
   // ======================================================
   // RAZAS DISPONIBLES
   // ======================================================

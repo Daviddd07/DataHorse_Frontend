@@ -6,6 +6,7 @@ import {
   NgZone,
   ViewChild,
   inject,
+  signal,
 } from '@angular/core';
 
 import { CommonModule } from '@angular/common';
@@ -19,6 +20,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { AuthService } from '../../Services/auth.service';
 
 import { environment } from '../../../environments/environment';
+
 declare global {
   interface Window {
     google: any;
@@ -51,6 +53,8 @@ export class Login implements AfterViewInit {
   correo = '';
 
   password = '';
+
+  verPassword = signal(false);
 
   mensaje = '';
 
