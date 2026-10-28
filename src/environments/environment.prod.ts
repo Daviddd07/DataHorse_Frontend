@@ -1,9 +1,10 @@
 export const environment = {
-  production: true,
+  production: true, // Lo dejamos en true porque Docker compila así
 
-  apiUrl: 'https://api.datahorse.com',
+  // Cambiamos las URLs de producción por las de tu Docker local
+  apiUrl: 'http://localhost:8000',
+  uploadsUrl: 'http://localhost:8000',
 
-  uploadsUrl: 'https://api.datahorse.com',
-
-  googleClientId: '698630764703-nsr0e739j8qnt2b6lkqg2uft417n5jl3.apps.googleusercontent.com',
+  // Puedes dejar este mismo Client ID si configuras Google, o crear uno nuevo
+  googleClientId: '942711166900-mj0cag572gl4fdhh22b5u51qju6bc80t.apps.googleusercontent.com',
 };

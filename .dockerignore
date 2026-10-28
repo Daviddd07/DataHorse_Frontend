@@ -1,7 +1,24 @@
-﻿node_modules/
+﻿# Dependencias (¡Crucial! Docker las instalará limpias por dentro)
+node_modules/
+npm-debug.log
+yarn-error.log
+.pnpm-store/
+
+# Carpetas de compilación y caché de Angular
 dist/
 .angular/
-.git/
 coverage/
+
+# Variables de entorno
 .env
 .env.*
+
+# Archivos de Git y VS Code
+.git
+.gitignore
+.vscode/
+.idea/
+
+# Archivos de Docker (no necesitan copiarse dentro de la imagen)
+Dockerfile
+.dockerignore
