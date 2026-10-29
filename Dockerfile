@@ -26,7 +26,8 @@ COPY nginx.conf /etc/nginx/conf.d/default.conf
 COPY --from=build /app/dist/frontend/browser /usr/share/nginx/html
 
 # ✅ SOLUCIÓN SONARQUBE: Otorgar permisos al usuario nginx y cambiar a ese usuario
-RUN chown -R nginx:nginx /var/cache/nginx /var/run /var/log/nginx /usr/share/nginx/html
+RUN chown -R nginx:nginx /var/cache/nginx /var/log/nginx /usr/share/nginx/html \
+    && sed -i 's#/run/nginx.pid#/tmp/nginx.pid#' /etc/nginx/nginx.conf
 USER nginx
 
 # ✅ EXPONEMOS EL PUERTO 8080 (No el 80)

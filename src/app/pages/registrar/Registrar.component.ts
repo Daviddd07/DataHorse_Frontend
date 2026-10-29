@@ -19,7 +19,7 @@ import {
   Validators,
 } from '@angular/forms';
 
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 
 import { HttpErrorResponse } from '@angular/common/http';
 
@@ -53,9 +53,9 @@ type Campo = 'nombre' | 'correo' | 'contrasena' | 'confirmar' | 'telefono' | 'ub
 @Component({
   selector: 'app-registrar',
   standalone: true,
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [ReactiveFormsModule],
   templateUrl: './registrar.component.html',
-  styleUrls: ['./registrar.component.css', './registrar.animations.css'],
+  styleUrls: ['./Registrar.component.css', './registrar.animations.css'],
 })
 export class RegistrarComponent implements AfterViewInit {
   @ViewChild('googleButton')

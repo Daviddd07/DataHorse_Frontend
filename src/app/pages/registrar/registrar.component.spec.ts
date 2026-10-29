@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router, provideRouter } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 import { of, throwError } from 'rxjs';
-import { RegistrarComponent } from './registrar.component';
+import { RegistrarComponent } from './Registrar.component';
 import { RegistroService } from '../../Services/Registro.service';
 import { AuthService } from '../../Services/auth.service';
 
