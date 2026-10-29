@@ -39,7 +39,6 @@ declare global {
 
 const contrasenaSegura: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
   const valor: string = control.value ?? '';
-
   return /[a-z]/.test(valor) && /[A-Z]/.test(valor) && /\d/.test(valor) ? null : { debil: true };
 };
 
@@ -53,37 +52,27 @@ type Campo = 'nombre' | 'correo' | 'contrasena' | 'confirmar' | 'telefono' | 'ub
 
 @Component({
   selector: 'app-registrar',
-
   standalone: true,
-
   imports: [ReactiveFormsModule, RouterLink],
-
   templateUrl: './registrar.component.html',
-
   styleUrls: ['./registrar.component.css', './registrar.animations.css'],
 })
 export class RegistrarComponent implements AfterViewInit {
   @ViewChild('googleButton')
-  googleButton!: ElementRef<HTMLDivElement>;
+  readonly googleButton!: ElementRef<HTMLDivElement>;
 
-  private fb = inject(FormBuilder).nonNullable;
+  private readonly fb = inject(FormBuilder).nonNullable;
+  private readonly registro = inject(RegistroService);
+  private readonly auth = inject(AuthService);
+  private readonly router = inject(Router);
+  private readonly zone = inject(NgZone);
 
-  private registro = inject(RegistroService);
-
-  private auth = inject(AuthService);
-
-  private router = inject(Router);
-
-  private zone = inject(NgZone);
-
+  // ✅ AQUÍ ESTÁ LA VARIABLE QUE FALTABA
   private googleInitialized = false;
 
   cargando = signal(false);
-
   cargandoGoogle = signal(false);
-
   verPass = signal(false);
-
   verConfirmar = signal(false);
 
   mensaje = signal<{
@@ -94,34 +83,21 @@ export class RegistrarComponent implements AfterViewInit {
   form = this.fb.group(
     {
       nombre: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(120)]],
-
-      correo: [
-        '',
-        [
-          Validators.required,
-          Validators.maxLength(180),
-          Validators.pattern(/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/),
-        ],
-      ],
-
+      correo: ['', [Validators.required, Validators.maxLength(180), Validators.email]],
       contrasena: [
         '',
         [Validators.required, Validators.minLength(8), Validators.maxLength(64), contrasenaSegura],
       ],
-
       confirmar: ['', [Validators.required]],
-
       telefono: ['', [Validators.maxLength(30), Validators.pattern(/^(\+?[0-9 ()-]{7,30})?$/)]],
-
       ubicacion: ['', [Validators.maxLength(180)]],
     },
-
     {
       validators: coinciden,
     },
   );
 
-  private version = signal(0);
+  private readonly version = signal(0);
 
   constructor() {
     this.form.events.pipe(takeUntilDestroyed()).subscribe(() => this.version.update((n) => n + 1));
@@ -136,7 +112,6 @@ export class RegistrarComponent implements AfterViewInit {
       if (intento < 30) {
         setTimeout(() => this.inicializarGoogle(intento + 1), 250);
       }
-
       return;
     }
 
@@ -153,7 +128,7 @@ export class RegistrarComponent implements AfterViewInit {
     });
 
     window.google.accounts.id.renderButton(this.googleButton.nativeElement, {
-      theme: 'filled_black', // <--- Cambia esto
+      theme: 'filled_black',
       size: 'large',
       text: 'continue_with',
       shape: 'rectangular',
@@ -167,19 +142,16 @@ export class RegistrarComponent implements AfterViewInit {
     }
 
     this.cargandoGoogle.set(true);
-
     this.mensaje.set(null);
 
     this.auth
       .google(credential)
-
       .pipe(finalize(() => this.cargandoGoogle.set(false)))
-
       .subscribe({
+        // ✅ VOLVEMOS A AGREGAR LA NAVEGACIÓN QUE SE HABÍA BORRADO
         next: () => {
-          this.router.navigate(['/marketplace']);
+          void this.router.navigate(['/marketplace']);
         },
-
         error: (e: HttpErrorResponse) => {
           this.mensaje.set({
             tipo: 'error',
@@ -191,27 +163,18 @@ export class RegistrarComponent implements AfterViewInit {
 
   get fuerza(): number {
     this.version();
-
     const password = this.form.controls.contrasena.value;
-
     let puntos = 0;
-
     if (password.length >= 8) puntos++;
-
     if (password.length >= 12) puntos++;
-
     if (/[a-z]/.test(password) && /[A-Z]/.test(password)) puntos++;
-
     if (/\d/.test(password)) puntos++;
-
     if (/[^A-Za-z0-9]/.test(password)) puntos++;
-
     return puntos;
   }
 
   error(campo: Campo): string {
     this.version();
-
     const control = this.form.controls[campo];
 
     if (!control.touched && !control.dirty) {
@@ -257,12 +220,10 @@ export class RegistrarComponent implements AfterViewInit {
         tipo: 'error',
         texto: 'Revisa los campos marcados.',
       });
-
       return;
     }
 
     const datos = this.form.getRawValue();
-
     const correo = datos.correo.trim().toLowerCase();
 
     this.cargando.set(true);
@@ -270,30 +231,22 @@ export class RegistrarComponent implements AfterViewInit {
     this.registro
       .registrar({
         nombre: datos.nombre.trim(),
-
         correo,
-
         contrasena: datos.contrasena,
-
         telefono: datos.telefono.trim() || null,
-
         ubicacion: datos.ubicacion.trim() || null,
       })
-
       .pipe(finalize(() => this.cargando.set(false)))
-
       .subscribe({
         next: () => {
-          this.router.navigate(['/verificar-correo'], {
+          void this.router.navigate(['/verificar-correo'], {
             queryParams: {
               correo,
             },
           });
         },
-
         error: (e: HttpErrorResponse) => {
           let texto = 'No pudimos crear la cuenta.';
-
           if (e.status === 409) {
             texto = 'Ese correo ya está registrado.';
           } else if (e.status === 0) {
@@ -301,7 +254,6 @@ export class RegistrarComponent implements AfterViewInit {
           } else if (e.error?.detail) {
             texto = e.error.detail;
           }
-
           this.mensaje.set({
             tipo: 'error',
             texto,
@@ -309,6 +261,7 @@ export class RegistrarComponent implements AfterViewInit {
         },
       });
   }
+
   irALogin(event: Event): void {
     event.preventDefault();
 
@@ -316,7 +269,7 @@ export class RegistrarComponent implements AfterViewInit {
     const sinMovimiento = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     if (!tarjeta || sinMovimiento) {
-      this.router.navigate(['/login']);
+      void this.router.navigate(['/login']);
       return;
     }
 
@@ -325,7 +278,7 @@ export class RegistrarComponent implements AfterViewInit {
     document.body.classList.add('giro-entrando');
 
     setTimeout(() => {
-      this.router.navigate(['/login']).then((ok) => {
+      void this.router.navigate(['/login']).then((ok) => {
         if (!ok) tarjeta.classList.remove('volteando');
       });
     }, 500);

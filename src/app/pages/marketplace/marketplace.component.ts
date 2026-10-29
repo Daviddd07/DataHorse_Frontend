@@ -66,11 +66,9 @@ interface CaballoMarketplace {
   styleUrl: './marketplace.component.css',
 })
 export class MarketplaceComponent {
-  private auth = inject(AuthService);
-
-  private caballoService = inject(CaballoService);
-
-  private router = inject(Router);
+  private readonly auth = inject(AuthService);
+  private readonly caballoService = inject(CaballoService);
+  private readonly router = inject(Router);
 
   nombreUsuario = signal('');
 
@@ -230,7 +228,7 @@ export class MarketplaceComponent {
 
     return this.publicacionesFiltradas()
 
-      .filter((caballo) => !destacado || caballo.id !== destacado.id);
+      .filter((caballo) => caballo.id !== destacado?.id);
   });
 
   // ======================================================
@@ -271,7 +269,10 @@ export class MarketplaceComponent {
   private cargarRazas(): void {
     this.caballoService.listarRazas().subscribe({
       next: (razas) => {
-        this.razas.set(razas.map((r) => r.nombre).sort());
+        // SOLUCIÓN: Agregamos el comparador (a, b) => a.localeCompare(b)
+        const nombresOrdenados = razas.map((r) => r.nombre).sort((a, b) => a.localeCompare(b));
+
+        this.razas.set(nombresOrdenados);
       },
 
       error: (err) => {
@@ -423,14 +424,15 @@ export class MarketplaceComponent {
   // ======================================================
 
   agregarPublicacion(): void {
-    this.router.navigate(['/publicaciones/nueva']);
+    void this.router.navigate(['/publicaciones/nueva']);
   }
   // ======================================================
   // IR AL DETALLE DE LA PUBLICACIÓN
   // ======================================================
 
   irADetalle(caballo: CaballoMarketplace): void {
-    this.router.navigate(['/publicaciones', caballo.id]);
+    console.log('Navegando al caballo con ID:', caballo.id);
+    void this.router.navigate(['/publicaciones', caballo.id]);
   }
 
   // ======================================================
@@ -443,7 +445,7 @@ export class MarketplaceComponent {
 
   irAMisCaballos(): void {
     this.menuAbierto.set(false);
-    this.router.navigate(['/mis-caballos']);
+    void this.router.navigate(['/mis-caballos']);
   }
 
   cerrarMenu(): void {
@@ -454,12 +456,12 @@ export class MarketplaceComponent {
     this.auth.logout().subscribe({
       next: () => {
         this.menuAbierto.set(false);
-        this.router.navigate(['/login']);
+        void this.router.navigate(['/login']);
       },
       error: () => {
         // Aunque el backend falle, igual sacamos al usuario
         this.menuAbierto.set(false);
-        this.router.navigate(['/login']);
+        void this.router.navigate(['/login']);
       },
     });
   }

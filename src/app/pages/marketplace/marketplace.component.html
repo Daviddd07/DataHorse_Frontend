@@ -1,12 +1,11 @@
 <div class="dashboard-container">
-  <!-- BARRA LATERAL (Fija a la izquierda) -->
-  <aside class="sidebar glass">
+  <!-- BARRA LATERAL -->
+  <aside class="sidebar glass" aria-label="Menú de navegación lateral">
     <div class="sidebar-logo">
       <img src="Logo_blanco.png" alt="DH" class="logo-img" />
     </div>
 
     <div class="sidebar-menu">
-      <!-- Inicio -->
       <button
         class="icon-btn"
         [class.active]="categoriaActiva() === 'Todos'"
@@ -27,7 +26,6 @@
         <span class="icon-label">Inicio</span>
       </button>
 
-      <!-- Favoritos -->
       <button
         class="icon-btn"
         [class.active]="categoriaActiva() === 'Favoritos'"
@@ -48,7 +46,7 @@
         </svg>
         <span class="icon-label">Favoritos</span>
       </button>
-      <!-- Caballos -->
+
       <button class="icon-btn" (click)="irAMisCaballos()" title="Mis Caballos">
         <svg
           viewBox="0 0 24 24"
@@ -87,7 +85,7 @@
     </div>
   </aside>
 
-  <!-- CONTENEDOR DERECHO (Navbar + Tarjetas) -->
+  <!-- CONTENEDOR DERECHO -->
   <div class="main-wrapper">
     <!-- HEADER FLOTANTE -->
     <header class="top-navbar glass">
@@ -109,6 +107,7 @@
         <input
           type="text"
           placeholder="Buscar..."
+          aria-label="Buscar en el marketplace"
           [value]="busqueda()"
           (input)="busqueda.set($any($event.target).value)"
         />
@@ -117,17 +116,19 @@
       <div class="header-actions">
         <button class="btn-add" type="button" (click)="agregarPublicacion()">Publicar</button>
 
+        <!-- MENÚ DE USUARIO -->
         <div class="dh-user-menu-wrap">
           <button
             class="avatar"
             type="button"
             (click)="toggleMenu()"
             [attr.aria-expanded]="menuAbierto()"
+            aria-label="Menú de usuario"
           >
-            {{ inicial() }}
+            <span aria-hidden="true">{{ inicial() }}</span>
           </button>
 
-          <!-- MENÚ DE USUARIO REDISEÑADO (SIN "MIS PUBLICACIONES") -->
+          <!-- DROPDOWN -->
           <div class="user-menu" *ngIf="menuAbierto()">
             <div class="user-menu-head">
               <div class="user-avatar-lg">{{ inicial() }}</div>
@@ -171,9 +172,6 @@
                   <span class="menu-badge">5</span>
                 </button>
               </li>
-
-              <!-- AQUÍ ESTABA EL DE FAVORITOS, YA LO ELIMINAMOS -->
-
               <li>
                 <button type="button">
                   <svg
@@ -255,24 +253,19 @@
       </div>
     </header>
 
-    <!-- GRILLA DE CABALLOS -->
+    <!-- CONTENIDO -->
     <main class="content-area">
       <div class="content-header">
         <div class="header-title-wrapper">
           <h2>Ejemplares disponibles</h2>
-
           <p class="filter-indicator" *ngIf="categoriaActiva() === 'Edad'">
             Filtrados por edad: {{ edadAscendente() ? 'de menor a mayor' : 'de mayor a menor' }}
           </p>
-
           <p class="filter-indicator" *ngIf="categoriaActiva() === 'Altura'">
             Filtrados por altura: {{ alturaAscendente() ? 'de menor a mayor' : 'de mayor a menor' }}
           </p>
 
-          <!-- NUEVO: Indicador de Proximidad y Botón de Ubicación -->
-          <!-- NUEVO: Indicador de Proximidad y Slider de Distancia -->
           <div class="proximity-status" *ngIf="categoriaActiva() === 'Proximidad'">
-            <!-- Si ya hay ubicación, mostramos el control deslizante -->
             <div class="radius-control" *ngIf="userLat() && userLng()">
               <span class="filter-indicator"
                 >Distancia: <strong>{{ radioMax() }} km</strong></span
@@ -283,17 +276,12 @@
                 max="500"
                 step="5"
                 [value]="radioMax()"
-                (input)="radioMax.set(+$any($event.target).value)"
+                (input)="radioMax.set($any($event.target).valueAsNumber)"
                 class="range-slider-small"
+                aria-label="Ajustar distancia máxima en kilómetros"
               />
             </div>
-
-            <!-- Si hay un error, lo mostramos -->
-            <p class="filter-indicator error" *ngIf="errorUbicacion()">
-              {{ errorUbicacion() }}
-            </p>
-
-            <!-- Si no hay ubicación ni error, mostramos el botón para pedir permiso -->
+            <p class="filter-indicator error" *ngIf="errorUbicacion()">{{ errorUbicacion() }}</p>
             <div class="location-btn-wrapper" *ngIf="!userLat() && !errorUbicacion()">
               <p class="filter-indicator">
                 Activa tu ubicación para encontrar los ejemplares más cercanos.
@@ -320,7 +308,6 @@
               </button>
             </div>
           </div>
-          <!-- FIN DEL NUEVO BLOQUE -->
         </div>
         <button class="btn-filter" (click)="toggleFiltros()">Filtros y Búsqueda</button>
       </div>
@@ -328,10 +315,13 @@
       <section class="grid-cards">
         <p class="empty-state" *ngIf="cargando()">Cargando ejemplares...</p>
 
-        <article
+        <button
           class="card glass"
+          type="button"
           *ngFor="let h of publicacionesFiltradas()"
           (click)="irADetalle(h)"
+          (keydown.enter)="irADetalle(h)"
+          (keydown.space.prevent)="irADetalle(h)"
         >
           <div class="card-media" [style.background]="h.fondo">
             <img
@@ -340,12 +330,8 @@
               [alt]="h.nombre"
               class="card-img"
             />
-            <ng-template #placeholderCard>
-              <div class="placeholder-mark">DH</div>
-            </ng-template>
-
+            <ng-template #placeholderCard><div class="placeholder-mark">DH</div></ng-template>
             <span class="badge-tuyo" *ngIf="h.esMia">Tuyo</span>
-
             <button
               class="btn-fav"
               type="button"
@@ -355,7 +341,6 @@
               {{ h.esFavorito ? '♥' : '♡' }}
             </button>
           </div>
-
           <div class="card-body">
             <p class="card-tag">{{ h.raza }} · {{ h.sexo }}</p>
             <h3 class="card-title">{{ h.nombre }}</h3>
@@ -367,7 +352,7 @@
               <span class="price" *ngIf="h.precio === null">Sin precio</span>
             </div>
           </div>
-        </article>
+        </button>
 
         <p class="empty-state" *ngIf="!cargando() && publicacionesFiltradas().length === 0">
           {{ categoriaActiva() === 'Favoritos' ? 'No tienes favoritos.' : 'No hay coincidencias.' }}
@@ -377,58 +362,67 @@
   </div>
 
   <!-- DRAWER DE FILTROS -->
-  <div class="filter-overlay" *ngIf="filtrosAbiertos()" (click)="toggleFiltros()"></div>
-  <aside class="filter-drawer glass" [class.open]="filtrosAbiertos()">
-    <div class="drawer-header">
-      <h2>Filtros</h2>
-      <button class="btn-close" (click)="toggleFiltros()">X</button>
-    </div>
-    <div class="drawer-content">
-      <!-- (Aquí va tu código de filtros que ya tenías) -->
-      <div
-        class="filter-group"
-        *ngIf="
-          categoriaActiva() !== 'Edad' &&
-          categoriaActiva() !== 'Altura' &&
-          categoriaActiva() !== 'Proximidad'
-        "
-      >
-        <h3>Precio Máximo</h3>
-        <input
-          type="range"
-          min="0"
-          max="60000000"
-          step="1000000"
-          [value]="precioMax()"
-          (input)="precioMax.set(+$any($event.target).value)"
-        />
-        <p class="filter-value">Hasta {{ precioMax() | currency: 'COP' : 'symbol' : '1.0-0' }}</p>
+  <div
+    class="filter-overlay"
+    *ngIf="filtrosAbiertos()"
+    (click)="toggleFiltros()"
+    (keydown.escape)="toggleFiltros()"
+    tabindex="-1"
+  >
+    <aside
+      class="filter-drawer glass"
+      [class.open]="filtrosAbiertos()"
+      aria-label="Panel de filtros"
+    >
+      <div class="drawer-header">
+        <h2>Filtros</h2>
+        <button class="btn-close" (click)="toggleFiltros()" aria-label="Cerrar filtros">X</button>
       </div>
-      <div class="filter-group" *ngIf="categoriaActiva() === 'Edad'">
-        <h3>Edad Máxima</h3>
-        <input
-          type="range"
-          min="1"
-          max="20"
-          step="1"
-          [value]="edadMax()"
-          (input)="edadMax.set(+$any($event.target).value)"
-        />
-        <p class="filter-value">Hasta {{ edadMax() }} {{ edadMax() === 1 ? 'año' : 'años' }}</p>
-      </div>
-      <div class="filter-group">
-        <h3>Razas</h3>
-        <div class="razas-list">
-          <label *ngFor="let raza of razas()" class="checkbox-label">
-            <input
-              type="checkbox"
-              [checked]="razasSeleccionadas().includes(raza)"
-              (change)="toggleRaza(raza)"
-            />
-            {{ raza }}
-          </label>
+      <div class="drawer-content">
+        <div
+          class="filter-group"
+          *ngIf="
+            categoriaActiva() !== 'Edad' &&
+            categoriaActiva() !== 'Altura' &&
+            categoriaActiva() !== 'Proximidad'
+          "
+        >
+          <h3>Precio Máximo</h3>
+          <input
+            type="range"
+            step="1000000"
+            [value]="precioMax()"
+            (input)="precioMax.set(+$any($event.target).value)"
+            aria-label="Filtrar por precio máximo"
+          />
+          <p class="filter-value">Hasta {{ precioMax() | currency: 'COP' : 'symbol' : '1.0-0' }}</p>
+        </div>
+        <div class="filter-group" *ngIf="categoriaActiva() === 'Edad'">
+          <h3>Edad Máxima</h3>
+          <input
+            type="range"
+            max="20"
+            step="1"
+            [value]="edadMax()"
+            (input)="edadMax.set(+$any($event.target).value)"
+            aria-label="Filtrar por edad máxima"
+          />
+          <p class="filter-value">Hasta {{ edadMax() }} {{ edadMax() === 1 ? 'año' : 'años' }}</p>
+        </div>
+        <div class="filter-group">
+          <h3>Razas</h3>
+          <div class="razas-list">
+            <label *ngFor="let raza of razas()" class="checkbox-label">
+              <input
+                type="checkbox"
+                [checked]="razasSeleccionadas().includes(raza)"
+                (change)="toggleRaza(raza)"
+              />
+              {{ raza }}
+            </label>
+          </div>
         </div>
       </div>
-    </div>
-  </aside>
+    </aside>
+  </div>
 </div>

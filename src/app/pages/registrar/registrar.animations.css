@@ -25,6 +25,9 @@
    ---------------------------------------------------------------------- */
 :host {
   --anim: 1;
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
 }
 
 :host-context(body.giro-entrando) {
@@ -34,11 +37,6 @@
 /* ----------------------------------------------------------------------
    1. FONDO: aurora suave + malla de puntos que se desvanece hacia los bordes
    ---------------------------------------------------------------------- */
-:host {
-  position: relative;
-  overflow: hidden;
-  isolation: isolate;
-}
 
 :host::before,
 :host::after {
@@ -218,9 +216,15 @@
 .registrar-logo {
   --glow: 79, 70, 229;
   filter: drop-shadow(0 6px 14px rgba(var(--glow), 0.32));
-  transition:
-    scale 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
-    rotate 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Bloque nuevo para la accesibilidad */
+@media (prefers-reduced-motion: no-preference) {
+  .registrar-logo {
+    transition:
+      scale 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
+      rotate 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
 }
 
 .card > .registrar-logo {
@@ -507,12 +511,27 @@
 /* ----------------------------------------------------------------------
    8. MENSAJES: el error cae y se sacude; el de éxito aparece con rebote
    ---------------------------------------------------------------------- */
+/* Deja aquí los colores y estilos que ya tenías */
 .mensaje.error-msg {
-  animation: errorIn 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97) backwards;
+  color: #ffb3b3;
+  background: rgb(97, 1, 1);
+  padding: 10px;
 }
 
 .mensaje.ok-msg {
-  animation: okIn 0.45s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+  color: #4ade80;
+  background: rgb(0, 77, 28);
+  padding: 10px;
+}
+
+/* Y la animación va aquí abajo */
+@media (prefers-reduced-motion: no-preference) {
+  .mensaje.error-msg {
+    animation: errorIn 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97) backwards;
+  }
+  .mensaje.ok-msg {
+    animation: okIn 0.45s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+  }
 }
 
 @keyframes errorIn {
@@ -571,7 +590,7 @@
   .card .fuerza span::after,
   .card .primario:hover::after,
   .mensaje {
-    animation: none !important;
+    animation: none;
   }
 }
 /* ----------------------------------------------------------------------

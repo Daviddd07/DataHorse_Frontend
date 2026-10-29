@@ -80,7 +80,9 @@
   justify-content: center;
   cursor: pointer;
   color: var(--text-muted);
-  transition: all 0.2s ease;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
 }
 
 .dh-icon-btn:hover {
@@ -124,15 +126,28 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all 0.3s ease;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .nombre-de-tu-clase-aqui {
+    transition:
+      transform 0.3s ease,
+      box-shadow 0.3s ease;
+  }
 }
 
 .dp-back-btn svg {
   width: 22px;
   height: 22px;
-  transition: transform 0.3s ease;
 }
+
+@media (prefers-reduced-motion: no-preference) {
+  .tu-clase-aqui {
+    transition: transform 0.3s ease;
+  }
+}
+
 .dp-back-btn:hover {
   background: rgba(255, 255, 255, 0.15);
   border-color: var(--accent-gold);
@@ -226,7 +241,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s ease;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
 }
 
 .dp-galeria-nav:hover {
@@ -261,7 +278,12 @@
   overflow: hidden;
   background: rgba(0, 0, 0, 0.3);
   cursor: pointer;
-  transition: all 0.2s ease;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .mi-elemento {
+    transition: transform 0.2s ease;
+  }
 }
 
 .dp-miniatura:hover {
@@ -407,10 +429,18 @@
   font-size: 0.95rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s ease;
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+/* El bloque de la transición, respetando la accesibilidad */
+@media (prefers-reduced-motion: no-preference) {
+  .dp-btn {
+    transition:
+      background-color 0.2s ease,
+      transform 0.2s ease;
+  }
 }
 
 .dp-btn:hover {
@@ -463,16 +493,6 @@
 .dp-error {
   color: #ff6b6b;
   border-color: rgba(255, 107, 107, 0.3);
-}
-
-/* ======================================================
-   ANIMACIONES Y RESPONSIVE
-====================================================== */
-.dp-galeria {
-  animation: slideInLeft 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-.dp-info {
-  animation: slideInRight 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 @keyframes slideInLeft {
@@ -529,5 +549,17 @@
   .dp-miniatura {
     width: 60px;
     height: 60px;
+  }
+}
+/* =========================================
+   ANIMACIONES CON ACCESIBILIDAD
+   ========================================= */
+@media (prefers-reduced-motion: no-preference) {
+  .dp-galeria {
+    animation: slideInLeft 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  .dp-info {
+    animation: slideInRight 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   }
 }

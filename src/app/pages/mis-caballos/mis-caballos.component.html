@@ -26,7 +26,7 @@
             [attr.aria-expanded]="menuAbierto()"
             aria-label="Menú de usuario"
           >
-            {{ inicial() }}
+            <span aria-hidden="true">{{ inicial() }}</span>
           </button>
 
           <div class="dh-user-menu" *ngIf="menuAbierto()">
@@ -106,11 +106,20 @@
           No tienes caballos machos registrados.
         </p>
 
-        <article class="mc-item glass" *ngFor="let c of machos()" (click)="editarCaballo(c)">
+        <div
+          class="mc-item glass"
+          *ngFor="let c of machos()"
+          (click)="editarCaballo(c)"
+          (keydown.enter)="editarCaballo(c)"
+          (keydown.space.prevent)="editarCaballo(c)"
+          tabindex="0"
+          role="button"
+        >
           <div class="mc-item-thumb">
             <img *ngIf="c.fotoUrl; else sinFotoMacho" [src]="c.fotoUrl" [alt]="c.nombre" />
             <ng-template #sinFotoMacho><div class="mc-thumb-placeholder">🐴</div></ng-template>
           </div>
+
           <div class="mc-item-info">
             <p class="mc-item-tag">{{ c.raza }} · {{ c.sexo }}</p>
             <h3>{{ c.nombre }}</h3>
@@ -123,7 +132,9 @@
               <span class="mc-badge-off" *ngIf="!c.publicado">Sin publicar</span>
             </div>
           </div>
+
           <div class="mc-item-actions">
+            <!-- Estos botones de aquí adentro ya están perfectos -->
             <button
               type="button"
               class="mc-btn"
@@ -139,7 +150,7 @@
               Eliminar
             </button>
           </div>
-        </article>
+        </div>
       </section>
 
       <!-- HEMBRAS -->

@@ -33,13 +33,13 @@ interface FotoVista extends FotoCaballoDetalle {
   styleUrl: './editar-caballo.component.css',
 })
 export class EditarCaballoComponent {
-  private route = inject(ActivatedRoute);
+  private readonly route = inject(ActivatedRoute);
 
-  private router = inject(Router);
+  private readonly router = inject(Router);
 
-  private auth = inject(AuthService);
+  private readonly auth = inject(AuthService);
 
-  private caballoService = inject(CaballoService);
+  private readonly caballoService = inject(CaballoService);
 
   // Usuario en el header
   nombreUsuario = signal('');
@@ -54,6 +54,9 @@ export class EditarCaballoComponent {
   idCaballo = signal<number>(0);
 
   cargando = signal(true);
+
+  // Variable para obtener la fecha de hoy en formato YYYY-MM-DD
+  hoy = new Date().toISOString().split('T')[0];
 
   guardando = signal(false);
 
@@ -343,7 +346,7 @@ export class EditarCaballoComponent {
 
         if (nuevas.length === 0) {
           this.guardando.set(false);
-          this.router.navigate(['/mis-caballos']);
+          void this.router.navigate(['/mis-caballos']);
           return;
         }
 
@@ -351,7 +354,7 @@ export class EditarCaballoComponent {
         this.caballoService.subirFotos(this.idCaballo(), nuevas).subscribe({
           next: () => {
             this.guardando.set(false);
-            this.router.navigate(['/mis-caballos']);
+            void this.router.navigate(['/mis-caballos']);
           },
 
           error: (err) => {
@@ -393,7 +396,7 @@ export class EditarCaballoComponent {
     this.caballoService.eliminarCaballo(this.idCaballo()).subscribe({
       next: () => {
         this.modalEliminarCaballoAbierto.set(false);
-        this.router.navigate(['/mis-caballos']);
+        void this.router.navigate(['/mis-caballos']);
       },
 
       error: (err) => {
@@ -410,7 +413,7 @@ export class EditarCaballoComponent {
   // ======================================================
 
   cancelar(): void {
-    this.router.navigate(['/mis-caballos']);
+    void this.router.navigate(['/mis-caballos']);
   }
 
   toggleMenu(): void {
@@ -423,7 +426,7 @@ export class EditarCaballoComponent {
 
   irAMisCaballos(): void {
     this.menuAbierto.set(false);
-    this.router.navigate(['/mis-caballos']);
+    void this.router.navigate(['/mis-caballos']);
   }
 
   cerrarSesion(): void {

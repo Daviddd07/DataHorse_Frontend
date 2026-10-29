@@ -415,9 +415,9 @@ import { AuthService } from '../../Services/auth.service';
   ],
 })
 export class RecuperarPasswordComponent {
-  private auth = inject(AuthService);
-  private router = inject(Router);
-  private cd = inject(ChangeDetectorRef);
+  private readonly auth = inject(AuthService);
+  private readonly router = inject(Router);
+  private readonly cd = inject(ChangeDetectorRef);
 
   paso = 1;
   correo = '';
@@ -486,7 +486,7 @@ export class RecuperarPasswordComponent {
     this.auth.resetPassword(this.correo, this.codigo.trim(), this.nuevaPassword).subscribe({
       next: () => {
         this.cargando = false;
-        this.router.navigate(['/login']);
+        void this.router.navigate(['/login']);
       },
       error: (e: HttpErrorResponse) => {
         this.cargando = false;

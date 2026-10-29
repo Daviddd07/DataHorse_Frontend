@@ -31,7 +31,6 @@
     radial-gradient(38% 34% at 18% 28%, rgba(99, 102, 241, 0.38), transparent 70%),
     radial-gradient(34% 38% at 82% 22%, rgba(34, 211, 238, 0.2), transparent 70%),
     radial-gradient(44% 40% at 66% 86%, rgba(168, 85, 247, 0.3), transparent 70%);
-  animation: auroraDrift 24s ease-in-out infinite alternate;
   will-change: transform;
 }
 .login-container::after {
@@ -41,8 +40,18 @@
   background-size: 28px 28px;
   -webkit-mask-image: radial-gradient(60% 55% at 50% 50%, #000 15%, transparent 78%);
   mask-image: radial-gradient(60% 55% at 50% 50%, #000 15%, transparent 78%);
-  animation: gridDrift 40s linear infinite;
 }
+
+/* Animaciones del fondo */
+@media (prefers-reduced-motion: no-preference) {
+  .login-container::before {
+    animation: auroraDrift 24s ease-in-out infinite alternate;
+  }
+  .login-container::after {
+    animation: gridDrift 40s linear infinite;
+  }
+}
+
 @keyframes auroraDrift {
   from {
     transform: translate3d(-4%, -3%, 0) rotate(0deg) scale(1);
@@ -60,11 +69,58 @@
 /* 2. TARJETA Y GIRO */
 .login-card {
   position: relative;
-  transition: box-shadow 0.4s ease;
-  animation:
-    cardIn calc(0.8s * var(--anim)) cubic-bezier(0.16, 1, 0.3, 1) backwards,
-    cardFlipIn calc(0.5s * (1 - var(--anim))) cubic-bezier(0, 0, 0.5, 1) backwards,
-    cardLiftIn calc(0.5s * (1 - var(--anim))) ease-out backwards;
+}
+
+.login-card:focus-within {
+  box-shadow:
+    0 1px 2px rgba(15, 23, 42, 0.04),
+    0 20px 40px -12px rgba(15, 23, 42, 0.35),
+    0 0 70px -12px rgba(99, 102, 241, 0.55);
+}
+
+.login-card::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  padding: 1.5px;
+  border-radius: 24px;
+  background: conic-gradient(
+    from var(--glow-angle),
+    transparent 0 55%,
+    #6366f1 72%,
+    #22d3ee 86%,
+    transparent 100%
+  );
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.login-card:hover::before,
+.login-card:focus-within::before {
+  opacity: 1;
+}
+
+/* Animaciones de la tarjeta */
+@media (prefers-reduced-motion: no-preference) {
+  .login-card {
+    transition: box-shadow 0.4s ease;
+    animation:
+      cardIn calc(0.8s * var(--anim)) cubic-bezier(0.16, 1, 0.3, 1) backwards,
+      cardFlipIn calc(0.5s * (1 - var(--anim))) cubic-bezier(0, 0, 0.5, 1) backwards,
+      cardLiftIn calc(0.5s * (1 - var(--anim))) ease-out backwards;
+  }
+  .login-card::before {
+    transition: opacity 0.35s ease;
+    animation: glowSpin 3.5s linear infinite;
+  }
 }
 
 @keyframes cardIn {
@@ -93,45 +149,6 @@
   }
 }
 
-.login-card:focus-within {
-  box-shadow:
-    0 1px 2px rgba(15, 23, 42, 0.04),
-    0 20px 40px -12px rgba(15, 23, 42, 0.35),
-    0 0 70px -12px rgba(99, 102, 241, 0.55);
-}
-
-.login-card::before {
-  content: '';
-  position: absolute;
-  inset: -1px;
-  padding: 1.5px;
-  border-radius: 24px; /* Ajustado para que coincida con el borde de la tarjeta */
-  background: conic-gradient(
-    from var(--glow-angle),
-    transparent 0 55%,
-    #6366f1 72%,
-    #22d3ee 86%,
-    transparent 100%
-  );
-  -webkit-mask:
-    linear-gradient(#000 0 0) content-box,
-    linear-gradient(#000 0 0);
-  -webkit-mask-composite: xor;
-  mask:
-    linear-gradient(#000 0 0) content-box,
-    linear-gradient(#000 0 0);
-  mask-composite: exclude;
-  opacity: 0;
-  transition: opacity 0.35s ease;
-  animation: glowSpin 3.5s linear infinite;
-  pointer-events: none;
-}
-
-.login-card:hover::before,
-.login-card:focus-within::before {
-  opacity: 1;
-}
-
 @keyframes glowSpin {
   to {
     --glow-angle: 360deg;
@@ -139,10 +156,6 @@
 }
 
 /* 3. ENTRADA ESCALONADA */
-.login-card > :not(.login-logo) {
-  animation: riseIn calc(0.6s * var(--anim)) cubic-bezier(0.16, 1, 0.3, 1) calc(0.55s * var(--anim))
-    backwards;
-}
 .login-card > :nth-child(1) {
   animation-delay: calc(0.1s * var(--anim));
 }
@@ -162,6 +175,13 @@
   animation-delay: calc(0.5s * var(--anim));
 }
 
+@media (prefers-reduced-motion: no-preference) {
+  .login-card > :not(.login-logo) {
+    animation: riseIn calc(0.6s * var(--anim)) cubic-bezier(0.16, 1, 0.3, 1)
+      calc(0.55s * var(--anim)) backwards;
+  }
+}
+
 @keyframes riseIn {
   from {
     opacity: 0;
@@ -177,17 +197,6 @@
 .login-logo {
   --glow: 79, 70, 229;
   filter: drop-shadow(0 6px 14px rgba(var(--glow), 0.32));
-  transition:
-    scale 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
-    rotate 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-.login-card > .login-logo {
-  animation:
-    logoPop calc(0.9s * var(--anim)) cubic-bezier(0.34, 1.56, 0.64, 1) calc(0.15s * var(--anim))
-      backwards,
-    logoFloat 4.5s ease-in-out 1s infinite,
-    logoGlow 2.25s ease-in-out 1s infinite alternate;
 }
 
 .login-logo:hover {
@@ -205,22 +214,39 @@
 
 .login-card:has(.error-message) .login-logo {
   --glow: 239, 68, 68;
-  animation:
-    logoPop calc(0.9s * var(--anim)) cubic-bezier(0.34, 1.56, 0.64, 1) calc(0.15s * var(--anim))
-      backwards,
-    logoFloat 4.5s ease-in-out 1s infinite,
-    logoGlow 2.25s ease-in-out 1s infinite alternate,
-    logoNo 0.55s ease 1;
 }
 
 .login-card:has(form button:disabled) .login-logo {
   --glow: 99, 102, 241;
-  animation:
-    logoPop calc(0.9s * var(--anim)) cubic-bezier(0.34, 1.56, 0.64, 1) calc(0.15s * var(--anim))
-      backwards,
-    logoFloat 4.5s ease-in-out 1s infinite,
-    logoGlow 2.25s ease-in-out 1s infinite alternate,
-    logoPulse 0.9s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .login-logo {
+    transition: rotate 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .login-card > .login-logo {
+    animation:
+      logoPop calc(0.9s * var(--anim)) cubic-bezier(0.34, 1.56, 0.64, 1) calc(0.15s * var(--anim))
+        backwards,
+      logoFloat 4.5s ease-in-out 1s infinite,
+      logoGlow 2.25s ease-in-out 1s infinite alternate;
+  }
+  .login-card:has(.error-message) .login-logo {
+    animation:
+      logoPop calc(0.9s * var(--anim)) cubic-bezier(0.34, 1.56, 0.64, 1) calc(0.15s * var(--anim))
+        backwards,
+      logoFloat 4.5s ease-in-out 1s infinite,
+      logoGlow 2.25s ease-in-out 1s infinite alternate,
+      logoNo 0.55s ease 1;
+  }
+  .login-card:has(form button:disabled) .login-logo {
+    animation:
+      logoPop calc(0.9s * var(--anim)) cubic-bezier(0.34, 1.56, 0.64, 1) calc(0.15s * var(--anim))
+        backwards,
+      logoFloat 4.5s ease-in-out 1s infinite,
+      logoGlow 2.25s ease-in-out 1s infinite alternate,
+      logoPulse 0.9s ease-in-out infinite;
+  }
 }
 
 @keyframes logoPop {
@@ -281,15 +307,17 @@
 }
 
 /* 5. CAMPOS Y FOCO */
-.form-group label {
-  transition: color 0.2s ease;
-}
 .form-group:focus-within label {
   color: #4f46e5;
 }
 
-.form-group input:focus {
-  animation: focusPulse 0.5s ease-out;
+@media (prefers-reduced-motion: no-preference) {
+  .form-group label {
+    transition: color 0.2s ease;
+  }
+  .form-group input:focus {
+    animation: focusPulse 0.5s ease-out;
+  }
 }
 
 @keyframes focusPulse {
@@ -308,10 +336,6 @@
 .login-card form button[type='submit'] {
   position: relative;
   overflow: hidden;
-  transition:
-    background-color 0.15s ease,
-    transform 0.2s ease,
-    box-shadow 0.25s ease;
 }
 
 .login-card form button[type='submit']:hover:not(:disabled) {
@@ -338,10 +362,6 @@
   pointer-events: none;
 }
 
-.login-card form button[type='submit']:hover:not(:disabled)::after {
-  animation: shine 0.8s ease;
-}
-
 .login-card form button[type='submit']:disabled {
   cursor: progress;
   opacity: 0.9;
@@ -357,7 +377,21 @@
   border: 2px solid rgba(255, 255, 255, 0.35);
   border-top-color: #ffffff;
   border-radius: 50%;
-  animation: spin 0.7s linear infinite;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .login-card form button[type='submit'] {
+    transition:
+      background-color 0.15s ease,
+      transform 0.2s ease,
+      box-shadow 0.25s ease;
+  }
+  .login-card form button[type='submit']:hover:not(:disabled)::after {
+    animation: shine 0.8s ease;
+  }
+  .login-card form button[type='submit']:disabled::before {
+    animation: spin 0.7s linear infinite;
+  }
 }
 
 @keyframes shine {
@@ -372,8 +406,10 @@
 }
 
 /* 7. ERROR */
-.error-message {
-  animation: errorIn 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97) backwards;
+@media (prefers-reduced-motion: no-preference) {
+  .error-message {
+    animation: errorIn 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97) backwards;
+  }
 }
 
 @keyframes errorIn {
@@ -406,9 +442,14 @@
 .login-card.volteando {
   pointer-events: none;
   transform: perspective(1400px) rotateY(90deg);
-  animation:
-    cardFlipOut 0.5s cubic-bezier(0.5, 0, 1, 1) forwards,
-    cardLiftOut 0.5s ease-in forwards;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .login-card.volteando {
+    animation:
+      cardFlipOut 0.5s cubic-bezier(0.5, 0, 1, 1) forwards,
+      cardLiftOut 0.5s ease-in forwards;
+  }
 }
 
 @keyframes cardFlipOut {
@@ -423,19 +464,5 @@
 @keyframes cardLiftOut {
   to {
     scale: 1.06;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .login-container::before,
-  .login-container::after,
-  .login-card,
-  .login-card::before,
-  .login-card > *,
-  .login-card > .login-logo,
-  .form-group input:focus,
-  .login-card form button[type='submit']:hover::after,
-  .error-message {
-    animation: none !important;
   }
 }

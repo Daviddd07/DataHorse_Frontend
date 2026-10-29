@@ -372,9 +372,9 @@ import { RegistroService } from '../../Services/Registro.service';
   ],
 })
 export class VerificarCorreoComponent {
-  private route = inject(ActivatedRoute);
-  private router = inject(Router);
-  private registro = inject(RegistroService);
+  private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
+  private readonly registro = inject(RegistroService);
 
   correo = this.route.snapshot.queryParamMap.get('correo') ?? '';
 
@@ -441,16 +441,18 @@ export class VerificarCorreoComponent {
         this.animandoExito.set(true);
 
         setTimeout(() => {
-          this.router.navigate(['/login']);
+          void this.router.navigate(['/login']);
         }, 1500);
       },
       error: (e: HttpErrorResponse) => {
         this.cargando.set(false);
 
         // Parche por si el backend envía la 'ó' rota (CÃ³digo)
+        // Parche por si el backend envía la 'ó' rota (Ã³)
         let errorMsg = e.error?.detail || 'C\u00f3digo incorrecto o expirado.';
+
         if (errorMsg.includes('Ã³')) {
-          errorMsg = errorMsg.replace(/Ã³/g, 'ó');
+          errorMsg = errorMsg.replaceAll('Ã³', 'ó'); // Usamos replaceAll
         }
 
         this.triggerErrorAnimacion(errorMsg);
@@ -488,8 +490,10 @@ export class VerificarCorreoComponent {
         this.reenviando.set(false);
 
         let errorMsg = e.error?.detail || 'No fue posible reenviar el c\u00f3digo.';
+
         if (errorMsg.includes('Ã³')) {
-          errorMsg = errorMsg.replace(/Ã³/g, 'ó');
+          //  Usamos replaceAll y quitamos las barras de la expresión regular
+          errorMsg = errorMsg.replaceAll('Ã³', 'ó');
         }
 
         this.triggerErrorAnimacion(errorMsg);

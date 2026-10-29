@@ -91,11 +91,11 @@ label {
 
 input {
   width: 100%;
-  height: 46px !important;
+  height: 46px;
   box-sizing: border-box;
-  line-height: 1.5 !important;
-  font-family: inherit !important;
-  font-size: 14px !important;
+  line-height: 1.5;
+  font-family: inherit;
+  font-size: 14px;
   padding: 11px 14px;
 
   /* Estilos oscuros */
@@ -104,7 +104,16 @@ input {
   color: var(--text-main);
   background-color: rgba(0, 0, 0, 0.3);
   outline: none;
-  transition: all 0.2s ease;
+}
+
+/* Bloque de accesibilidad para las transiciones */
+@media (prefers-reduced-motion: no-preference) {
+  input {
+    transition:
+      border-color 0.2s ease,
+      background-color 0.2s ease,
+      box-shadow 0.2s ease;
+  }
 }
 
 /* Contenedor del ojito */
@@ -116,7 +125,7 @@ input {
 
 .con-boton input {
   width: 100%;
-  height: 46px !important;
+  height: 46px;
   padding-right: 44px;
   margin: 0;
 }
@@ -124,13 +133,13 @@ input {
 /* Evitar iconos nativos del navegador */
 input::-ms-reveal,
 input::-ms-clear {
-  display: none !important;
+  display: none;
 }
 
 input::-webkit-contacts-auto-fill-button,
 input::-webkit-credentials-auto-fill-button {
   visibility: hidden;
-  display: none !important;
+  display: none;
   pointer-events: none;
   position: absolute;
   right: 0;
@@ -177,7 +186,17 @@ input.invalido:focus {
   cursor: pointer;
   padding: 0;
   border-radius: 50%;
-  transition: all 0.2s ease;
+}
+
+/* Bloque para respetar la accesibilidad y especificar propiedades */
+@media (prefers-reduced-motion: no-preference) {
+  .ver {
+    /* Cambiamos 'all' por lo que suele cambiar en estos botones */
+    transition:
+      background-color 0.2s ease,
+      color 0.2s ease,
+      transform 0.1s ease;
+  }
 }
 
 .ver:hover {
@@ -191,7 +210,7 @@ input.invalido:focus {
 }
 
 .ver:active {
-  transform: translateY(-50%) scale(0.9) !important;
+  transform: translateY(-50%) scale(0.9);
 }
 
 /* ======================================================
@@ -222,13 +241,13 @@ input.invalido:focus {
 
 .error-msg {
   background-color: rgba(255, 107, 107, 0.15);
-  color: #ff6b6b;
+  color: #630f0f;
   border: 1px solid rgba(255, 107, 107, 0.3);
 }
 
 .ok-msg {
   background-color: rgba(74, 222, 128, 0.15);
-  color: #4ade80;
+  color: #233f2d;
   border: 1px solid rgba(74, 222, 128, 0.3);
 }
 
@@ -274,8 +293,18 @@ input.invalido:focus {
   font-size: 15px;
   font-weight: 700;
   cursor: pointer;
-  transition: all 0.2s ease;
   box-shadow: 0 8px 20px rgba(181, 101, 29, 0.3);
+}
+
+/* Bloque de accesibilidad */
+@media (prefers-reduced-motion: no-preference) {
+  .primario {
+    /* Cambiamos 'all' por las propiedades típicas de un botón primario */
+    transition:
+      background-color 0.2s ease,
+      box-shadow 0.2s ease,
+      transform 0.2s ease;
+  }
 }
 
 .primario:hover:not(:disabled) {

@@ -87,11 +87,14 @@
   justify-content: center;
   cursor: pointer;
   color: rgba(255, 255, 255, 0.7);
-  transition: all 0.2s ease;
+  /* En lugar de transition: all... */
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
 }
 
 .dh-header-original .dh-icon-btn:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.041);
   color: #e6a817;
 }
 
@@ -168,7 +171,15 @@
   text-align: left;
   cursor: pointer;
   border-radius: 8px;
-  transition: 0.2s;
+}
+
+/* Bloque de accesibilidad y propiedades específicas */
+@media (prefers-reduced-motion: no-preference) {
+  .dh-user-list button {
+    transition:
+      background-color 0.2s ease,
+      color 0.2s ease;
+  }
 }
 
 .dh-user-list button:hover {
@@ -177,7 +188,14 @@
 }
 .dh-user-list svg {
   color: var(--text-muted);
-  transition: 0.2s;
+}
+
+/* Bloque de accesibilidad */
+@media (prefers-reduced-motion: no-preference) {
+  .dh-user-list svg {
+    /* Especificamos que solo se anime el color */
+    transition: color 0.2s ease;
+  }
 }
 .dh-user-list button:hover svg {
   color: var(--accent-gold);
@@ -240,14 +258,32 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all 0.3s ease;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+/* Bloque nuevo para la accesibilidad y transiciones específicas */
+@media (prefers-reduced-motion: no-preference) {
+  .mc-back-btn {
+    /* Cambiamos 'all' por las propiedades que suelen cambiar en estos botones */
+    transition:
+      background-color 0.3s ease,
+      color 0.3s ease,
+      border-color 0.3s ease,
+      box-shadow 0.3s ease,
+      transform 0.3s ease;
+  }
 }
 
 .mc-back-btn svg {
   width: 22px;
   height: 22px;
-  transition: transform 0.3s ease;
+}
+
+/*Bloque de accesibilidad */
+@media (prefers-reduced-motion: no-preference) {
+  .mc-back-btn svg {
+    transition: transform 0.3s ease;
+  }
 }
 
 .mc-back-btn:hover {
@@ -272,7 +308,6 @@
   font-size: 0.95rem;
   color: var(--text-muted);
 }
-
 .mc-btn-primary {
   flex-shrink: 0;
   border: none;
@@ -284,8 +319,17 @@
   font-size: 0.9rem;
   font-weight: 700;
   cursor: pointer;
-  transition: 0.2s;
   box-shadow: 0 8px 20px rgba(181, 101, 29, 0.3);
+}
+
+/*Bloque nuevo para la accesibilidad y transiciones específicas */
+@media (prefers-reduced-motion: no-preference) {
+  .mc-btn-primary {
+    transition:
+      background-color 0.2s ease,
+      box-shadow 0.2s ease,
+      transform 0.2s ease;
+  }
 }
 
 .mc-btn-primary:hover {
@@ -351,11 +395,17 @@
   align-items: center;
   padding: 16px;
   border-radius: 20px;
-  transition:
-    transform 0.2s ease,
-    background 0.2s ease,
-    border-color 0.2s ease;
   cursor: pointer;
+}
+
+/*Bloque de accesibilidad */
+@media (prefers-reduced-motion: no-preference) {
+  .mc-item {
+    transition:
+      transform 0.2s ease,
+      background-color 0.2s ease,
+      border-color 0.2s ease;
+  }
 }
 
 .mc-item:hover {
@@ -461,8 +511,17 @@
   font-size: 0.8rem;
   font-weight: 600;
   cursor: pointer;
-  transition: 0.2s;
   white-space: nowrap;
+}
+
+/*Bloque de accesibilidad y propiedades específicas */
+@media (prefers-reduced-motion: no-preference) {
+  .mc-btn {
+    transition:
+      background-color 0.2s ease,
+      color 0.2s ease,
+      border-color 0.2s ease;
+  }
 }
 
 .mc-btn:hover {
@@ -529,7 +588,16 @@
   font-size: 0.9rem;
   font-weight: 700;
   cursor: pointer;
-  transition: 0.2s;
+}
+
+/* Bloque de accesibilidad y propiedades específicas */
+@media (prefers-reduced-motion: no-preference) {
+  .mc-modal-btn {
+    transition:
+      background-color 0.2s ease,
+      color 0.2s ease,
+      box-shadow 0.2s ease;
+  }
 }
 
 .mc-modal-btn-secondary {
