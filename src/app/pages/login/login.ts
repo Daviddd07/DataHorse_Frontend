@@ -42,13 +42,13 @@ export class Login implements AfterViewInit {
   @ViewChild('googleButton')
   googleButton!: ElementRef<HTMLDivElement>;
 
-  private auth = inject(AuthService);
+  private readonly auth = inject(AuthService);
 
-  private router = inject(Router);
+  private readonly router = inject(Router);
 
-  private zone = inject(NgZone);
+  private readonly zone = inject(NgZone);
 
-  private cdr = inject(ChangeDetectorRef);
+  private readonly cdr = inject(ChangeDetectorRef);
   private googleInitialized = false;
   correo = '';
 
@@ -109,7 +109,7 @@ export class Login implements AfterViewInit {
       next: () => {
         this.cargandoGoogle = false;
 
-        this.router.navigate(['/marketplace']);
+        void this.router.navigate(['/marketplace']);
       },
 
       error: (e: HttpErrorResponse) => {
@@ -137,7 +137,7 @@ export class Login implements AfterViewInit {
       next: () => {
         this.cargando = false;
 
-        this.router.navigate(['/marketplace']);
+        void this.router.navigate(['/marketplace']);
       },
 
       error: (e: HttpErrorResponse) => {
@@ -170,7 +170,7 @@ export class Login implements AfterViewInit {
     const sinMovimiento = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     if (!tarjeta || sinMovimiento) {
-      this.router.navigate(['/registrar']);
+      void this.router.navigate(['/registrar']);
       return;
     }
 
@@ -179,7 +179,7 @@ export class Login implements AfterViewInit {
     document.body.classList.add('giro-entrando');
 
     setTimeout(() => {
-      this.router.navigate(['/registrar']).then((ok) => {
+      void this.router.navigate(['/registrar']).then((ok) => {
         if (!ok) tarjeta.classList.remove('volteando');
       });
     }, 500);

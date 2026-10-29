@@ -21,9 +21,9 @@ type Paso = 'tipo' | 'formulario';
   styleUrl: './nueva-publicacion.component.css',
 })
 export class NuevaPublicacionComponent {
-  private caballoService = inject(CaballoService);
+  private readonly caballoService = inject(CaballoService);
 
-  private router = inject(Router);
+  private readonly router = inject(Router);
 
   // ======================================================
   // PASOS
@@ -135,7 +135,7 @@ export class NuevaPublicacionComponent {
   // ======================================================
 
   cancelar(): void {
-    this.router.navigate(['/marketplace']);
+    void this.router.navigate(['/marketplace']);
   }
 
   // ======================================================
@@ -383,7 +383,7 @@ export class NuevaPublicacionComponent {
           if (esYegua) {
             this.exito.set('Yegua registrada. Estará disponible en "Mis caballos".');
           } else {
-            this.router.navigate(['/marketplace']);
+            void this.router.navigate(['/marketplace']);
           }
         };
 
@@ -422,6 +422,6 @@ export class NuevaPublicacionComponent {
     });
   }
   irAlMarketplace(): void {
-    this.router.navigate(['/marketplace']);
+    void this.router.navigate(['/marketplace']);
   }
 }

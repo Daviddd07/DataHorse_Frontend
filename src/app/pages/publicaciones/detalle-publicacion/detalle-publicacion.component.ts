@@ -20,11 +20,11 @@ import { environment } from '../../../../environments/environment';
 })
 export class DetallePublicacionComponent {
   environment = environment;
-  private route = inject(ActivatedRoute);
+  private readonly route = inject(ActivatedRoute);
 
-  private router = inject(Router);
+  private readonly router = inject(Router);
 
-  private caballoService = inject(CaballoService);
+  private readonly caballoService = inject(CaballoService);
 
   publicacion = signal<PublicacionDetalle | null>(null);
 
@@ -53,13 +53,23 @@ export class DetallePublicacionComponent {
       meses += 12;
     }
 
+    // 1. Calculamos los textos independientes (sin anidar ternarios)
+    const sufijoAnio = anios === 1 ? '' : 's';
+    const sufijoMes = meses === 1 ? '' : 'es';
+
+    const textoAnios = `${anios} año${sufijoAnio}`;
+    const textoMeses = `${meses} mes${sufijoMes}`;
+
+    // 2. Retornamos según los casos
     if (anios === 0) {
-      return `${meses} mes${meses === 1 ? '' : 'es'}`;
+      return textoMeses;
     }
 
-    return `${anios} año${anios === 1 ? '' : 's'}${
-      meses > 0 ? `, ${meses} mes${meses === 1 ? '' : 'es'}` : ''
-    }`;
+    if (meses > 0) {
+      return `${textoAnios}, ${textoMeses}`;
+    }
+
+    return textoAnios;
   });
 
   constructor() {
@@ -79,8 +89,10 @@ export class DetallePublicacionComponent {
         // Poner como activa la foto principal si existe
         const indicePrincipal = p.fotos.findIndex((f) => f.es_principal);
 
-        this.fotoActiva.set(indicePrincipal >= 0 ? indicePrincipal : 0);
+        // Usamos Math.max para evitar el ternario
+        this.fotoActiva.set(Math.max(0, indicePrincipal));
       },
+      // ...
 
       error: (err) => {
         console.error('Error cargando publicación:', err);
@@ -92,7 +104,7 @@ export class DetallePublicacionComponent {
   }
 
   volver(): void {
-    this.router.navigate(['/marketplace']);
+    void this.router.navigate(['/marketplace']);
   }
 
   cambiarFoto(index: number): void {
@@ -149,7 +161,7 @@ export class DetallePublicacionComponent {
   }
 
   chatearConVendedor(): void {
-    // TODO: implementar chat
+    // implementar chat
     console.log('Chatear con el vendedor — pendiente');
   }
 }

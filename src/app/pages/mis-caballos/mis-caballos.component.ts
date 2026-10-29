@@ -25,11 +25,11 @@ interface CaballoVista extends CaballoMio {
   styleUrl: './mis-caballos.component.css',
 })
 export class MisCaballosComponent {
-  private auth = inject(AuthService);
+  private readonly auth = inject(AuthService);
 
-  private caballoService = inject(CaballoService);
+  private readonly caballoService = inject(CaballoService);
 
-  private router = inject(Router);
+  private readonly router = inject(Router);
 
   nombreUsuario = signal('');
 
@@ -100,15 +100,15 @@ export class MisCaballosComponent {
   }
 
   volverAlMarketplace(): void {
-    this.router.navigate(['/marketplace']);
+    void this.router.navigate(['/marketplace']);
   }
 
   publicarCaballo(): void {
-    this.router.navigate(['/publicaciones/nueva']);
+    void this.router.navigate(['/publicaciones/nueva']);
   }
 
   editarCaballo(caballo: CaballoVista): void {
-    this.router.navigate(['/mis-caballos/editar', caballo.id_caballo]);
+    void this.router.navigate(['/mis-caballos/editar', caballo.id_caballo]);
   }
 
   eliminarCaballo(caballo: CaballoVista): void {
@@ -160,7 +160,7 @@ export class MisCaballosComponent {
 
   irAMisCaballos(): void {
     this.menuAbierto.set(false);
-    this.router.navigate(['/mis-caballos']);
+    void this.router.navigate(['/mis-caballos']);
   }
 
   cerrarSesion(): void {
