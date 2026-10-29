@@ -78,7 +78,7 @@ export class MarketplaceComponent {
 
   busqueda = signal('');
 
-  categorias = ['Todos', 'Edad', 'Altura', 'Proximidad', 'Compatibilidad', 'Pedigrí', 'Favoritos'];
+  categorias = ['Todos', 'Edad', 'Altura', 'Proximidad', 'Compatibilidad', 'Pedigrí'];
 
   categoriaActiva = signal('Todos');
 
@@ -103,6 +103,8 @@ export class MarketplaceComponent {
   alturaAscendente = signal(false);
 
   filtrosAbiertos = signal(false);
+
+  edadAscendente = signal(true);
 
   toggleFiltros() {
     this.filtrosAbiertos.update((v) => !v);
@@ -160,10 +162,6 @@ export class MarketplaceComponent {
       .filter((caballo) => caballo.edad <= edadMaxima)
 
       .filter((caballo) => {
-        if (categoria === 'Favoritos') {
-          return caballo.esFavorito;
-        }
-
         if (categoria === 'En venta') {
           return caballo.disponibilidad === 'Disponible';
         }
@@ -173,16 +171,21 @@ export class MarketplaceComponent {
         }
 
         // AGREGA ESTE BLOQUE
+        // AGREGA ESTE BLOQUE
         if (categoria === 'Proximidad') {
           const lat = this.userLat();
           const lng = this.userLng();
 
-          // Si no hay ubicación o el caballo no tiene coordenadas, lo ocultamos
-          if (!lat || !lng || !caballo.lat || !caballo.lng) return false;
+          // Si aún no tenemos la ubicación, mostramos todos los caballos
+          if (!lat || !lng) return true;
+
+          // Si el caballo no tiene coordenadas, lo ocultamos
+          if (!caballo.lat || !caballo.lng) return false;
 
           const distancia = this.calcularDistancia(lat, lng, caballo.lat, caballo.lng);
           return distancia <= this.radioMax();
         }
+
         // FIN DEL BLOQUE
 
         return true;
@@ -199,12 +202,20 @@ export class MarketplaceComponent {
     //  FIN DEL ORDENAMIENTO
 
     // Ordenar por altura cuando la categoría es Altura
+    // ... (código anterior de filtrado) ...
+
+    // Ordenar por altura cuando la categoría es Altura
     if (categoria === 'Altura') {
       const ascendente = this.alturaAscendente();
-
       return [...filtrados].sort((a, b) =>
         ascendente ? a.altura - b.altura : b.altura - a.altura,
       );
+    }
+
+    // NUEVO: Ordenar por edad cuando la categoría es Edad
+    if (categoria === 'Edad') {
+      const ascendente = this.edadAscendente();
+      return [...filtrados].sort((a, b) => (ascendente ? a.edad - b.edad : b.edad - a.edad));
     }
 
     return filtrados;
@@ -493,9 +504,18 @@ export class MarketplaceComponent {
       return;
     }
 
-    // Si es una categoría distinta, resetear la dirección
+    // Si vuelven a hacer clic en "Edad", cambiar dirección
+    if (categoria === 'Edad' && this.categoriaActiva() === 'Edad') {
+      this.edadAscendente.update((v) => !v);
+      return;
+    }
+
+    // Si es una categoría distinta, resetear las direcciones
     if (categoria !== 'Altura') {
       this.alturaAscendente.set(false);
+    }
+    if (categoria !== 'Edad') {
+      this.edadAscendente.set(true);
     }
 
     this.categoriaActiva.set(categoria);

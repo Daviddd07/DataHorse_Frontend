@@ -1,6 +1,19 @@
-/* You can add global styles to this file, and also import other style files */
+/* =========================================
+   1. RESETEO GLOBAL (Esto soluciona el scroll y la línea blanca)
+   ========================================= */
+html,
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow-x: hidden; /* Elimina el scroll horizontal de raíz */
+  background-color: #0f1419; /* Color oscuro para que no haya destellos blancos */
+}
 
-/* Efecto global para todos los botones */
+/* =========================================
+   2. TUS ESTILOS DE BOTONES (Los que ya tenías)
+   ========================================= */
 button {
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }

@@ -1,117 +1,400 @@
-<div class="dh-page">
-  <header class="dh-header">
-    <div class="dh-logo">
-      <img src="Logo.png" alt="DataHorse" class="dh-logo-img" />
-      <span> DataHorse </span>
+<div class="dashboard-container">
+  <!-- BARRA LATERAL (Fija a la izquierda) -->
+  <aside class="sidebar glass">
+    <div class="sidebar-logo">
+      <img src="Logo_blanco.png" alt="DH" class="logo-img" />
     </div>
 
-    <div class="dh-search">
-      <input
-        type="text"
-        placeholder="Buscar por nombre, raza o ubicación"
-        [value]="busqueda()"
-        (input)="busqueda.set($any($event.target).value)"
-      />
-    </div>
-
-    <div class="dh-header-actions">
+    <div class="sidebar-menu">
+      <!-- Inicio -->
       <button
-        class="dh-icon-btn"
-        type="button"
-        aria-label="Favoritos"
-        (click)="categoriaActiva.set('Favoritos')"
+        class="icon-btn"
+        [class.active]="categoriaActiva() === 'Todos'"
+        (click)="categoriaActiva.set('Todos')"
+        title="Inicio"
       >
-        ♥
-      </button>
-      <button
-        class="dh-icon-btn"
-        type="button"
-        aria-label="Agregar publicación"
-        (click)="agregarPublicacion()"
-      >
-        +
-      </button>
-
-      <div class="dh-user-menu-wrap">
-        <button
-          class="dh-avatar"
-          type="button"
-          (click)="toggleMenu()"
-          [attr.aria-expanded]="menuAbierto()"
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
         >
-          {{ inicial() }}
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+          <polyline points="9 22 9 12 15 12 15 22"></polyline>
+        </svg>
+        <span class="icon-label">Inicio</span>
+      </button>
+
+      <!-- Favoritos -->
+      <button
+        class="icon-btn"
+        [class.active]="categoriaActiva() === 'Favoritos'"
+        (click)="categoriaActiva.set('Favoritos')"
+        title="Favoritos"
+      >
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path
+            d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"
+          ></path>
+        </svg>
+        <span class="icon-label">Favoritos</span>
+      </button>
+
+      <!-- Caballos -->
+      <button class="icon-btn" (click)="irAMisCaballos()" title="Mis Caballos">
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+          <polyline points="14 2 14 8 20 8"></polyline>
+          <line x1="16" y1="13" x2="8" y2="13"></line>
+          <line x1="16" y1="17" x2="8" y2="17"></line>
+          <polyline points="10 9 9 9 8 9"></polyline>
+        </svg>
+        <span class="icon-label">Caballos</span>
+      </button>
+    </div>
+
+    <div class="sidebar-bottom">
+      <button class="icon-btn btn-logout" (click)="cerrarSesion()" title="Cerrar Sesión">
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+          <polyline points="16 17 21 12 16 7"></polyline>
+          <line x1="21" y1="12" x2="9" y2="12"></line>
+        </svg>
+        <span class="icon-label">Salir</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- CONTENEDOR DERECHO (Navbar + Tarjetas) -->
+  <div class="main-wrapper">
+    <!-- HEADER FLOTANTE -->
+    <header class="top-navbar glass">
+      <div class="nav-brand">DataHorse</div>
+
+      <nav class="nav-categories">
+        <button
+          *ngFor="let categoria of categorias"
+          type="button"
+          class="nav-link"
+          [class.active]="categoriaActiva() === categoria"
+          (click)="seleccionarCategoria(categoria)"
+        >
+          {{ categoria }}
         </button>
-        <div class="dh-user-menu" *ngIf="menuAbierto()">
-          <div class="dh-user-menu-head">
-            <div class="dh-avatar dh-avatar--lg">{{ inicial() }}</div>
-            <div class="dh-user-menu-info">
-              <strong>{{ nombreUsuario() }}</strong>
-              <span>{{ correoUsuario() }}</span>
+      </nav>
+
+      <div class="search-bar">
+        <input
+          type="text"
+          placeholder="Buscar..."
+          [value]="busqueda()"
+          (input)="busqueda.set($any($event.target).value)"
+        />
+      </div>
+
+      <div class="header-actions">
+        <button class="btn-add" type="button" (click)="agregarPublicacion()">Publicar</button>
+
+        <div class="dh-user-menu-wrap">
+          <button
+            class="avatar"
+            type="button"
+            (click)="toggleMenu()"
+            [attr.aria-expanded]="menuAbierto()"
+          >
+            {{ inicial() }}
+          </button>
+
+          <!-- MENÚ DE USUARIO REDISEÑADO (SIN "MIS PUBLICACIONES") -->
+          <div class="user-menu" *ngIf="menuAbierto()">
+            <div class="user-menu-head">
+              <div class="user-avatar-lg">{{ inicial() }}</div>
+              <div class="user-info">
+                <strong>{{ nombreUsuario() }}</strong>
+                <span>{{ correoUsuario() }}</span>
+              </div>
+            </div>
+
+            <ul class="user-menu-list">
+              <li>
+                <button type="button">
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                  </svg>
+                  Mi cuenta
+                </button>
+              </li>
+              <li>
+                <button type="button" (click)="irAMisCaballos()">
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                    <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                  </svg>
+                  Mis caballos
+                  <span class="menu-badge">5</span>
+                </button>
+              </li>
+
+              <!-- AQUÍ ESTABA EL DE FAVORITOS, YA LO ELIMINAMOS -->
+
+              <li>
+                <button type="button">
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                  </svg>
+                  Mensajes
+                </button>
+              </li>
+              <li>
+                <button type="button">
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                    <line x1="16" y1="13" x2="8" y2="13"></line>
+                    <line x1="16" y1="17" x2="8" y2="17"></line>
+                    <polyline points="10 9 9 9 8 9"></polyline>
+                  </svg>
+                  Pedigrí y documentos
+                </button>
+              </li>
+              <li>
+                <button type="button">
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <circle cx="12" cy="12" r="5"></circle>
+                    <line x1="12" y1="1" x2="12" y2="3"></line>
+                    <line x1="12" y1="21" x2="12" y2="23"></line>
+                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                    <line x1="1" y1="12" x2="3" y2="12"></line>
+                    <line x1="21" y1="12" x2="23" y2="12"></line>
+                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                  </svg>
+                  Configuración
+                </button>
+              </li>
+            </ul>
+
+            <div class="user-menu-footer">
+              <button type="button" class="user-menu-logout" (click)="cerrarSesion()">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                  <polyline points="16 17 21 12 16 7"></polyline>
+                  <line x1="21" y1="12" x2="9" y2="12"></line>
+                </svg>
+                Cerrar sesión
+              </button>
             </div>
           </div>
-          <ul class="dh-user-menu-list">
-            <li>
-              <button type="button" (click)="irAMisCaballos()">
-                <span class="dh-menu-ico"></span> Mis caballos
-              </button>
-            </li>
-            <li>
-              <button type="button" (click)="cerrarMenu()">
-                <span class="dh-menu-ico"></span> Mis publicaciones
-              </button>
-            </li>
-          </ul>
-          <div class="dh-user-menu-divider"></div>
-          <button type="button" class="dh-user-menu-logout" (click)="cerrarSesion()">
-            <span class="dh-menu-ico"></span> Cerrar sesión
-          </button>
         </div>
       </div>
-    </div>
-  </header>
+    </header>
 
-  <div class="dh-greeting">
-    <h1>Hola, {{ nombreUsuario() }}</h1>
-    <p>Explora los ejemplares para la reproduccion publicados en DataHorse.</p>
-  </div>
+    <!-- GRILLA DE CABALLOS -->
+    <main class="content-area">
+      <div class="content-header">
+        <div class="header-title-wrapper">
+          <h2>Ejemplares disponibles</h2>
 
-  <!-- PESTAÑAS (Todas juntas a la izquierda) -->
-  <nav class="dh-categories">
-    <button
-      *ngFor="let categoria of categorias"
-      type="button"
-      [class.active]="categoriaActiva() === categoria"
-      (click)="seleccionarCategoria(categoria)"
-    >
-      {{ categoria }}
-    </button>
+          <p class="filter-indicator" *ngIf="categoriaActiva() === 'Edad'">
+            Filtrados por edad: {{ edadAscendente() ? 'de menor a mayor' : 'de mayor a menor' }}
+          </p>
 
-    <!-- Botón solo para abrir filtros en celular -->
-    <button class="dh-btn-mobile-filters" (click)="toggleFiltros()">⚙️ Filtros</button>
-  </nav>
+          <p class="filter-indicator" *ngIf="categoriaActiva() === 'Altura'">
+            Filtrados por altura: {{ alturaAscendente() ? 'de menor a mayor' : 'de mayor a menor' }}
+          </p>
 
-  <div class="dh-body">
-    <!-- OVERLAY PARA CELULAR -->
-    <div class="dh-overlay" *ngIf="filtrosAbiertos()" (click)="toggleFiltros()"></div>
+          <!-- NUEVO: Indicador de Proximidad y Botón de Ubicación -->
+          <!-- NUEVO: Indicador de Proximidad y Slider de Distancia -->
+          <div class="proximity-status" *ngIf="categoriaActiva() === 'Proximidad'">
+            <!-- Si ya hay ubicación, mostramos el control deslizante -->
+            <div class="radius-control" *ngIf="userLat() && userLng()">
+              <span class="filter-indicator"
+                >Distancia: <strong>{{ radioMax() }} km</strong></span
+              >
+              <input
+                type="range"
+                min="5"
+                max="500"
+                step="5"
+                [value]="radioMax()"
+                (input)="radioMax.set(+$any($event.target).value)"
+                class="range-slider-small"
+              />
+            </div>
 
-    <!-- BARRA LATERAL IZQUIERDA (Filtros + Razas) -->
-    <aside class="dh-filters" [class.open]="filtrosAbiertos()">
-      <!-- Barra superior del menú (solo celular) -->
-      <div class="dh-mobile-close-bar">
-        <h2>Filtros</h2>
-        <button class="dh-close-filters" (click)="toggleFiltros()">✕</button>
+            <!-- Si hay un error, lo mostramos -->
+            <p class="filter-indicator error" *ngIf="errorUbicacion()">
+              {{ errorUbicacion() }}
+            </p>
+
+            <!-- Si no hay ubicación ni error, mostramos el botón para pedir permiso -->
+            <div class="location-btn-wrapper" *ngIf="!userLat() && !errorUbicacion()">
+              <p class="filter-indicator">
+                Activa tu ubicación para encontrar los ejemplares más cercanos.
+              </p>
+              <button
+                class="btn-location-small"
+                (click)="pedirUbicacion()"
+                [disabled]="cargandoUbicacion()"
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  width="14"
+                  height="14"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                  <circle cx="12" cy="10" r="3"></circle>
+                </svg>
+                {{ cargandoUbicacion() ? 'Buscando...' : 'Permitir ubicación' }}
+              </button>
+            </div>
+          </div>
+          <!-- FIN DEL NUEVO BLOQUE -->
+        </div>
+        <button class="btn-filter" (click)="toggleFiltros()">Filtros y Búsqueda</button>
       </div>
 
-      <!-- CONTROLES DINÁMICOS -->
+      <section class="grid-cards">
+        <p class="empty-state" *ngIf="cargando()">Cargando ejemplares...</p>
+
+        <article
+          class="card glass"
+          *ngFor="let h of publicacionesFiltradas()"
+          (click)="irADetalle(h)"
+        >
+          <div class="card-media" [style.background]="h.fondo">
+            <img
+              *ngIf="h.fotoPrincipal; else placeholderCard"
+              [src]="h.fotoPrincipal"
+              [alt]="h.nombre"
+              class="card-img"
+            />
+            <ng-template #placeholderCard>
+              <div class="placeholder-mark">DH</div>
+            </ng-template>
+
+            <span class="badge-tuyo" *ngIf="h.esMia">Tuyo</span>
+
+            <button
+              class="btn-fav"
+              type="button"
+              [class.active]="h.esFavorito"
+              (click)="$event.stopPropagation(); toggleFavorito(h)"
+            >
+              {{ h.esFavorito ? '♥' : '♡' }}
+            </button>
+          </div>
+
+          <div class="card-body">
+            <p class="card-tag">{{ h.raza }} · {{ h.sexo }}</p>
+            <h3 class="card-title">{{ h.nombre }}</h3>
+            <p class="card-loc">{{ h.ubicacion }}</p>
+            <div class="card-footer">
+              <span class="price" *ngIf="h.precio !== null">{{
+                h.precio | currency: 'COP' : 'symbol' : '1.0-0'
+              }}</span>
+              <span class="price" *ngIf="h.precio === null">Sin precio</span>
+            </div>
+          </div>
+        </article>
+
+        <p class="empty-state" *ngIf="!cargando() && publicacionesFiltradas().length === 0">
+          {{ categoriaActiva() === 'Favoritos' ? 'No tienes favoritos.' : 'No hay coincidencias.' }}
+        </p>
+      </section>
+    </main>
+  </div>
+
+  <!-- DRAWER DE FILTROS -->
+  <div class="filter-overlay" *ngIf="filtrosAbiertos()" (click)="toggleFiltros()"></div>
+  <aside class="filter-drawer glass" [class.open]="filtrosAbiertos()">
+    <div class="drawer-header">
+      <h2>Filtros</h2>
+      <button class="btn-close" (click)="toggleFiltros()">X</button>
+    </div>
+    <div class="drawer-content">
+      <!-- (Aquí va tu código de filtros que ya tenías) -->
       <div
-        class="dh-filter-group"
+        class="filter-group"
         *ngIf="
           categoriaActiva() !== 'Edad' &&
           categoriaActiva() !== 'Altura' &&
           categoriaActiva() !== 'Proximidad'
         "
       >
-        <h3>Precio</h3>
+        <h3>Precio Máximo</h3>
         <input
           type="range"
           min="0"
@@ -120,20 +403,10 @@
           [value]="precioMax()"
           (input)="precioMax.set(+$any($event.target).value)"
         />
-        <p class="dh-filter-value">
-          Hasta {{ precioMax() | currency: 'COP' : 'symbol' : '1.0-0' }}
-        </p>
+        <p class="filter-value">Hasta {{ precioMax() | currency: 'COP' : 'symbol' : '1.0-0' }}</p>
       </div>
-
-      <div class="dh-filter-group" *ngIf="categoriaActiva() === 'Altura'">
-        <h3>Altura</h3>
-        <p class="dh-filter-value">
-          {{ alturaAscendente() ? 'Del más bajo al más alto. ↓' : 'Del más alto al más bajo. ↑' }}
-        </p>
-      </div>
-
-      <div class="dh-filter-group" *ngIf="categoriaActiva() === 'Edad'">
-        <h3>Edad máxima</h3>
+      <div class="filter-group" *ngIf="categoriaActiva() === 'Edad'">
+        <h3>Edad Máxima</h3>
         <input
           type="range"
           min="1"
@@ -142,108 +415,21 @@
           [value]="edadMax()"
           (input)="edadMax.set(+$any($event.target).value)"
         />
-        <p class="dh-filter-value">Hasta {{ edadMax() }} {{ edadMax() === 1 ? 'año' : 'años' }}</p>
+        <p class="filter-value">Hasta {{ edadMax() }} {{ edadMax() === 1 ? 'año' : 'años' }}</p>
       </div>
-
-      <div class="dh-filter-group" *ngIf="categoriaActiva() === 'Proximidad'">
-        <h3>Cerca de mí</h3>
-        <button
-          type="button"
-          class="dh-btn-location"
-          (click)="pedirUbicacion()"
-          [disabled]="cargandoUbicacion()"
-        >
-          {{ cargandoUbicacion() ? 'Buscando...' : '📍 Usar mi ubicación' }}
-        </button>
-        @if (errorUbicacion()) {
-          <p class="dh-error-text">{{ errorUbicacion() }}</p>
-        }
-        @if (userLat() && userLng()) {
-          <div style="margin-top: 15px">
-            <input
-              type="range"
-              min="5"
-              max="500"
-              step="5"
-              [value]="radioMax()"
-              (input)="radioMax.set(+$any($event.target).value)"
-            />
-            <p class="dh-filter-value">En un radio de {{ radioMax() }} km</p>
-          </div>
-        }
-      </div>
-
-      <!-- LISTA DE RAZAS (Siempre visible en la barra lateral) -->
-      <div class="dh-filter-group">
+      <div class="filter-group">
         <h3>Razas</h3>
-        <label *ngFor="let raza of razas()" class="dh-checkbox">
-          <input
-            type="checkbox"
-            [checked]="razasSeleccionadas().includes(raza)"
-            (change)="toggleRaza(raza)"
-          />
-          {{ raza }}
-        </label>
+        <div class="razas-list">
+          <label *ngFor="let raza of razas()" class="checkbox-label">
+            <input
+              type="checkbox"
+              [checked]="razasSeleccionadas().includes(raza)"
+              (change)="toggleRaza(raza)"
+            />
+            {{ raza }}
+          </label>
+        </div>
       </div>
-    </aside>
-
-    <!-- SECCIÓN DE TARJETAS -->
-    <section class="dh-grid">
-      <p class="dh-empty" *ngIf="cargando()">Cargando publicaciones...</p>
-
-      <article
-        class="dh-card"
-        *ngFor="let h of publicacionesFiltradas()"
-        (click)="irADetalle(h)"
-        style="cursor: pointer"
-      >
-        <div class="dh-card-media" [style.background]="h.fondo">
-          <img
-            *ngIf="h.fotoPrincipal; else placeholderCard"
-            [src]="h.fotoPrincipal"
-            [alt]="h.nombre"
-            class="dh-card-img"
-          />
-          <ng-template #placeholderCard>
-            <svg class="dh-horse-mark" viewBox="0 0 32 32" fill="none" aria-hidden="true">
-              <path
-                d="M9 24c0-7 3-13 7-13s7 6 7 13"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-              />
-            </svg>
-          </ng-template>
-          <span class="dh-badge" *ngIf="h.esMia"> Tuyo </span>
-          <button
-            class="dh-fav"
-            type="button"
-            [class.active]="h.esFavorito"
-            (click)="$event.stopPropagation(); toggleFavorito(h)"
-          >
-            {{ h.esFavorito ? '♥' : '♡' }}
-          </button>
-        </div>
-        <div class="dh-card-body">
-          <p class="dh-card-tag">{{ h.raza }} · {{ h.sexo }}</p>
-          <h3>{{ h.nombre }}</h3>
-          <p class="dh-card-loc">{{ h.ubicacion }}</p>
-          <div class="dh-card-footer">
-            <span class="dh-price" *ngIf="h.precio !== null">{{
-              h.precio | currency: 'COP' : 'symbol' : '1.0-0'
-            }}</span>
-            <span class="dh-price" *ngIf="h.precio === null"> Sin precio </span>
-          </div>
-        </div>
-      </article>
-
-      <p class="dh-empty" *ngIf="!cargando() && publicacionesFiltradas().length === 0">
-        {{
-          categoriaActiva() === 'Favoritos'
-            ? 'Todavía no tienes publicaciones favoritas.'
-            : 'No hay publicaciones que coincidan con los filtros.'
-        }}
-      </p>
-    </section>
-  </div>
+    </div>
+  </aside>
 </div>
