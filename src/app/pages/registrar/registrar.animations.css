@@ -574,3 +574,28 @@
     animation: none !important;
   }
 }
+/* ----------------------------------------------------------------------
+   10. GIRO DE LA TARJETA al pulsar "Inicia sesión"
+   ---------------------------------------------------------------------- */
+.card.volteando {
+  pointer-events: none;
+  transform: perspective(1400px) rotateY(-90deg);
+  animation:
+    cardFlipOutReg 0.5s cubic-bezier(0.5, 0, 1, 1) forwards,
+    cardLiftOutReg 0.5s ease-in forwards;
+}
+
+@keyframes cardFlipOutReg {
+  from {
+    transform: perspective(1400px) rotateY(0deg);
+  }
+  to {
+    transform: perspective(1400px) rotateY(-90deg);
+  }
+}
+
+@keyframes cardLiftOutReg {
+  to {
+    scale: 1.06;
+  }
+}

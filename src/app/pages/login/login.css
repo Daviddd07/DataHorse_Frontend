@@ -1,7 +1,7 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
 :host {
-  --bg-glass: rgba(30, 35, 40, 0.6);
+  --bg-glass: rgba(30, 35, 40, 0.65);
   --border-glass: rgba(255, 255, 255, 0.15);
   --text-main: #ffffff;
   --text-muted: rgba(255, 255, 255, 0.7);
@@ -9,16 +9,12 @@
   --accent-leather: #b5651d;
 }
 
-/* Contenedor principal con la imagen de fondo */
 .login-container {
   min-height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
-  font-family:
-    'Inter',
-    -apple-system,
-    sans-serif;
+  font-family: 'Inter', sans-serif;
   padding: 24px;
   box-sizing: border-box;
 
@@ -30,13 +26,12 @@
   background-attachment: fixed;
 }
 
-/* Tarjeta con efecto Glassmorphism */
+/* Tarjeta de Cristal Oscuro */
 .login-card {
   width: 400px;
   max-width: 100%;
   padding: 44px 40px;
 
-  /* Estilos del cristal */
   background: var(--bg-glass);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
@@ -45,16 +40,13 @@
   border-radius: 24px;
 
   color: var(--text-main);
-  position: relative;
-  transition: box-shadow 0.4s ease;
-  animation: cardIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) backwards;
 }
 
 .login-card h1 {
   text-align: center;
   margin: 0 0 6px;
   font-size: 26px;
-  font-weight: 700;
+  font-weight: 800;
   letter-spacing: -0.02em;
   color: var(--text-main);
 }
@@ -81,7 +73,7 @@
 }
 
 .form-group:focus-within label {
-  color: var(--accent-gold); /* Se ilumina en dorado al enfocar */
+  color: var(--accent-gold);
 }
 
 .form-group input {
@@ -93,7 +85,7 @@
   font-family: inherit;
   font-size: 14px;
   color: var(--text-main);
-  background-color: rgba(0, 0, 0, 0.3); /* Fondo oscuro translúcido */
+  background-color: rgba(0, 0, 0, 0.3);
   transition: all 0.2s ease;
 }
 
@@ -268,5 +260,5 @@ button[type='submit']:active {
   width: 80px;
   height: 80px;
   object-fit: contain;
-  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.5)); /* Sombra para que resalte */
+  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.5));
 }

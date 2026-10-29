@@ -153,7 +153,7 @@ export class RegistrarComponent implements AfterViewInit {
     });
 
     window.google.accounts.id.renderButton(this.googleButton.nativeElement, {
-      theme: 'outline',
+      theme: 'filled_black', // <--- Cambia esto
       size: 'large',
       text: 'continue_with',
       shape: 'rectangular',
@@ -308,5 +308,28 @@ export class RegistrarComponent implements AfterViewInit {
           });
         },
       });
+  }
+  irALogin(event: Event): void {
+    event.preventDefault();
+
+    const tarjeta = (event.currentTarget as HTMLElement).closest('.card');
+    const sinMovimiento = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    if (!tarjeta || sinMovimiento) {
+      this.router.navigate(['/login']);
+      return;
+    }
+
+    (document.activeElement as HTMLElement | null)?.blur();
+    tarjeta.classList.add('volteando');
+    document.body.classList.add('giro-entrando');
+
+    setTimeout(() => {
+      this.router.navigate(['/login']).then((ok) => {
+        if (!ok) tarjeta.classList.remove('volteando');
+      });
+    }, 500);
+
+    setTimeout(() => document.body.classList.remove('giro-entrando'), 1600);
   }
 }

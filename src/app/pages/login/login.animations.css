@@ -1,33 +1,29 @@
-/* ======================================================================
-   login.animations.css
-   Animaciones e interacciones del login. Solo CSS y 100% aditivo:
-   no cambia login.html ni login.css. Se carga junto a login.css con
-       styleUrls: ['./login.css', './login.animations.css']
-   ====================================================================== */
-
-/* Ángulo animable para el borde luminoso de la tarjeta */
 @property --glow-angle {
   syntax: '<angle>';
   inherits: false;
   initial-value: 0deg;
 }
 
-/* ----------------------------------------------------------------------
-   1. FONDO: aurora suave + malla de puntos que se desvanece hacia los bordes
-   ---------------------------------------------------------------------- */
+/* Variables para el giro */
+:host {
+  --anim: 1;
+}
+:host-context(body.giro-entrando) {
+  --anim: 0;
+}
+
+/* 1. FONDO */
 .login-container {
   position: relative;
   overflow: hidden;
   isolation: isolate;
 }
-
 .login-container::before,
 .login-container::after {
   content: '';
   position: absolute;
   pointer-events: none;
 }
-
 .login-container::before {
   inset: -25%;
   z-index: -2;
@@ -38,7 +34,6 @@
   animation: auroraDrift 24s ease-in-out infinite alternate;
   will-change: transform;
 }
-
 .login-container::after {
   inset: 0;
   z-index: -1;
@@ -48,7 +43,6 @@
   mask-image: radial-gradient(60% 55% at 50% 50%, #000 15%, transparent 78%);
   animation: gridDrift 40s linear infinite;
 }
-
 @keyframes auroraDrift {
   from {
     transform: translate3d(-4%, -3%, 0) rotate(0deg) scale(1);
@@ -57,21 +51,46 @@
     transform: translate3d(4%, 3%, 0) rotate(10deg) scale(1.15);
   }
 }
-
 @keyframes gridDrift {
   to {
     background-position: 28px 28px;
   }
 }
 
-/* ----------------------------------------------------------------------
-   2. TARJETA: entrada suave + borde luminoso que recorre el contorno
-      al pasar el mouse o al escribir
-   ---------------------------------------------------------------------- */
+/* 2. TARJETA Y GIRO */
 .login-card {
   position: relative;
   transition: box-shadow 0.4s ease;
-  animation: cardIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+  animation:
+    cardIn calc(0.8s * var(--anim)) cubic-bezier(0.16, 1, 0.3, 1) backwards,
+    cardFlipIn calc(0.5s * (1 - var(--anim))) cubic-bezier(0, 0, 0.5, 1) backwards,
+    cardLiftIn calc(0.5s * (1 - var(--anim))) ease-out backwards;
+}
+
+@keyframes cardIn {
+  from {
+    opacity: 0;
+    transform: translateY(28px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes cardFlipIn {
+  from {
+    transform: perspective(1400px) rotateY(90deg);
+  }
+  to {
+    transform: perspective(1400px) rotateY(0deg);
+  }
+}
+
+@keyframes cardLiftIn {
+  from {
+    scale: 1.06;
+  }
 }
 
 .login-card:focus-within {
@@ -86,7 +105,7 @@
   position: absolute;
   inset: -1px;
   padding: 1.5px;
-  border-radius: 11px;
+  border-radius: 24px; /* Ajustado para que coincida con el borde de la tarjeta */
   background: conic-gradient(
     from var(--glow-angle),
     transparent 0 55%,
@@ -113,47 +132,34 @@
   opacity: 1;
 }
 
-@keyframes cardIn {
-  from {
-    opacity: 0;
-    transform: translateY(28px) scale(0.97);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
-}
-
 @keyframes glowSpin {
   to {
     --glow-angle: 360deg;
   }
 }
 
-/* ----------------------------------------------------------------------
-   3. ENTRADA ESCALONADA de los elementos de la tarjeta
-      (hijos directos: h1, logo, subtítulo, form, separador, google, registro)
-   ---------------------------------------------------------------------- */
+/* 3. ENTRADA ESCALONADA */
 .login-card > :not(.login-logo) {
-  animation: riseIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.55s backwards;
+  animation: riseIn calc(0.6s * var(--anim)) cubic-bezier(0.16, 1, 0.3, 1) calc(0.55s * var(--anim))
+    backwards;
 }
 .login-card > :nth-child(1) {
-  animation-delay: 0.1s;
+  animation-delay: calc(0.1s * var(--anim));
 }
 .login-card > :nth-child(3) {
-  animation-delay: 0.2s;
+  animation-delay: calc(0.2s * var(--anim));
 }
 .login-card > :nth-child(4) {
-  animation-delay: 0.28s;
+  animation-delay: calc(0.28s * var(--anim));
 }
 .login-card > :nth-child(5) {
-  animation-delay: 0.36s;
+  animation-delay: calc(0.36s * var(--anim));
 }
 .login-card > :nth-child(6) {
-  animation-delay: 0.42s;
+  animation-delay: calc(0.42s * var(--anim));
 }
 .login-card > :nth-child(7) {
-  animation-delay: 0.5s;
+  animation-delay: calc(0.5s * var(--anim));
 }
 
 @keyframes riseIn {
@@ -167,15 +173,7 @@
   }
 }
 
-/* ----------------------------------------------------------------------
-   4. LOGO (tu caballo): flota, brilla y reacciona a lo que haces.
-      Usa las propiedades individuales translate / rotate / scale para que
-      el flotado y las reacciones se sumen sin pisarse.
-      La lista base (pop, float, glow) se repite IGUAL en cada estado y las
-      reacciones solo agregan una animación al final: así, al cambiar de
-      estado, el logo no vuelve a "aparecer" ni reinicia el flotado.
-      El color del brillo cambia con la variable --glow.
-   ---------------------------------------------------------------------- */
+/* 4. LOGO */
 .login-logo {
   --glow: 79, 70, 229;
   filter: drop-shadow(0 6px 14px rgba(var(--glow), 0.32));
@@ -186,7 +184,8 @@
 
 .login-card > .login-logo {
   animation:
-    logoPop 0.9s cubic-bezier(0.34, 1.56, 0.64, 1) 0.15s backwards,
+    logoPop calc(0.9s * var(--anim)) cubic-bezier(0.34, 1.56, 0.64, 1) calc(0.15s * var(--anim))
+      backwards,
     logoFloat 4.5s ease-in-out 1s infinite,
     logoGlow 2.25s ease-in-out 1s infinite alternate;
 }
@@ -195,34 +194,30 @@
   scale: 1.08;
   rotate: -4deg;
 }
-
-/* Curioso al escribir el correo */
 .login-card:has(#correo:focus) .login-logo {
   scale: 1.06;
   rotate: -3deg;
 }
-
-/* Tímido al escribir la contraseña */
 .login-card:has(#password:focus) .login-logo {
   scale: 0.93;
   rotate: 7deg;
 }
 
-/* Negación con la cabeza y brillo rojo cuando hay error */
 .login-card:has(.error-message) .login-logo {
   --glow: 239, 68, 68;
   animation:
-    logoPop 0.9s cubic-bezier(0.34, 1.56, 0.64, 1) 0.15s backwards,
+    logoPop calc(0.9s * var(--anim)) cubic-bezier(0.34, 1.56, 0.64, 1) calc(0.15s * var(--anim))
+      backwards,
     logoFloat 4.5s ease-in-out 1s infinite,
     logoGlow 2.25s ease-in-out 1s infinite alternate,
     logoNo 0.55s ease 1;
 }
 
-/* Late mientras se inicia sesión */
 .login-card:has(form button:disabled) .login-logo {
   --glow: 99, 102, 241;
   animation:
-    logoPop 0.9s cubic-bezier(0.34, 1.56, 0.64, 1) 0.15s backwards,
+    logoPop calc(0.9s * var(--anim)) cubic-bezier(0.34, 1.56, 0.64, 1) calc(0.15s * var(--anim))
+      backwards,
     logoFloat 4.5s ease-in-out 1s infinite,
     logoGlow 2.25s ease-in-out 1s infinite alternate,
     logoPulse 0.9s ease-in-out infinite;
@@ -240,7 +235,6 @@
     rotate: 0deg;
   }
 }
-
 @keyframes logoFloat {
   0%,
   100% {
@@ -250,7 +244,6 @@
     translate: 0 -6px;
   }
 }
-
 @keyframes logoGlow {
   from {
     filter: drop-shadow(0 6px 14px rgba(var(--glow), 0.3));
@@ -259,7 +252,6 @@
     filter: drop-shadow(0 10px 24px rgba(var(--glow), 0.6));
   }
 }
-
 @keyframes logoNo {
   0%,
   100% {
@@ -278,7 +270,6 @@
     rotate: 5deg;
   }
 }
-
 @keyframes logoPulse {
   0%,
   100% {
@@ -289,13 +280,10 @@
   }
 }
 
-/* ----------------------------------------------------------------------
-   5. CAMPOS: la etiqueta se ilumina y el anillo de foco "late" una vez
-   ---------------------------------------------------------------------- */
+/* 5. CAMPOS Y FOCO */
 .form-group label {
   transition: color 0.2s ease;
 }
-
 .form-group:focus-within label {
   color: #4f46e5;
 }
@@ -316,9 +304,7 @@
   }
 }
 
-/* ----------------------------------------------------------------------
-   6. BOTÓN: elevación, destello al pasar el mouse y spinner al cargar
-   ---------------------------------------------------------------------- */
+/* 6. BOTÓN */
 .login-card form button[type='submit'] {
   position: relative;
   overflow: hidden;
@@ -379,16 +365,13 @@
     transform: translateX(120%);
   }
 }
-
 @keyframes spin {
   to {
     transform: rotate(360deg);
   }
 }
 
-/* ----------------------------------------------------------------------
-   7. MENSAJE DE ERROR: cae y se sacude (se repite cada vez que aparece)
-   ---------------------------------------------------------------------- */
+/* 7. ERROR */
 .error-message {
   animation: errorIn 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97) backwards;
 }
@@ -419,33 +402,7 @@
   }
 }
 
-/* ----------------------------------------------------------------------
-   8. ACCESIBILIDAD: sin movimiento si el usuario lo pide
-      (el spinner de carga se mantiene como indicador)
-   ---------------------------------------------------------------------- */
-@media (prefers-reduced-motion: reduce) {
-  .login-container::before,
-  .login-container::after,
-  .login-card,
-  .login-card::before,
-  .login-card > *,
-  .login-card > .login-logo,
-  .login-card:has(.error-message) .login-logo,
-  .login-card:has(form button:disabled) .login-logo,
-  .form-group input:focus,
-  .login-card form button[type='submit']:hover::after,
-  .error-message {
-    animation: none !important;
-  }
-}
-
-/* ----------------------------------------------------------------------
-   9. GIRO DE LA TARJETA al pulsar "Regístrate"
-      Es la primera mitad de un giro continuo: la tarjeta del login gira
-      hasta quedar de canto (invisible) y, al cambiar de ruta, la tarjeta
-      de registro completa el giro (ver registrar.animations.css).
-      login.ts añade la clase .volteando a la tarjeta.
-   ---------------------------------------------------------------------- */
+/* 8. GIRO DE SALIDA */
 .login-card.volteando {
   pointer-events: none;
   transform: perspective(1400px) rotateY(90deg);
@@ -463,9 +420,22 @@
   }
 }
 
-/* La carta se "levanta" un poco mientras gira */
 @keyframes cardLiftOut {
   to {
     scale: 1.06;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .login-container::before,
+  .login-container::after,
+  .login-card,
+  .login-card::before,
+  .login-card > *,
+  .login-card > .login-logo,
+  .form-group input:focus,
+  .login-card form button[type='submit']:hover::after,
+  .error-message {
+    animation: none !important;
   }
 }
