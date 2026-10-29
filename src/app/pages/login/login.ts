@@ -90,11 +90,11 @@ export class Login implements AfterViewInit {
     });
 
     window.google.accounts.id.renderButton(this.googleButton.nativeElement, {
-      theme: 'outline',
+      theme: 'filled_black' /* Tema oscuro oficial */,
       size: 'large',
       text: 'continue_with',
       shape: 'rectangular',
-      width: 320,
+      width: 300 /* Un poco más angosto para evitar desbordes */,
     });
   }
 

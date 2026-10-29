@@ -1,14 +1,14 @@
 <div class="login-container">
   <div class="login-card">
     <h1>DataHorse</h1>
-    <img src="Logo.png" alt="DataHorse" class="login-logo" />
+    <!-- CAMBIO DE LOGO AQUÍ -->
+    <img src="Logo_blanco.png" alt="DataHorse" class="login-logo" />
 
     <p class="subtitle">Inicia sesión en tu cuenta</p>
 
     <form (ngSubmit)="iniciarSesion()">
       <div class="form-group">
         <label for="correo"> Correo electrónico </label>
-
         <input
           type="email"
           id="correo"
@@ -44,7 +44,6 @@
             [attr.aria-label]="verPassword() ? 'Ocultar contraseña' : 'Mostrar contraseña'"
           >
             @if (verPassword()) {
-              <!-- Ojito tachado (Ocultar) -->
               <svg
                 viewBox="0 0 24 24"
                 fill="none"
@@ -59,7 +58,6 @@
                 <line x1="1" y1="1" x2="23" y2="23"></line>
               </svg>
             } @else {
-              <!-- Ojito abierto (Mostrar) -->
               <svg
                 viewBox="0 0 24 24"
                 fill="none"
@@ -76,7 +74,7 @@
         </div>
       </div>
 
-      <div style="text-align: right; margin-bottom: 16px">
+      <div class="forgot-password">
         <a routerLink="/recuperar-password"> ¿Olvidaste tu contraseña? </a>
       </div>
 
@@ -84,13 +82,8 @@
         {{ mensaje }}
       </p>
 
-      <p *ngIf="necesitaVerificacion">
-        <a
-          routerLink="/verificar-correo"
-          [queryParams]="{
-            correo: correo,
-          }"
-        >
+      <p *ngIf="necesitaVerificacion" class="verify-link">
+        <a routerLink="/verificar-correo" [queryParams]="{ correo: correo }">
           Verificar mi correo
         </a>
       </p>
@@ -100,26 +93,21 @@
       </button>
     </form>
 
-    <div style="display: flex; align-items: center; gap: 12px; margin: 22px 0; color: #888">
-      <span style="flex: 1; height: 1px; background: #ddd"></span>
-
-      <span> o </span>
-
-      <span style="flex: 1; height: 1px; background: #ddd"></span>
+    <!-- CAMBIO DE COLOR EN LAS LÍNEAS DIVISORIAS -->
+    <div class="divider">
+      <span class="line"></span>
+      <span class="text"> o </span>
+      <span class="line"></span>
     </div>
 
-    <div style="display: flex; justify-content: center">
+    <div class="google-wrapper">
       <div #googleButton></div>
     </div>
 
-    <p *ngIf="cargandoGoogle" style="text-align: center; margin-top: 10px">
-      Conectando con Google...
-    </p>
+    <p *ngIf="cargandoGoogle" class="google-loading">Conectando con Google...</p>
 
-    <p>
-      ¿No tienes cuenta?
-
-      <a href="/registrar" (click)="irARegistro($event)"> Regístrate </a>
+    <p class="register-link">
+      ¿No tienes cuenta? <a href="/registrar" (click)="irARegistro($event)"> Regístrate </a>
     </p>
   </div>
 </div>

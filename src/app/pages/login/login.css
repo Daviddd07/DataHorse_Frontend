@@ -1,246 +1,257 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
+:host {
+  --bg-glass: rgba(30, 35, 40, 0.6);
+  --border-glass: rgba(255, 255, 255, 0.15);
+  --text-main: #ffffff;
+  --text-muted: rgba(255, 255, 255, 0.7);
+  --accent-gold: #e6a817;
+  --accent-leather: #b5651d;
+}
+
+/* Contenedor principal con la imagen de fondo */
 .login-container {
   min-height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
-  background: linear-gradient(160deg, #0f172a 0%, #1e293b 45%, #0f172a 100%);
   font-family:
     'Inter',
     -apple-system,
-    BlinkMacSystemFont,
-    'Segoe UI',
     sans-serif;
   padding: 24px;
   box-sizing: border-box;
+
+  background-image:
+    linear-gradient(rgba(15, 20, 25, 0.65), rgba(15, 20, 25, 0.85)),
+    url('https://images.unsplash.com/photo-1553284965-83fd3e82fa5a?q=80&w=1920&auto=format&fit=crop');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
 }
 
+/* Tarjeta con efecto Glassmorphism */
 .login-card {
   width: 400px;
   max-width: 100%;
   padding: 44px 40px;
-  background-color: #ffffff;
-  border-radius: 10px;
-  border: 1px solid rgba(15, 23, 42, 0.06);
-  box-shadow:
-    0 1px 2px rgba(15, 23, 42, 0.04),
-    0 20px 40px -12px rgba(15, 23, 42, 0.35);
+
+  /* Estilos del cristal */
+  background: var(--bg-glass);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border-glass);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+  border-radius: 24px;
+
+  color: var(--text-main);
+  position: relative;
+  transition: box-shadow 0.4s ease;
+  animation: cardIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) backwards;
 }
 
 .login-card h1 {
   text-align: center;
   margin: 0 0 6px;
-  font-size: 24px;
+  font-size: 26px;
   font-weight: 700;
   letter-spacing: -0.02em;
-  color: #0f172a;
+  color: var(--text-main);
 }
 
 .subtitle {
   text-align: center;
   margin: 0 0 32px;
   font-size: 14px;
-  color: #64748b;
+  color: var(--text-muted);
 }
 
+/* Inputs */
 .form-group {
   margin-bottom: 20px;
 }
 
 .form-group label {
   display: block;
-  margin-bottom: 6px;
+  margin-bottom: 8px;
   font-size: 13px;
   font-weight: 500;
-  color: #334155;
+  color: var(--text-muted);
+  transition: color 0.2s ease;
+}
+
+.form-group:focus-within label {
+  color: var(--accent-gold); /* Se ilumina en dorado al enfocar */
 }
 
 .form-group input {
   width: 100%;
-  padding: 11px 14px;
+  padding: 12px 14px;
   box-sizing: border-box;
-  border: 1px solid #cbd5e1;
-  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
   font-family: inherit;
   font-size: 14px;
-  color: #0f172a;
-  background-color: #f8fafc;
-  transition:
-    border-color 0.15s ease,
-    box-shadow 0.15s ease,
-    background-color 0.15s ease;
+  color: var(--text-main);
+  background-color: rgba(0, 0, 0, 0.3); /* Fondo oscuro translúcido */
+  transition: all 0.2s ease;
 }
 
 .form-group input::placeholder {
-  color: #94a3b8;
+  color: rgba(255, 255, 255, 0.4);
 }
 
 .form-group input:hover {
-  border-color: #94a3b8;
+  border-color: rgba(255, 255, 255, 0.4);
 }
 
 .form-group input:focus {
   outline: none;
-  border-color: #4f46e5;
-  background-color: #ffffff;
-  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+  border-color: var(--accent-gold);
+  background-color: rgba(0, 0, 0, 0.5);
+  box-shadow: 0 0 0 3px rgba(230, 168, 23, 0.15);
 }
 
-button {
+/* Botón principal */
+button[type='submit'] {
   width: 100%;
-  padding: 12px;
+  padding: 14px;
   margin-top: 8px;
   border: none;
-  border-radius: 6px;
-  background-color: #4f46e5;
+  border-radius: 8px;
+  background-color: var(--accent-leather);
   color: #ffffff;
   font-family: inherit;
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 600;
   cursor: pointer;
-  transition:
-    background-color 0.15s ease,
-    transform 0.05s ease;
+  transition: all 0.15s ease;
 }
 
-button:hover {
-  background-color: #4338ca;
+button[type='submit']:hover {
+  background-color: #9a5214;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 22px -8px rgba(181, 101, 29, 0.65);
 }
 
-button:active {
-  transform: translateY(1px);
+button[type='submit']:active {
+  transform: translateY(1px) scale(0.99);
 }
 
-button:focus-visible {
-  outline: 2px solid #4f46e5;
-  outline-offset: 2px;
+/* Links de recuperar contraseña y registro */
+.forgot-password {
+  text-align: right;
+  margin-bottom: 16px;
 }
 
-.register-text {
-  text-align: center;
-  margin-top: 24px;
-  font-size: 13px;
-  color: #64748b;
-}
-
-.register-text a {
-  color: #4f46e5;
+.forgot-password a,
+.register-link a,
+.verify-link a {
+  color: var(--accent-gold);
   font-weight: 600;
+  font-size: 13px;
   text-decoration: none;
+  transition: color 0.2s;
 }
 
-.register-text a:hover {
+.forgot-password a:hover,
+.register-link a:hover,
+.verify-link a:hover {
+  color: #ffffff;
   text-decoration: underline;
 }
 
-/* ======================================================
-   MENSAJE DE ERROR
-====================================================== */
-
+/* Mensajes de Error */
 .error-message {
   display: flex;
   align-items: center;
   gap: 8px;
-
-  background-color: #fef2f2;
-  color: #b91c1c;
-
-  border: 1px solid #fecaca;
-  border-radius: 6px;
-
+  background-color: rgba(255, 107, 107, 0.15);
+  color: #ff6b6b;
+  border: 1px solid rgba(255, 107, 107, 0.3);
+  border-radius: 8px;
   padding: 10px 14px;
   margin: 0 0 16px;
-
   font-size: 13px;
   font-weight: 500;
-  line-height: 1.4;
 }
 
 .error-message::before {
   content: '⚠';
   font-size: 15px;
-  line-height: 1;
-  flex-shrink: 0;
-}
-.login-logo {
-  display: block;
-  margin: 0 auto 16px;
-
-  width: 80px;
-  height: 80px;
-
-  object-fit: contain;
-}
-@keyframes fadeSlideUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
 }
 
-.dh-page,
-.mc-page,
-.ec-page,
-.dp-page {
-  animation: fadeSlideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+/* Divisor y Google */
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 22px 0;
+  color: var(--text-muted);
+  font-size: 13px;
 }
-/* ======================================================
-   INPUT CON OJITO
-====================================================== */
-/* El contenedor del input */
+
+.divider .line {
+  flex: 1;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.google-wrapper {
+  display: flex;
+  justify-content: center;
+}
+
+.google-loading {
+  text-align: center;
+  margin-top: 10px;
+  font-size: 13px;
+  color: var(--accent-gold);
+}
+
+.register-link {
+  text-align: center;
+  margin-top: 24px;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+/* Ojito de la contraseña */
 .input-password-wrapper {
   position: relative;
   display: block;
   width: 100%;
 }
 
-/* El input */
 .input-password-wrapper input {
   width: 100%;
-  padding-right: 44px; /* Espacio para el ojito */
-  box-sizing: border-box;
+  padding-right: 44px;
 }
 
-/* El botón del ojito */
 .btn-ojo {
   position: absolute;
   right: 8px;
-  top: 50%; /* 👈 Volvemos al top 50% */
-  transform: translateY(-50%); /* 👈 Y lo centramos con transform */
-
+  top: 50%;
+  transform: translateY(-50%);
   width: 32px;
   height: 32px;
-  margin: 0; /* 👈 Quitamos cualquier margen que interfiera */
-
   display: flex;
   align-items: center;
   justify-content: center;
-
   border: none;
   background: transparent;
-  color: #64748b;
-
+  color: rgba(255, 255, 255, 0.5);
   cursor: pointer;
   padding: 0;
   border-radius: 50%;
-
-  transition:
-    background-color 0.2s ease,
-    color 0.2s ease;
+  transition: all 0.2s ease;
 }
 
 .btn-ojo:hover {
-  background-color: #e2e8f0;
-  color: #0f172a;
+  background-color: rgba(255, 255, 255, 0.1);
+  color: var(--text-main);
 }
 
-/* 🚨 LA CLAVE ESTÁ AQUÍ 🚨 */
-/* Al hacer clic, mantenemos el translateY(-50%) y solo lo encogemos */
 .btn-ojo:active {
   transform: translateY(-50%) scale(0.9) !important;
 }
@@ -250,31 +261,12 @@ button:focus-visible {
   height: 20px;
 }
 
-/* Mantenemos el hover y el active (para que no salte) */
-.btn-ojo:hover {
-  background-color: #e2e8f0;
-  color: #0f172a;
-}
-
-.btn-ojo:active {
-  transform: scale(0.9) !important;
-}
-
-.btn-ojo svg {
-  width: 20px;
-  height: 20px;
-}
-
-.btn-ojo:active {
-  transform: translateY(-50%) scale(0.9) !important;
-}
-
-.btn-ojo:hover {
-  background-color: #e2e8f0; /* Círculo gris al pasar el mouse */
-  color: #0f172a;
-}
-
-.btn-ojo svg {
-  width: 20px;
-  height: 20px;
+/* Logo */
+.login-logo {
+  display: block;
+  margin: 0 auto 16px;
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.5)); /* Sombra para que resalte */
 }
