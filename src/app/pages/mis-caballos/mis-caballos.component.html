@@ -8,14 +8,7 @@
       </div>
 
       <div class="dh-header-actions">
-        <button
-          class="dh-icon-btn"
-          type="button"
-          aria-label="Favoritos"
-          (click)="volverAlMarketplace()"
-        >
-          ♥
-        </button>
+        <!-- Botón del más (+) -->
         <button
           class="dh-icon-btn"
           type="button"
@@ -61,38 +54,38 @@
       </div>
     </header>
 
-    <!-- BOTÓN VOLVER -->
-    <div class="mc-top-bar">
-      <button
-        class="mc-back-btn"
-        type="button"
-        (click)="volverAlMarketplace()"
-        title="Volver al marketplace"
-        aria-label="Volver al marketplace"
-      >
-        <svg
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
+    <!-- CABECERA: FLECHA + TÍTULO + BOTÓN PUBLICAR -->
+    <div class="mc-header-row">
+      <div class="mc-title-group">
+        <button
+          class="mc-back-btn"
+          type="button"
+          (click)="volverAlMarketplace()"
+          title="Volver al marketplace"
+          aria-label="Volver al marketplace"
         >
-          <line x1="19" y1="12" x2="5" y2="12"></line>
-          <polyline points="12 19 5 12 12 5"></polyline>
-        </svg>
-      </button>
-    </div>
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+          </svg>
+        </button>
 
-    <!-- TÍTULO -->
-    <div class="mc-heading">
-      <div>
-        <h1>Mis caballos</h1>
-        <p>
-          Tienes {{ caballos().length }} ejemplares registrados. Edita su información o elimínalos
-          de DataHorse.
-        </p>
+        <div class="mc-heading-text">
+          <h1>Mis caballos</h1>
+          <p>
+            Tienes {{ caballos().length }} ejemplares registrados. Edita su información o elimínalos
+            de DataHorse.
+          </p>
+        </div>
       </div>
+
       <button type="button" class="mc-btn-primary" (click)="publicarCaballo()">
         + Publicar ejemplar
       </button>

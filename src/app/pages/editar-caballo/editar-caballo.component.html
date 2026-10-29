@@ -1,34 +1,41 @@
 <div class="ec-page">
-  <!-- HEADER -->
-
-  <header class="ec-header">
+  <!-- HEADER (Mismo estilo oscuro del marketplace) -->
+  <header class="ec-header glass">
     <div class="ec-logo">
-      <img src="Logo.png" alt="DataHorse" class="dh-logo-img" />
+      <img src="Logo_blanco.png" alt="DataHorse" class="dh-logo-img" />
       <span>DataHorse</span>
     </div>
 
-    <div class="ec-search">
-      <input type="text" placeholder="Buscar por nombre, raza o ubicación" />
-    </div>
-
     <div class="ec-header-actions">
-      <button class="ec-icon-btn" type="button" aria-label="Favoritos" (click)="cancelar()">
-        ♥
-      </button>
+      <!-- Botón del más (+) -->
       <button
         class="ec-icon-btn"
         type="button"
         aria-label="Agregar publicación"
         (click)="cancelar()"
       >
-        +
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          width="20"
+          height="20"
+        >
+          <line x1="12" y1="5" x2="12" y2="19"></line>
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+        </svg>
       </button>
 
+      <!-- Avatar del usuario -->
       <div class="ec-user-wrap">
         <button class="ec-avatar" type="button" (click)="toggleMenu()" aria-label="Menú de usuario">
           {{ inicial() }}
         </button>
 
+        <!-- MENÚ DE USUARIO OSCURO -->
         <div class="ec-user-menu" *ngIf="menuAbierto()">
           <div class="ec-user-head">
             <div class="ec-avatar ec-avatar--lg">{{ inicial() }}</div>
@@ -37,20 +44,42 @@
               <span>{{ correoUsuario() }}</span>
             </div>
           </div>
-
           <ul class="ec-user-list">
             <li>
               <button type="button" (click)="irAMisCaballos()">
-                <span class="ec-menu-ico"></span>
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  width="16"
+                  height="16"
+                >
+                  <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                  <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                </svg>
                 Mis caballos
               </button>
             </li>
           </ul>
-
           <div class="ec-user-divider"></div>
-
           <button type="button" class="ec-user-logout" (click)="cerrarSesion()">
-            <span class="ec-menu-ico">↪</span>
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              width="16"
+              height="16"
+            >
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+              <polyline points="16 17 21 12 16 7"></polyline>
+              <line x1="21" y1="12" x2="9" y2="12"></line>
+            </svg>
             Cerrar sesión
           </button>
         </div>
@@ -59,244 +88,234 @@
   </header>
 
   <!-- ESTADOS -->
-
-  <p class="ec-empty" *ngIf="cargando()">Cargando...</p>
-
-  <p class="ec-error-block" *ngIf="!cargando() && error() && !caballo()">
-    {{ error() }}
-  </p>
+  <p class="ec-empty glass" *ngIf="cargando()">Cargando datos del caballo...</p>
+  <p class="ec-error-block glass" *ngIf="!cargando() && error() && !caballo()">{{ error() }}</p>
 
   <!-- FORMULARIO -->
-
   <div class="ec-content" *ngIf="!cargando() && caballo() as c">
-    <!-- MIGAS -->
+    <!-- TÍTULO Y FLECHA EN LA MISMA LÍNEA -->
+    <div class="ec-title-row">
+      <button
+        class="ec-back-btn"
+        type="button"
+        (click)="cancelar()"
+        title="Volver a Mis Caballos"
+        aria-label="Volver"
+      >
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <line x1="19" y1="12" x2="5" y2="12"></line>
+          <polyline points="12 19 5 12 12 5"></polyline>
+        </svg>
+      </button>
 
-    <div class="ec-breadcrumb">
-      <span class="ec-link" (click)="irAMisCaballos()">Mi cuenta</span>
-      <span class="ec-sep">/</span>
-      <span class="ec-link" (click)="irAMisCaballos()">Mis caballos</span>
-      <span class="ec-sep">/</span>
-      <span>Editar</span>
-    </div>
-
-    <!-- TÍTULO -->
-
-    <div class="ec-heading">
-      <h1>Editar a {{ c.nombre }}</h1>
-      <p>
-        Actualiza la información de tu ejemplar. Los cambios se verán en el marketplace al guardar.
-      </p>
+      <div class="ec-heading">
+        <h1>Editar a {{ c.nombre }}</h1>
+        <p>
+          Actualiza la información de tu ejemplar. Los cambios se verán en el marketplace al
+          guardar.
+        </p>
+      </div>
     </div>
 
     <p class="ec-tipo">
       Tipo seleccionado: <strong>{{ c.sexo }}</strong>
     </p>
 
-    <!-- FORM -->
+    <!-- CONTENEDOR DEL FORMULARIO CON CRISTAL -->
+    <div class="ec-form-wrapper glass">
+      <form class="ec-form" (ngSubmit)="guardar()">
+        <label>
+          Nombre
+          <input type="text" [value]="nombre()" (input)="nombre.set($any($event.target).value)" />
+        </label>
 
-    <form class="ec-form" (ngSubmit)="guardar()">
-      <!-- NOMBRE -->
+        <label>
+          Raza
+          <select (change)="onRazaChange($any($event.target).value)">
+            <option
+              *ngFor="let r of razas()"
+              [value]="r.id_raza"
+              [selected]="r.id_raza === idRazaSeleccionada()"
+            >
+              {{ r.nombre }}
+            </option>
+            <option value="-1">Otro</option>
+          </select>
+        </label>
 
-      <label>
-        Nombre
-        <input type="text" [value]="nombre()" (input)="nombre.set($any($event.target).value)" />
-      </label>
+        <label *ngIf="razaEsOtro()">
+          ¿Cuál raza?
+          <input
+            type="text"
+            placeholder="Escribe la raza"
+            [value]="razaPersonalizada()"
+            (input)="razaPersonalizada.set($any($event.target).value)"
+          />
+        </label>
 
-      <!-- RAZA -->
-
-      <label>
-        Raza
-        <select (change)="onRazaChange($any($event.target).value)">
-          <option
-            *ngFor="let r of razas()"
-            [value]="r.id_raza"
-            [selected]="r.id_raza === idRazaSeleccionada()"
+        <label>
+          Fecha de nacimiento
+          <input
+            type="date"
+            [value]="fechaNacimiento()"
+            (input)="fechaNacimiento.set($any($event.target).value)"
+          />
+          <span class="ec-hint"
+            >Si no conoces la fecha exacta, puedes ingresar una aproximada.</span
           >
-            {{ r.nombre }}
-          </option>
-          <option value="-1">Otro</option>
-        </select>
-      </label>
+        </label>
 
-      <label *ngIf="razaEsOtro()">
-        ¿Cuál raza?
-        <input
-          type="text"
-          placeholder="Escribe la raza"
-          [value]="razaPersonalizada()"
-          (input)="razaPersonalizada.set($any($event.target).value)"
-        />
-      </label>
-
-      <!-- FECHA -->
-
-      <label>
-        Fecha de nacimiento
-        <input
-          type="date"
-          [value]="fechaNacimiento()"
-          (input)="fechaNacimiento.set($any($event.target).value)"
-        />
-        <span class="ec-hint">Si no conoces la fecha exacta, puedes ingresar una aproximada.</span>
-      </label>
-
-      <!-- ALTURA -->
-
-      <label>
-        Altura (metros)
-        <input
-          type="number"
-          min="0"
-          step="0.01"
-          [value]="altura() ?? ''"
-          (input)="onAlturaChange($any($event.target).value)"
-        />
-      </label>
-
-      <!-- COLOR -->
-
-      <label>
-        Color
-        <input type="text" [value]="color()" (input)="color.set($any($event.target).value)" />
-      </label>
-
-      <!-- UBICACIÓN -->
-
-      <label>
-        Ubicación
-        <input
-          type="text"
-          [value]="ubicacion()"
-          (input)="ubicacion.set($any($event.target).value)"
-        />
-      </label>
-
-      <!-- PRECIO (solo machos) -->
-
-      <label *ngIf="c.sexo === 'Macho'">
-        Precio
-        <div class="ec-price-input">
-          <span>$</span>
+        <label>
+          Altura (metros)
           <input
             type="number"
-            min="1"
-            step="1000"
-            [value]="precio() ?? ''"
-            (input)="onPrecioChange($any($event.target).value)"
+            min="0"
+            step="0.01"
+            [value]="altura() ?? ''"
+            (input)="onAlturaChange($any($event.target).value)"
           />
-        </div>
-      </label>
+        </label>
 
-      <!-- DESCRIPCIÓN -->
+        <label>
+          Color
+          <input type="text" [value]="color()" (input)="color.set($any($event.target).value)" />
+        </label>
 
-      <label class="ec-full">
-        Descripción
-        <textarea
-          [value]="descripcion()"
-          (input)="descripcion.set($any($event.target).value)"
-        ></textarea>
-      </label>
+        <label>
+          Ubicación
+          <input
+            type="text"
+            [value]="ubicacion()"
+            (input)="ubicacion.set($any($event.target).value)"
+          />
+        </label>
 
-      <!-- DISPONIBILIDAD -->
+        <label *ngIf="c.sexo === 'Macho'">
+          Precio
+          <div class="ec-price-input">
+            <span>$</span>
+            <input
+              type="number"
+              min="1"
+              step="1000"
+              [value]="precio() ?? ''"
+              (input)="onPrecioChange($any($event.target).value)"
+            />
+          </div>
+        </label>
 
-      <label>
-        Disponibilidad
-        <select (change)="onDisponibilidadChange($any($event.target).value)">
-          <option value="Disponible" [selected]="disponibilidad() === 'Disponible'">
-            Disponible
-          </option>
-          <option value="No disponible" [selected]="disponibilidad() === 'No disponible'">
-            No disponible
-          </option>
-        </select>
-      </label>
+        <label class="ec-full">
+          Descripción
+          <textarea
+            [value]="descripcion()"
+            (input)="descripcion.set($any($event.target).value)"
+          ></textarea>
+        </label>
 
-      <!-- FOTOS -->
+        <label>
+          Disponibilidad
+          <select (change)="onDisponibilidadChange($any($event.target).value)">
+            <option value="Disponible" [selected]="disponibilidad() === 'Disponible'">
+              Disponible
+            </option>
+            <option value="No disponible" [selected]="disponibilidad() === 'No disponible'">
+              No disponible
+            </option>
+          </select>
+        </label>
 
-      <div class="ec-fotos-field ec-full">
-        <div class="ec-fotos-head">
-          <span class="ec-fotos-title">Fotos del ejemplar</span>
-          <span class="ec-fotos-hint">Hasta 5 MB por foto. La primera será la principal.</span>
-        </div>
+        <!-- FOTOS -->
+        <div class="ec-fotos-field ec-full">
+          <div class="ec-fotos-head">
+            <span class="ec-fotos-title">Fotos del ejemplar</span>
+            <span class="ec-fotos-hint">Hasta 5 MB por foto. La primera será la principal.</span>
+          </div>
 
-        <!-- Fotos existentes -->
+          <div class="ec-fotos-grid" *ngIf="fotos().length > 0">
+            <div class="ec-foto-item" *ngFor="let f of fotos()">
+              <img [src]="f.urlCompleta" [alt]="'Foto de ' + c.nombre" />
+              <span class="ec-foto-principal" *ngIf="f.es_principal">Principal</span>
+              <button
+                type="button"
+                class="ec-foto-remove"
+                (click)="pedirEliminarFoto(f.id_foto)"
+                aria-label="Eliminar foto"
+              >
+                ×
+              </button>
+            </div>
+          </div>
 
-        <div class="ec-fotos-grid" *ngIf="fotos().length > 0">
-          <div class="ec-foto-item" *ngFor="let f of fotos()">
-            <img [src]="f.urlCompleta" [alt]="'Foto de ' + c.nombre" />
+          <div class="ec-fotos-nuevas" *ngIf="fotosNuevas().length > 0">
+            <p class="ec-fotos-nuevas-title">Nuevas por subir ({{ fotosNuevas().length }})</p>
+            <ul class="ec-fotos-nuevas-list">
+              <li *ngFor="let f of fotosNuevas(); let i = index">
+                <span>{{ f.name }}</span>
+                <button type="button" (click)="quitarFotoNueva(i)">×</button>
+              </li>
+            </ul>
+          </div>
 
-            <span class="ec-foto-principal" *ngIf="f.es_principal">Principal</span>
+          <input
+            #fileInputEditar
+            type="file"
+            accept="image/jpeg,image/png,image/webp"
+            multiple
+            (change)="onFotosSeleccionadas($event)"
+            hidden
+          />
 
-            <button
-              type="button"
-              class="ec-foto-remove"
-              (click)="pedirEliminarFoto(f.id_foto)"
-              aria-label="Eliminar foto"
+          <button type="button" class="ec-fotos-btn" (click)="fileInputEditar.click()">
+            <svg
+              viewBox="0 0 24 24"
+              width="16"
+              height="16"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
             >
-              ×
+              <path d="M12 5v14M5 12h14" />
+            </svg>
+            Añadir fotos
+          </button>
+        </div>
+
+        <p class="ec-error ec-full" *ngIf="error()">{{ error() }}</p>
+
+        <div class="ec-actions ec-full">
+          <!-- Botón de eliminar (separado a la izquierda) -->
+          <button type="button" class="ec-btn ec-btn-danger" (click)="pedirEliminarCaballo()">
+            Eliminar caballo
+          </button>
+
+          <!-- Contenedor para agrupar Cancelar y Guardar a la derecha -->
+          <div class="ec-main-actions">
+            <button type="button" class="ec-btn ec-btn-secondary" (click)="cancelar()">
+              Cancelar
+            </button>
+            <button type="submit" class="ec-btn ec-btn-primary" [disabled]="guardando()">
+              {{ guardando() ? 'Guardando...' : 'Guardar cambios' }}
             </button>
           </div>
         </div>
-
-        <!-- Fotos nuevas -->
-
-        <div class="ec-fotos-nuevas" *ngIf="fotosNuevas().length > 0">
-          <p class="ec-fotos-nuevas-title">Nuevas por subir ({{ fotosNuevas().length }})</p>
-
-          <ul class="ec-fotos-nuevas-list">
-            <li *ngFor="let f of fotosNuevas(); let i = index">
-              <span>{{ f.name }}</span>
-              <button type="button" (click)="quitarFotoNueva(i)">×</button>
-            </li>
-          </ul>
-        </div>
-
-        <!-- Input de archivos -->
-
-        <input
-          #fileInputEditar
-          type="file"
-          accept="image/jpeg,image/png,image/webp"
-          multiple
-          (change)="onFotosSeleccionadas($event)"
-          hidden
-        />
-
-        <button type="button" class="ec-fotos-btn" (click)="fileInputEditar.click()">
-          + Añadir fotos
-        </button>
-      </div>
-
-      <!-- ERRORES Y ÉXITOS -->
-
-      <p class="ec-error ec-full" *ngIf="error()">
-        {{ error() }}
-      </p>
-
-      <!-- BOTONES -->
-
-      <div class="ec-actions ec-full">
-        <button type="submit" class="ec-btn ec-btn-primary" [disabled]="guardando()">
-          {{ guardando() ? 'Guardando...' : 'Guardar cambios' }}
-        </button>
-
-        <button type="button" class="ec-btn ec-btn-secondary" (click)="cancelar()">Cancelar</button>
-
-        <button type="button" class="ec-btn ec-btn-danger" (click)="pedirEliminarCaballo()">
-          Eliminar caballo
-        </button>
-      </div>
-    </form>
+      </form>
+    </div>
   </div>
 
-  <!-- MODAL: ELIMINAR FOTO -->
-
+  <!-- MODALES OSCUROS -->
   <div class="ec-modal-bg" *ngIf="modalEliminarFotoAbierto()">
-    <div class="ec-modal">
+    <div class="ec-modal glass">
       <h2>Eliminar foto</h2>
-
       <p>¿Seguro que quieres eliminar esta foto? Esta acción no se puede deshacer.</p>
-
       <div class="ec-modal-actions">
         <button type="button" class="ec-btn ec-btn-secondary" (click)="cancelarEliminarFoto()">
           Cancelar
@@ -308,17 +327,13 @@
     </div>
   </div>
 
-  <!-- MODAL: ELIMINAR CABALLO -->
-
   <div class="ec-modal-bg" *ngIf="modalEliminarCaballoAbierto()">
-    <div class="ec-modal">
+    <div class="ec-modal glass">
       <h2>Eliminar caballo</h2>
-
       <p>
         ¿Seguro que quieres eliminar este caballo? Ya no aparecerá en el marketplace ni en "Mis
         caballos".
       </p>
-
       <div class="ec-modal-actions">
         <button type="button" class="ec-btn ec-btn-secondary" (click)="cancelarEliminarCaballo()">
           Cancelar
