@@ -1,262 +1,221 @@
-<div class="dh-page">
-  <!-- HEADER -->
+<div class="mc-page">
+  <div class="dh-page">
+    <!-- HEADER ORIGINAL RESTAURADO -->
+    <header class="dh-header-original">
+      <div class="dh-logo">
+        <img src="Logo_blanco.png" alt="DataHorse" class="dh-logo-img" />
+        <span>DataHorse</span>
+      </div>
 
-  <header class="dh-header">
-    <div class="dh-logo">
-      <img src="Logo.png" alt="DataHorse" class="dh-logo-img" />
-      <span>DataHorse</span>
-    </div>
+      <div class="dh-header-actions">
+        <button
+          class="dh-icon-btn"
+          type="button"
+          aria-label="Favoritos"
+          (click)="volverAlMarketplace()"
+        >
+          ♥
+        </button>
+        <button
+          class="dh-icon-btn"
+          type="button"
+          aria-label="Agregar publicación"
+          (click)="publicarCaballo()"
+        >
+          +
+        </button>
 
-    <div class="dh-header-actions">
+        <div class="dh-user-wrap">
+          <button
+            class="dh-avatar"
+            type="button"
+            (click)="toggleMenu()"
+            [attr.aria-expanded]="menuAbierto()"
+            aria-label="Menú de usuario"
+          >
+            {{ inicial() }}
+          </button>
+
+          <div class="dh-user-menu" *ngIf="menuAbierto()">
+            <div class="dh-user-head">
+              <div class="dh-avatar dh-avatar--lg">{{ inicial() }}</div>
+              <div class="dh-user-info">
+                <strong>{{ nombreUsuario() }}</strong>
+                <span>{{ correoUsuario() }}</span>
+              </div>
+            </div>
+            <ul class="dh-user-list">
+              <li><button type="button" (click)="irAMisCaballos()">Mis caballos</button></li>
+              <li><button type="button" (click)="cerrarMenu()">Mis publicaciones</button></li>
+              <li><button type="button" (click)="cerrarMenu()">Favoritos</button></li>
+              <li><button type="button" (click)="cerrarMenu()">Mensajes</button></li>
+              <li><button type="button" (click)="cerrarMenu()">Pedigrí y documentos</button></li>
+              <li><button type="button" (click)="cerrarMenu()">Configuración</button></li>
+            </ul>
+            <div class="dh-user-divider"></div>
+            <button type="button" class="dh-user-logout" (click)="cerrarSesion()">
+              Cerrar sesión
+            </button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- BOTÓN VOLVER -->
+    <div class="mc-top-bar">
       <button
-        class="dh-icon-btn"
+        class="mc-back-btn"
         type="button"
-        aria-label="Favoritos"
         (click)="volverAlMarketplace()"
+        title="Volver al marketplace"
+        aria-label="Volver al marketplace"
       >
-        ♥
-      </button>
-
-      <button
-        class="dh-icon-btn"
-        type="button"
-        aria-label="Agregar publicación"
-        (click)="publicarCaballo()"
-      >
-        +
-      </button>
-
-      <div class="dh-user-wrap">
-        <button
-          class="dh-avatar"
-          type="button"
-          (click)="toggleMenu()"
-          [attr.aria-expanded]="menuAbierto()"
-          aria-label="Menú de usuario"
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
         >
-          {{ inicial() }}
-        </button>
+          <line x1="19" y1="12" x2="5" y2="12"></line>
+          <polyline points="12 19 5 12 12 5"></polyline>
+        </svg>
+      </button>
+    </div>
 
-        <div class="dh-user-menu" *ngIf="menuAbierto()">
-          <div class="dh-user-head">
-            <div class="dh-avatar dh-avatar--lg">
-              {{ inicial() }}
-            </div>
-            <div class="dh-user-info">
-              <strong>{{ nombreUsuario() }}</strong>
-              <span>{{ correoUsuario() }}</span>
+    <!-- TÍTULO -->
+    <div class="mc-heading">
+      <div>
+        <h1>Mis caballos</h1>
+        <p>
+          Tienes {{ caballos().length }} ejemplares registrados. Edita su información o elimínalos
+          de DataHorse.
+        </p>
+      </div>
+      <button type="button" class="mc-btn-primary" (click)="publicarCaballo()">
+        + Publicar ejemplar
+      </button>
+    </div>
+
+    <!-- ESTADOS -->
+    <p class="mc-empty glass" *ngIf="cargando()">Cargando tus caballos...</p>
+    <p class="mc-error glass" *ngIf="!cargando() && error()">{{ error() }}</p>
+
+    <!-- LISTAS -->
+    <div class="mc-grid" *ngIf="!cargando() && !error()">
+      <!-- MACHOS -->
+      <section class="mc-col">
+        <h2 class="mc-col-title">
+          Machos <span class="mc-count">{{ machos().length }}</span>
+        </h2>
+        <p class="mc-col-empty glass" *ngIf="machos().length === 0">
+          No tienes caballos machos registrados.
+        </p>
+
+        <article class="mc-item glass" *ngFor="let c of machos()" (click)="editarCaballo(c)">
+          <div class="mc-item-thumb">
+            <img *ngIf="c.fotoUrl; else sinFotoMacho" [src]="c.fotoUrl" [alt]="c.nombre" />
+            <ng-template #sinFotoMacho><div class="mc-thumb-placeholder">🐴</div></ng-template>
+          </div>
+          <div class="mc-item-info">
+            <p class="mc-item-tag">{{ c.raza }} · {{ c.sexo }}</p>
+            <h3>{{ c.nombre }}</h3>
+            <p class="mc-item-loc">{{ c.ubicacion }}</p>
+            <div class="mc-item-footer">
+              <span class="mc-price" *ngIf="c.precio !== null">{{
+                c.precio | currency: 'COP' : 'symbol' : '1.0-0'
+              }}</span>
+              <span class="mc-price mc-price--off" *ngIf="c.precio === null">Sin precio</span>
+              <span class="mc-badge-off" *ngIf="!c.publicado">Sin publicar</span>
             </div>
           </div>
+          <div class="mc-item-actions">
+            <button
+              type="button"
+              class="mc-btn"
+              (click)="$event.stopPropagation(); editarCaballo(c)"
+            >
+              Editar
+            </button>
+            <button
+              type="button"
+              class="mc-btn mc-btn-delete"
+              (click)="$event.stopPropagation(); eliminarCaballo(c)"
+            >
+              Eliminar
+            </button>
+          </div>
+        </article>
+      </section>
 
-          <ul class="dh-user-list">
-            <li>
-              <button type="button" (click)="irAMisCaballos()">
-                <span class="dh-menu-ico"></span>
-                Mis caballos
-              </button>
-            </li>
+      <!-- HEMBRAS -->
+      <section class="mc-col">
+        <h2 class="mc-col-title">
+          Hembras <span class="mc-count">{{ hembras().length }}</span>
+        </h2>
+        <p class="mc-col-empty glass" *ngIf="hembras().length === 0">
+          No tienes yeguas registradas.
+        </p>
 
-            <li>
-              <button type="button" (click)="cerrarMenu()">
-                <span class="dh-menu-ico"></span>
-                Mis publicaciones
-              </button>
-            </li>
+        <article class="mc-item glass" *ngFor="let c of hembras()" (click)="editarCaballo(c)">
+          <div class="mc-item-thumb">
+            <img *ngIf="c.fotoUrl; else sinFotoHembra" [src]="c.fotoUrl" [alt]="c.nombre" />
+            <ng-template #sinFotoHembra><div class="mc-thumb-placeholder">🐴</div></ng-template>
+          </div>
+          <div class="mc-item-info">
+            <p class="mc-item-tag">{{ c.raza }} · {{ c.sexo }}</p>
+            <h3>{{ c.nombre }}</h3>
+            <p class="mc-item-loc">{{ c.ubicacion }}</p>
+          </div>
+          <div class="mc-item-actions">
+            <button
+              type="button"
+              class="mc-btn"
+              (click)="$event.stopPropagation(); editarCaballo(c)"
+            >
+              Editar
+            </button>
+            <button
+              type="button"
+              class="mc-btn mc-btn-delete"
+              (click)="$event.stopPropagation(); eliminarCaballo(c)"
+            >
+              Eliminar
+            </button>
+          </div>
+        </article>
+      </section>
+    </div>
+    <!-- Cierre correcto de mc-grid -->
 
-            <li>
-              <button type="button" (click)="cerrarMenu()">
-                <span class="dh-menu-ico"></span>
-                Favoritos
-              </button>
-            </li>
-
-            <li>
-              <button type="button" (click)="cerrarMenu()">
-                <span class="dh-menu-ico"></span>
-                Mensajes
-              </button>
-            </li>
-
-            <li>
-              <button type="button" (click)="cerrarMenu()">
-                <span class="dh-menu-ico"></span>
-                Pedigrí y documentos
-              </button>
-            </li>
-
-            <li>
-              <button type="button" (click)="cerrarMenu()">
-                <span class="dh-menu-ico"></span>
-                Configuración
-              </button>
-            </li>
-          </ul>
-
-          <div class="dh-user-divider"></div>
-
-          <button type="button" class="dh-user-logout" (click)="cerrarSesion()">
-            <span class="dh-menu-ico">↪</span>
-            Cerrar sesión
+    <!-- MODAL DE ELIMINACIÓN -->
+    <div class="mc-modal-bg" *ngIf="modalEliminarAbierto()">
+      <div class="mc-modal glass">
+        <h2>Eliminar caballo</h2>
+        <p>
+          ¿Seguro que quieres eliminar a <strong>{{ caballoAEliminar()?.nombre }}</strong
+          >? Ya no aparecerá en el marketplace ni en "Mis caballos".
+        </p>
+        <div class="mc-modal-actions">
+          <button
+            type="button"
+            class="mc-modal-btn mc-modal-btn-secondary"
+            (click)="cancelarEliminarCaballo()"
+          >
+            Cancelar
+          </button>
+          <button
+            type="button"
+            class="mc-modal-btn mc-modal-btn-danger"
+            (click)="confirmarEliminarCaballo()"
+          >
+            Sí, eliminar
           </button>
         </div>
       </div>
     </div>
-  </header>
-
-  <!-- MIGAS -->
-
-  <div class="mc-breadcrumb">
-    <span (click)="volverAlMarketplace()" class="mc-link"> Mi cuenta </span>
-    <span class="mc-sep">/</span>
-    <span>Mis caballos</span>
   </div>
-
-  <!-- TÍTULO -->
-
-  <div class="mc-heading">
-    <div>
-      <h1>Mis caballos</h1>
-      <p>
-        Tienes {{ caballos().length }} ejemplares registrados. Edita su información o elimínalos de
-        DataHorse.
-      </p>
-    </div>
-
-    <button type="button" class="mc-btn-primary" (click)="publicarCaballo()">
-      + Publicar caballo
-    </button>
-  </div>
-
-  <!-- ESTADOS -->
-
-  <p class="mc-empty" *ngIf="cargando()">Cargando tus caballos...</p>
-
-  <p class="mc-error" *ngIf="!cargando() && error()">
-    {{ error() }}
-  </p>
-
-  <!-- LISTAS -->
-
-  <div class="mc-grid" *ngIf="!cargando() && !error()">
-    <!-- MACHOS -->
-
-    <section class="mc-col">
-      <h2 class="mc-col-title">
-        Machos
-        <span class="mc-count">{{ machos().length }}</span>
-      </h2>
-
-      <p class="mc-col-empty" *ngIf="machos().length === 0">
-        No tienes caballos machos registrados.
-      </p>
-
-      <article class="mc-item" *ngFor="let c of machos()">
-        <div class="mc-item-thumb">
-          <img *ngIf="c.fotoUrl; else sinFotoMacho" [src]="c.fotoUrl" [alt]="c.nombre" />
-          <ng-template #sinFotoMacho>
-            <div class="mc-thumb-placeholder">🐴</div>
-          </ng-template>
-        </div>
-
-        <div class="mc-item-info">
-          <p class="mc-item-tag">{{ c.raza }} · {{ c.sexo }}</p>
-
-          <h3>{{ c.nombre }}</h3>
-
-          <p class="mc-item-loc">{{ c.ubicacion }}</p>
-
-          <div class="mc-item-footer">
-            <span class="mc-price" *ngIf="c.precio !== null">
-              {{ c.precio | currency: 'COP' : 'symbol' : '1.0-0' }}
-            </span>
-
-            <span class="mc-price mc-price--off" *ngIf="c.precio === null"> Sin precio </span>
-
-            <span class="mc-badge-off" *ngIf="!c.publicado"> Sin publicar </span>
-          </div>
-        </div>
-
-        <div class="mc-item-actions">
-          <button type="button" class="mc-btn mc-btn-edit" (click)="editarCaballo(c)">
-            ✎ Editar
-          </button>
-
-          <button type="button" class="mc-btn mc-btn-delete" (click)="eliminarCaballo(c)">
-            🗑 Eliminar
-          </button>
-        </div>
-      </article>
-    </section>
-
-    <!-- HEMBRAS -->
-
-    <section class="mc-col">
-      <h2 class="mc-col-title">
-        Hembras
-        <span class="mc-count">{{ hembras().length }}</span>
-      </h2>
-
-      <p class="mc-col-empty" *ngIf="hembras().length === 0">No tienes yeguas registradas.</p>
-
-      <article class="mc-item" *ngFor="let c of hembras()">
-        <div class="mc-item-thumb">
-          <img *ngIf="c.fotoUrl; else sinFotoHembra" [src]="c.fotoUrl" [alt]="c.nombre" />
-          <ng-template #sinFotoHembra>
-            <div class="mc-thumb-placeholder">🐴</div>
-          </ng-template>
-        </div>
-
-        <div class="mc-item-info">
-          <p class="mc-item-tag">{{ c.raza }} · {{ c.sexo }}</p>
-
-          <h3>{{ c.nombre }}</h3>
-
-          <p class="mc-item-loc">{{ c.ubicacion }}</p>
-        </div>
-
-        <div class="mc-item-actions">
-          <button type="button" class="mc-btn mc-btn-edit" (click)="editarCaballo(c)">
-            ✎ Editar
-          </button>
-
-          <button type="button" class="mc-btn mc-btn-delete" (click)="eliminarCaballo(c)">
-            🗑 Eliminar
-          </button>
-        </div>
-      </article>
-    </section>
-  </div>
-  <!-- ======================================================
-       MODAL: ELIMINAR CABALLO
-  ====================================================== -->
-
-  <div class="mc-modal-bg" *ngIf="modalEliminarAbierto()">
-    <div class="mc-modal">
-      <h2>Eliminar caballo</h2>
-
-      <p>
-        ¿Seguro que quieres eliminar a
-        <strong>{{ caballoAEliminar()?.nombre }}</strong
-        >? Ya no aparecerá en el marketplace ni en "Mis caballos".
-      </p>
-
-      <div class="mc-modal-actions">
-        <button
-          type="button"
-          class="mc-modal-btn mc-modal-btn-secondary"
-          (click)="cancelarEliminarCaballo()"
-        >
-          Cancelar
-        </button>
-
-        <button
-          type="button"
-          class="mc-modal-btn mc-modal-btn-danger"
-          (click)="confirmarEliminarCaballo()"
-        >
-          Sí, eliminar
-        </button>
-      </div>
-    </div>
-  </div>
+  <!-- Cierre correcto de dh-page -->
 </div>
+<!-- Cierre correcto de mc-page -->
