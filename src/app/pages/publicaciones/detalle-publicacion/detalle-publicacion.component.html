@@ -1,19 +1,73 @@
-<div class="dh-page">
-  <button class="dh-back" type="button" (click)="volver()">← Volver al marketplace</button>
+<div class="dp-page">
+  <!-- HEADER (Mismo estilo oscuro del marketplace) -->
+  <header class="dh-header glass">
+    <div class="dh-logo">
+      <img src="Logo_blanco.png" alt="DataHorse" class="dh-logo-img" />
+      <span>DataHorse</span>
+    </div>
 
-  <p class="dh-empty" *ngIf="cargando()">Cargando publicación...</p>
+    <div class="dh-header-actions">
+      <!-- Botón del más (+) -->
+      <button class="dh-icon-btn" type="button" aria-label="Agregar publicación" (click)="volver()">
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          width="20"
+          height="20"
+        >
+          <line x1="12" y1="5" x2="12" y2="19"></line>
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+        </svg>
+      </button>
 
-  <p class="dh-error" *ngIf="!cargando() && error()">
-    {{ error() }}
-  </p>
+      <!-- Avatar del usuario (Simplificado para esta vista) -->
+      <div class="dh-user-wrap">
+        <button class="dh-avatar" type="button">D</button>
+      </div>
+    </div>
+  </header>
+
+  <p class="dp-empty glass" *ngIf="cargando()">Cargando publicación...</p>
+  <p class="dp-error glass" *ngIf="!cargando() && error()">{{ error() }}</p>
 
   <ng-container *ngIf="!cargando() && publicacion() as p">
+    <!-- TÍTULO Y FLECHA EN LA MISMA LÍNEA -->
+    <div class="dp-title-row">
+      <button
+        class="dp-back-btn"
+        type="button"
+        (click)="volver()"
+        title="Volver al marketplace"
+        aria-label="Volver"
+      >
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <line x1="19" y1="12" x2="5" y2="12"></line>
+          <polyline points="12 19 5 12 12 5"></polyline>
+        </svg>
+      </button>
+
+      <div class="dp-heading-text">
+        <h1>{{ p.nombre }}</h1>
+        <p>{{ p.raza }} · {{ p.sexo }} · {{ edad() }}</p>
+      </div>
+    </div>
+
     <div class="dp-grid">
       <!-- ======================================================
-           GALERÍA
+           GALERÍA (Cristal Oscuro)
       ====================================================== -->
-
-      <section class="dp-galeria">
+      <section class="dp-galeria glass">
         <div class="dp-galeria-principal">
           <img
             *ngIf="p.fotos.length > 0"
@@ -32,6 +86,7 @@
             </svg>
           </div>
 
+          <!-- Flechas de navegación -->
           <button
             *ngIf="p.fotos.length > 1"
             class="dp-galeria-nav dp-galeria-prev"
@@ -39,7 +94,16 @@
             (click)="anteriorFoto()"
             aria-label="Foto anterior"
           >
-            ‹
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <polyline points="15 18 9 12 15 6"></polyline>
+            </svg>
           </button>
 
           <button
@@ -49,12 +113,20 @@
             (click)="siguienteFoto()"
             aria-label="Foto siguiente"
           >
-            ›
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
           </button>
         </div>
 
         <!-- MINIATURAS -->
-
         <div class="dp-galeria-miniaturas" *ngIf="p.fotos.length > 1">
           <button
             type="button"
@@ -69,86 +141,62 @@
       </section>
 
       <!-- ======================================================
-           INFORMACIÓN
+           INFORMACIÓN (Cristal Oscuro)
       ====================================================== -->
-
-      <section class="dp-info">
-        <span class="dp-badge" *ngIf="p.es_mia"> Tuyo </span>
-
-        <h1 class="dp-nombre">
-          {{ p.nombre }}
-        </h1>
-
-        <p class="dp-meta">
-          {{ p.raza }}
-          ·
-          {{ p.sexo }}
-          ·
-          {{ edad() }}
-        </p>
+      <section class="dp-info glass">
+        <span class="dp-badge" *ngIf="p.es_mia">Tuyo</span>
 
         <!-- DATOS RÁPIDOS -->
-
         <div class="dp-datos">
           <div class="dp-dato">
             <span class="dp-dato-label">Ubicación</span>
-            <span class="dp-dato-valor">📍 {{ p.ubicacion }}</span>
+            <span class="dp-dato-valor">{{ p.ubicacion }}</span>
           </div>
 
           <div class="dp-dato">
             <span class="dp-dato-label">Altura</span>
-            <span class="dp-dato-valor">📏 {{ p.altura }} m</span>
+            <span class="dp-dato-valor">{{ p.altura }} m</span>
           </div>
 
           <div class="dp-dato">
             <span class="dp-dato-label">Color</span>
-            <span class="dp-dato-valor">🎨 {{ p.color }}</span>
+            <span class="dp-dato-valor">{{ p.color }}</span>
           </div>
 
           <div class="dp-dato">
             <span class="dp-dato-label">Disponibilidad</span>
-            <span class="dp-dato-valor">✅ {{ p.disponibilidad }}</span>
+            <span class="dp-dato-valor">{{ p.disponibilidad }}</span>
           </div>
 
           <div class="dp-dato">
             <span class="dp-dato-label">Publicado</span>
-            <span class="dp-dato-valor"> 📅 {{ p.fecha_publicacion | date: 'longDate' }} </span>
+            <span class="dp-dato-valor">{{ p.fecha_publicacion | date: 'longDate' }}</span>
           </div>
 
           <div class="dp-dato">
             <span class="dp-dato-label">Propietario</span>
-            <span class="dp-dato-valor">👤 {{ p.propietario }}</span>
+            <span class="dp-dato-valor">{{ p.propietario }}</span>
           </div>
         </div>
 
         <!-- PRECIO DEL SALTO -->
-
         <div class="dp-precio" *ngIf="p.precio !== null">
-          <span class="dp-precio-label"> Precio del salto </span>
-
-          <span class="dp-precio-valor">
-            {{ p.precio | currency: 'COP' : 'symbol' : '1.0-0' }}
-          </span>
+          <span class="dp-precio-label">Precio del salto</span>
+          <span class="dp-precio-valor">{{ p.precio | currency: 'COP' : 'symbol' : '1.0-0' }}</span>
         </div>
 
         <div class="dp-precio dp-precio--sin" *ngIf="p.precio === null">
-          <span class="dp-precio-label"> Precio del salto </span>
-
-          <span class="dp-precio-valor"> No especificado </span>
+          <span class="dp-precio-label">Precio del salto</span>
+          <span class="dp-precio-valor">No especificado</span>
         </div>
 
         <!-- DESCRIPCIÓN -->
-
         <div class="dp-descripcion">
           <h2>Descripción</h2>
-
-          <p>
-            {{ p.descripcion }}
-          </p>
+          <p>{{ p.descripcion }}</p>
         </div>
 
         <!-- ACCIONES -->
-
         <div class="dp-acciones">
           <button
             type="button"
@@ -156,11 +204,39 @@
             [class.active]="p.es_favorita"
             (click)="toggleFavorito()"
           >
-            {{ p.es_favorita ? '♥ En favoritos' : '♡ Agregar a favoritos' }}
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              width="18"
+              height="18"
+              style="margin-right: 8px; vertical-align: middle"
+            >
+              <path
+                d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"
+              ></path>
+            </svg>
+            {{ p.es_favorita ? 'En favoritos' : 'Agregar a favoritos' }}
           </button>
 
           <button type="button" class="dp-btn dp-btn-chat" (click)="chatearConVendedor()">
-            💬 Chatear con el vendedor
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              width="18"
+              height="18"
+              style="margin-right: 8px; vertical-align: middle"
+            >
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+            </svg>
+            Chatear con el vendedor
           </button>
         </div>
       </section>

@@ -128,40 +128,36 @@ export class MarketplaceComponent {
 
   publicacionesFiltradas = computed(() => {
     const razas = this.razasSeleccionadas();
-
     const soloVerificados = this.soloVerificados();
-
     const precioMaximo = this.precioMax();
-
     const edadMaxima = this.edadMax();
-
     const texto = this.busqueda().trim().toLowerCase();
-
     const categoria = this.categoriaActiva();
 
     const filtrados = this.caballos()
-
+      // 1. FILTRO POR BÚSQUEDA (nombre, raza, ubicación)
       .filter((caballo) => {
-        if (!texto) {
-          return true;
-        }
-
+        if (!texto) return true;
         return (
           caballo.nombre.toLowerCase().includes(texto) ||
           caballo.raza.toLowerCase().includes(texto) ||
           caballo.ubicacion.toLowerCase().includes(texto)
         );
       })
-
+      // 2. FILTRO POR RAZAS
       .filter((caballo) => razas.length === 0 || razas.includes(caballo.raza))
-
+      // 3. FILTRO POR VERIFICADOS
       .filter((caballo) => !soloVerificados || caballo.verificado)
-
+      // 4. FILTRO POR PRECIO MÁXIMO
       .filter((caballo) => caballo.precio === null || caballo.precio <= precioMaximo)
-
+      // 5. FILTRO POR EDAD MÁXIMA
       .filter((caballo) => caballo.edad <= edadMaxima)
-
+      // 6. FILTRO POR CATEGORÍA ACTIVA (Favoritos, Pedigrí, Proximidad)
       .filter((caballo) => {
+        if (categoria === 'Favoritos') {
+          return caballo.esFavorito;
+        }
+
         if (categoria === 'En venta') {
           return caballo.disponibilidad === 'Disponible';
         }
@@ -170,13 +166,11 @@ export class MarketplaceComponent {
           return caballo.verificado;
         }
 
-        // AGREGA ESTE BLOQUE
-        // AGREGA ESTE BLOQUE
         if (categoria === 'Proximidad') {
           const lat = this.userLat();
           const lng = this.userLng();
 
-          // Si aún no tenemos la ubicación, mostramos todos los caballos
+          // Si no hay ubicación, mostramos todos
           if (!lat || !lng) return true;
 
           // Si el caballo no tiene coordenadas, lo ocultamos
@@ -186,10 +180,12 @@ export class MarketplaceComponent {
           return distancia <= this.radioMax();
         }
 
-        // FIN DEL BLOQUE
-
         return true;
       });
+
+    // ======================================================
+    // ORDENAMIENTOS
+    // ======================================================
 
     // ORDENAR POR PROXIMIDAD
     if (categoria === 'Proximidad' && this.userLat() && this.userLng()) {
@@ -199,12 +195,8 @@ export class MarketplaceComponent {
         return distA - distB; // El más cercano primero
       });
     }
-    //  FIN DEL ORDENAMIENTO
 
-    // Ordenar por altura cuando la categoría es Altura
-    // ... (código anterior de filtrado) ...
-
-    // Ordenar por altura cuando la categoría es Altura
+    // ORDENAR POR ALTURA
     if (categoria === 'Altura') {
       const ascendente = this.alturaAscendente();
       return [...filtrados].sort((a, b) =>
@@ -212,7 +204,7 @@ export class MarketplaceComponent {
       );
     }
 
-    // NUEVO: Ordenar por edad cuando la categoría es Edad
+    // ORDENAR POR EDAD
     if (categoria === 'Edad') {
       const ascendente = this.edadAscendente();
       return [...filtrados].sort((a, b) => (ascendente ? a.edad - b.edad : b.edad - a.edad));

@@ -31,7 +31,7 @@
       <button
         class="icon-btn"
         [class.active]="categoriaActiva() === 'Favoritos'"
-        (click)="categoriaActiva.set('Favoritos')"
+        (click)="seleccionarCategoria('Favoritos')"
         title="Favoritos"
       >
         <svg
@@ -48,7 +48,6 @@
         </svg>
         <span class="icon-label">Favoritos</span>
       </button>
-
       <!-- Caballos -->
       <button class="icon-btn" (click)="irAMisCaballos()" title="Mis Caballos">
         <svg
