@@ -1,22 +1,38 @@
 <div class="np-page">
-  <button class="np-back" type="button" (click)="cancelar()">← Volver al marketplace</button>
+  <!-- El botón superior SOLO se muestra en el primer paso -->
+  <div class="np-top-bar" *ngIf="paso() === 'tipo'">
+    <button
+      class="np-back-btn"
+      type="button"
+      (click)="cancelar()"
+      title="Volver al marketplace"
+      aria-label="Volver al marketplace"
+    >
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <line x1="19" y1="12" x2="5" y2="12"></line>
+        <polyline points="12 19 5 12 12 5"></polyline>
+      </svg>
+    </button>
+  </div>
 
   <!-- ======================================================
        SELECCIONAR TIPO
   ====================================================== -->
-
   <ng-container *ngIf="paso() === 'tipo'">
     <div class="np-heading">
-      <div class="np-plus">+</div>
-
       <h1>Registra un nuevo ejemplar</h1>
-
       <p>Selecciona el tipo de ejemplar que deseas registrar.</p>
     </div>
 
     <div class="np-tipo-opciones">
       <!-- YEGUA -->
-
       <button class="np-tipo-card np-yegua" type="button" (click)="elegirTipo('Hembra')">
         <div class="np-card-media">
           <img
@@ -24,23 +40,18 @@
             src="https://images.unsplash.com/photo-1553284965-83fd3e82fa5a?auto=format&fit=crop&w=1400&q=90"
             alt="Yegua"
           />
-
           <span class="np-sex-icon female"> ♀ </span>
         </div>
-
         <div class="np-card-content">
           <div>
             <h2>Yegua</h2>
-
             <p>Registrar un ejemplar hembra</p>
           </div>
-
           <span class="np-arrow"> → </span>
         </div>
       </button>
 
       <!-- CABALLO -->
-
       <button class="np-tipo-card np-caballo" type="button" (click)="elegirTipo('Macho')">
         <div class="np-card-media">
           <img
@@ -48,17 +59,13 @@
             src="https://images.unsplash.com/photo-1534773728080-33d31da27ae5?auto=format&fit=crop&w=1400&q=90"
             alt="Caballo"
           />
-
           <span class="np-sex-icon male"> ♂ </span>
         </div>
-
         <div class="np-card-content">
           <div>
             <h2>Caballo</h2>
-
             <p>Publicar un ejemplar macho</p>
           </div>
-
           <span class="np-arrow"> → </span>
         </div>
       </button>
@@ -68,17 +75,33 @@
   <!-- ======================================================
        FORMULARIO
   ====================================================== -->
-
   <ng-container *ngIf="paso() === 'formulario'">
     <div class="np-form-wrapper">
-      <button class="np-back np-change" type="button" (click)="volver()">← Cambiar tipo</button>
+      <!-- BOTÓN VOLVER DENTRO DEL FORMULARIO (Nueva flecha circular) -->
+      <button
+        class="np-back-btn np-btn-inner"
+        type="button"
+        (click)="volver()"
+        title="Cambiar tipo de ejemplar"
+        aria-label="Cambiar tipo"
+      >
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <line x1="19" y1="12" x2="5" y2="12"></line>
+          <polyline points="12 19 5 12 12 5"></polyline>
+        </svg>
+      </button>
 
       <div class="np-form-heading">
         <h1>Datos de la publicación</h1>
-
         <p>
           Tipo seleccionado:
-
           <strong>
             {{ sexo() === 'Hembra' ? 'Yegua' : 'Caballo' }}
           </strong>
@@ -93,34 +116,26 @@
 
       <form class="np-form">
         <!-- NOMBRE -->
-
         <label>
           Nombre
-
           <input type="text" [value]="nombre()" (input)="nombre.set($any($event.target).value)" />
         </label>
 
         <!-- RAZA -->
-
         <label>
           Raza
-
           <select (change)="onRazaChange($any($event.target).value)">
             <option value="" disabled selected>Selecciona una raza</option>
-
             <option *ngFor="let r of razas()" [value]="r.id_raza">
               {{ r.nombre }}
             </option>
-
             <option value="-1">Otro</option>
           </select>
         </label>
 
         <!-- OTRA RAZA -->
-
         <label *ngIf="razaEsOtro()">
           ¿Cuál raza?
-
           <input
             type="text"
             placeholder="Escribe la raza"
@@ -130,26 +145,21 @@
         </label>
 
         <!-- FECHA -->
-
         <label>
           Fecha de nacimiento
-
           <input
             type="date"
             [value]="fechaNacimiento()"
             (input)="fechaNacimiento.set($any($event.target).value)"
+            [max]="hoy"
           />
-
           <span class="np-hint">
             Si no conoces la fecha exacta, puedes ingresar una aproximada.
           </span>
         </label>
-
         <!-- ALTURA -->
-
         <label>
           Altura (metros)
-
           <input
             type="number"
             min="0"
@@ -160,18 +170,14 @@
         </label>
 
         <!-- COLOR -->
-
         <label>
           Color
-
           <input type="text" [value]="color()" (input)="color.set($any($event.target).value)" />
         </label>
 
         <!-- UBICACIÓN -->
-
         <label>
           Ubicación
-
           <input
             type="text"
             [value]="ubicacion()"
@@ -180,13 +186,10 @@
         </label>
 
         <!-- PRECIO SOLO CABALLO -->
-
         <label *ngIf="sexo() === 'Macho'">
           Precio
-
           <div class="np-price-input">
             <span> $ </span>
-
             <input
               type="number"
               min="1"
@@ -199,10 +202,8 @@
         </label>
 
         <!-- DESCRIPCIÓN -->
-
         <label class="np-full">
           Descripción
-
           <textarea
             [value]="descripcion()"
             (input)="descripcion.set($any($event.target).value)"
@@ -210,39 +211,31 @@
         </label>
 
         <!-- DISPONIBILIDAD -->
-
         <label>
           Disponibilidad
-
           <select (change)="onDisponibilidadChange($any($event.target).value)">
             <option value="Disponible">Disponible</option>
-
             <option value="No disponible">No disponible</option>
           </select>
         </label>
 
         <!-- ERROR -->
-
         <p class="np-error np-full" *ngIf="error()">
           {{ error() }}
         </p>
 
         <!-- ÉXITO -->
-
         <div class="np-exito np-full" *ngIf="exito()">
           <span>✅ {{ exito() }}</span>
-
           <button type="button" class="np-exito-btn" (click)="irAlMarketplace()">
             Ir al marketplace
           </button>
         </div>
 
         <!-- FOTOS -->
-
         <div class="np-fotos-field np-full">
           <div class="np-fotos-head">
             <span class="np-fotos-title"> Fotos del ejemplar </span>
-
             <span class="np-fotos-hint"> Hasta 5 MB por foto. La primera será la principal. </span>
           </div>
 
@@ -264,7 +257,6 @@
                 stroke-linecap="round"
               />
             </svg>
-
             Añadir fotos
           </button>
 
@@ -273,7 +265,6 @@
               <span class="np-foto-name">
                 {{ foto.name }}
               </span>
-
               <button
                 type="button"
                 class="np-foto-remove"
@@ -287,7 +278,6 @@
         </div>
 
         <!-- BOTÓN PUBLICAR -->
-
         <button class="np-submit np-full" type="button" [disabled]="enviando()" (click)="guardar()">
           {{
             enviando()

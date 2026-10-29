@@ -81,6 +81,9 @@ export class NuevaPublicacionComponent {
 
   fotosSeleccionadas = signal<File[]>([]);
 
+  // Variable para obtener la fecha de hoy en formato YYYY-MM-DD
+  hoy = new Date().toISOString().split('T')[0];
+
   // ======================================================
   // CONSTRUCTOR
   // ======================================================
@@ -267,6 +270,15 @@ export class NuevaPublicacionComponent {
     if (this.razaEsOtro() && !this.razaPersonalizada().trim()) {
       this.error.set('Escribe la raza del ejemplar.');
 
+      return;
+    }
+    // ==================================================
+    // CAMPOS OBLIGATORIOS
+    // ==================================================
+
+    // AGREGA ESTO ANTES DE LOS CAMPOS OBLIGATORIOS:
+    if (this.fechaNacimiento() > this.hoy) {
+      this.error.set('La fecha de nacimiento no puede ser una fecha futura.');
       return;
     }
 
