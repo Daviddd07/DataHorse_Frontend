@@ -1,11 +1,7 @@
 import { Component, inject, ChangeDetectorRef } from '@angular/core';
-
 import { FormsModule } from '@angular/forms';
-
 import { Router, RouterLink } from '@angular/router';
-
 import { HttpErrorResponse } from '@angular/common/http';
-
 import { AuthService } from '../../Services/auth.service';
 
 @Component({
@@ -15,6 +11,9 @@ import { AuthService } from '../../Services/auth.service';
   template: `
     <main class="contenedor">
       <section class="card">
+        <!-- Logo de DataHorse -->
+        <img src="Logo_blanco.png" alt="DataHorse" class="logo" />
+
         <h1>Recuperar contraseña</h1>
 
         @if (paso === 1) {
@@ -173,9 +172,16 @@ import { AuthService } from '../../Services/auth.service';
   `,
   styles: [
     `
-      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
       :host {
+        --bg-glass: rgba(30, 35, 40, 0.65);
+        --border-glass: rgba(255, 255, 255, 0.15);
+        --text-main: #ffffff;
+        --text-muted: rgba(255, 255, 255, 0.7);
+        --accent-gold: #e6a817;
+        --accent-leather: #b5651d;
+
         display: block;
         font-family:
           'Inter',
@@ -183,17 +189,21 @@ import { AuthService } from '../../Services/auth.service';
           sans-serif;
       }
 
-      /* Fondo oscuro y centrado */
+      /* Fondo oscuro inmersivo */
       .contenedor {
         min-height: 100vh;
         display: grid;
         place-items: center;
         padding: 24px;
-        background: linear-gradient(160deg, #0f172a 0%, #1e293b 45%, #0f172a 100%);
+        background-image:
+          linear-gradient(rgba(15, 20, 25, 0.65), rgba(15, 20, 25, 0.85)),
+          url('https://images.unsplash.com/photo-1553284965-83fd3e82fa5a?q=80&w=1920&auto=format&fit=crop');
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
         box-sizing: border-box;
       }
 
-      /* Animación de entrada: se desliza desde abajo */
       @keyframes slideUpFade {
         0% {
           opacity: 0;
@@ -205,35 +215,48 @@ import { AuthService } from '../../Services/auth.service';
         }
       }
 
+      /* Tarjeta de cristal */
       .card {
         width: min(420px, 100%);
-        background: #ffffff;
+        background: var(--bg-glass);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
         padding: 44px 40px;
-        border-radius: 10px;
-        border: 1px solid rgba(15, 23, 42, 0.06);
-        box-shadow:
-          0 1px 2px rgba(15, 23, 42, 0.04),
-          0 20px 40px -12px rgba(15, 23, 42, 0.35);
+        border-radius: 24px;
+        border: 1px solid var(--border-glass);
+        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
         text-align: center;
         box-sizing: border-box;
-
-        /* Aplicamos la animación aquí */
         animation: slideUpFade 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      }
+
+      /* Logo */
+      .logo {
+        display: block;
+        margin: 0 auto 16px;
+        width: 72px;
+        height: 72px;
+        object-fit: contain;
+        filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.5));
       }
 
       h1 {
         margin: 0 0 6px;
         font-size: 24px;
-        font-weight: 700;
+        font-weight: 800;
         letter-spacing: -0.02em;
-        color: #0f172a;
+        color: var(--text-main);
       }
 
       .sub {
         margin: 0 0 24px;
         font-size: 14px;
-        color: #64748b;
+        color: var(--text-muted);
         line-height: 1.5;
+      }
+
+      .sub strong {
+        color: var(--accent-gold);
       }
 
       .campo {
@@ -246,32 +269,37 @@ import { AuthService } from '../../Services/auth.service';
         margin-bottom: 6px;
         font-size: 13px;
         font-weight: 500;
-        color: #334155;
+        color: var(--text-muted);
       }
 
-      /* Estilos de los inputs */
+      /* Inputs oscuros */
       input {
         width: 100%;
         height: 46px !important;
         box-sizing: border-box;
         padding: 11px 14px;
-        border: 1px solid #cbd5e1;
-        border-radius: 6px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 8px;
         font-family: inherit;
         font-size: 14px;
-        color: #0f172a;
-        background-color: #f8fafc;
+        color: var(--text-main);
+        background-color: rgba(0, 0, 0, 0.3);
         outline: none;
-        transition:
-          border-color 0.15s ease,
-          box-shadow 0.15s ease,
-          background-color 0.15s ease;
+        transition: all 0.2s ease;
+      }
+
+      input::placeholder {
+        color: rgba(255, 255, 255, 0.4);
+      }
+
+      input:hover {
+        border-color: rgba(255, 255, 255, 0.4);
       }
 
       input:focus {
-        border-color: #4f46e5;
-        background-color: #ffffff;
-        box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+        border-color: var(--accent-gold);
+        background-color: rgba(0, 0, 0, 0.5);
+        box-shadow: 0 0 0 3px rgba(230, 168, 23, 0.15);
       }
 
       /* Ojito de la contraseña */
@@ -295,15 +323,15 @@ import { AuthService } from '../../Services/auth.service';
         justify-content: center;
         border: none;
         background: transparent;
-        color: #64748b;
+        color: rgba(255, 255, 255, 0.5);
         cursor: pointer;
         border-radius: 50%;
-        transition: background 0.2s;
+        transition: all 0.2s;
       }
 
       .ver:hover {
-        background: #e2e8f0;
-        color: #0f172a;
+        background: rgba(255, 255, 255, 0.1);
+        color: var(--text-main);
       }
 
       .ver svg {
@@ -311,27 +339,27 @@ import { AuthService } from '../../Services/auth.service';
         height: 20px;
       }
 
-      /* Botón primario (morado) */
+      /* Botón principal (Cuero) */
       .primario {
         width: 100%;
         height: 46px;
         padding: 0 12px;
         margin-top: 10px;
         border: none;
-        border-radius: 6px;
-        background-color: #4f46e5;
+        border-radius: 8px;
+        background-color: var(--accent-leather);
         color: #ffffff;
         font-family: inherit;
-        font-size: 14px;
+        font-size: 15px;
         font-weight: 600;
         cursor: pointer;
-        transition:
-          background-color 0.15s ease,
-          transform 0.05s ease;
+        transition: all 0.2s ease;
+        box-shadow: 0 8px 20px rgba(181, 101, 29, 0.3);
       }
 
       .primario:hover:not(:disabled) {
-        background-color: #4338ca;
+        background-color: #9a5214;
+        transform: translateY(-2px);
       }
 
       .primario:active:not(:disabled) {
@@ -347,40 +375,40 @@ import { AuthService } from '../../Services/auth.service';
       .mensaje {
         margin: 0 0 16px;
         padding: 10px 14px;
-        border-radius: 6px;
+        border-radius: 8px;
         font-size: 13px;
         font-weight: 500;
         text-align: left;
       }
 
       .error-msg {
-        background-color: #fef2f2;
-        color: #b91c1c;
-        border: 1px solid #fecaca;
+        background-color: rgba(255, 107, 107, 0.15);
+        color: #ff6b6b;
+        border: 1px solid rgba(255, 107, 107, 0.3);
       }
 
       .ok-msg {
-        background-color: #ecfdf5;
-        color: #065f46;
-        border: 1px solid #a7f3d0;
+        background-color: rgba(74, 222, 128, 0.15);
+        color: #4ade80;
+        border: 1px solid rgba(74, 222, 128, 0.3);
       }
 
       /* Enlace de abajo */
       .pie {
         margin: 24px 0 0;
         font-size: 13px;
-        color: #64748b;
+        color: var(--text-muted);
       }
 
       a {
-        color: #4f46e5;
+        color: var(--accent-gold);
         font-weight: 600;
         text-decoration: none;
         transition: color 0.15s ease;
       }
 
       a:hover {
-        color: #4338ca;
+        color: #ffffff;
         text-decoration: underline;
       }
     `,
@@ -400,7 +428,6 @@ export class RecuperarPasswordComponent {
   error = false;
   cargando = false;
 
-  // Variables para el ojito
   verPass = false;
   verConfirmar = false;
 
@@ -434,6 +461,7 @@ export class RecuperarPasswordComponent {
       },
     });
   }
+
   cambiarPassword(): void {
     if (!/^\d{6}$/.test(this.codigo.trim())) {
       this.error = true;
