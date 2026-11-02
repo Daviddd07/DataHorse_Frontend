@@ -4,13 +4,20 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { of, throwError } from 'rxjs';
 import { Login } from './login';
 import { AuthService } from '../../Services/auth.service';
+import { LogService } from '../../Services/log.service';
+
+const logMock = { debug: vi.fn(), info: vi.fn(), warn: vi.fn(), error: vi.fn(), flush: vi.fn() };
 
 describe('Login', () => {
   let fixture: ComponentFixture<Login>;
   let component: Login;
   let router: Router;
   const auth = { login: vi.fn(), google: vi.fn() };
-  let google: { accounts: { id: { initialize: ReturnType<typeof vi.fn>; renderButton: ReturnType<typeof vi.fn> } } };
+  let google: {
+    accounts: {
+      id: { initialize: ReturnType<typeof vi.fn>; renderButton: ReturnType<typeof vi.fn> };
+    };
+  };
 
   const crear = () => {
     fixture = TestBed.createComponent(Login);
@@ -27,7 +34,11 @@ describe('Login', () => {
 
     await TestBed.configureTestingModule({
       imports: [Login],
-      providers: [provideRouter([]), { provide: AuthService, useValue: auth }],
+      providers: [
+        provideRouter([]),
+        { provide: LogService, useValue: logMock },
+        { provide: AuthService, useValue: auth },
+      ],
     }).compileComponents();
 
     router = TestBed.inject(Router);
@@ -117,6 +128,7 @@ describe('Login', () => {
       expect(auth.login).toHaveBeenCalledWith('a@a.com', 'Secreto123');
       expect(router.navigate).toHaveBeenCalledWith(['/marketplace']);
       expect(component.cargando).toBe(false);
+      expect(logMock.info).toHaveBeenCalledWith('Inicio de sesión exitoso', { metodo: 'correo' });
     });
 
     it('should ask for verification on 403', () => {
@@ -135,6 +147,10 @@ describe('Login', () => {
       component.iniciarSesion();
       expect(component.necesitaVerificacion).toBe(false);
       expect(component.mensaje).toBe('Contraseña o correo incorrecto.');
+      expect(logMock.warn).toHaveBeenCalledWith('Inicio de sesión fallido', {
+        metodo: 'correo',
+        status: 401,
+      });
     });
   });
 

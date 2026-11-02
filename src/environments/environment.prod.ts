@@ -7,4 +7,7 @@ export const environment = {
 
   // Puedes dejar este mismo Client ID si configuras Google, o crear uno nuevo
   googleClientId: '942711166900-mj0cag572gl4fdhh22b5u51qju6bc80t.apps.googleusercontent.com',
+
+  // Nivel mínimo de logs que se envían al backend: debug | info | warn | error
+  logLevel: 'info',
 };

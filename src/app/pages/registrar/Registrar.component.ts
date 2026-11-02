@@ -29,6 +29,8 @@ import { RegistroService } from '../../Services/Registro.service';
 
 import { AuthService } from '../../Services/auth.service';
 
+import { LogService } from '../../Services/log.service';
+
 import { environment } from '../../../environments/environment';
 
 declare global {
@@ -66,6 +68,7 @@ export class RegistrarComponent implements AfterViewInit {
   private readonly auth = inject(AuthService);
   private readonly router = inject(Router);
   private readonly zone = inject(NgZone);
+  private readonly log = inject(LogService);
 
   // ✅ AQUÍ ESTÁ LA VARIABLE QUE FALTABA
   private googleInitialized = false;
@@ -239,6 +242,7 @@ export class RegistrarComponent implements AfterViewInit {
       .pipe(finalize(() => this.cargando.set(false)))
       .subscribe({
         next: () => {
+          this.log.info('Cuenta registrada', { metodo: 'correo' });
           void this.router.navigate(['/verificar-correo'], {
             queryParams: {
               correo,
@@ -246,6 +250,7 @@ export class RegistrarComponent implements AfterViewInit {
           });
         },
         error: (e: HttpErrorResponse) => {
+          this.log.warn('Registro fallido', { status: e.status });
           let texto = 'No pudimos crear la cuenta.';
           if (e.status === 409) {
             texto = 'Ese correo ya está registrado.';

@@ -3,6 +3,9 @@ import { Router, provideRouter } from '@angular/router';
 import { of, throwError } from 'rxjs';
 import { NuevaPublicacionComponent } from './nueva-publicacion.component';
 import { CaballoService } from '../../../Services/caballo.service';
+import { LogService } from '../../../Services/log.service';
+
+const logMock = { debug: vi.fn(), info: vi.fn(), warn: vi.fn(), error: vi.fn(), flush: vi.fn() };
 
 describe('NuevaPublicacionComponent', () => {
   let fixture: ComponentFixture<NuevaPublicacionComponent>;
@@ -14,7 +17,11 @@ describe('NuevaPublicacionComponent', () => {
   const crear = async () => {
     await TestBed.configureTestingModule({
       imports: [NuevaPublicacionComponent],
-      providers: [provideRouter([]), { provide: CaballoService, useValue: caballos }],
+      providers: [
+        provideRouter([]),
+        { provide: LogService, useValue: logMock },
+        { provide: CaballoService, useValue: caballos },
+      ],
     }).compileComponents();
     router = TestBed.inject(Router);
     vi.spyOn(router, 'navigate').mockResolvedValue(true);

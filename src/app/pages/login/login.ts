@@ -19,6 +19,8 @@ import { HttpErrorResponse } from '@angular/common/http';
 
 import { AuthService } from '../../Services/auth.service';
 
+import { LogService } from '../../Services/log.service';
+
 import { environment } from '../../../environments/environment';
 
 declare global {
@@ -49,6 +51,8 @@ export class Login implements AfterViewInit {
   private readonly zone = inject(NgZone);
 
   private readonly cdr = inject(ChangeDetectorRef);
+
+  private readonly log = inject(LogService);
   private googleInitialized = false;
   correo = '';
 
@@ -109,11 +113,15 @@ export class Login implements AfterViewInit {
       next: () => {
         this.cargandoGoogle = false;
 
+        this.log.info('Inicio de sesión exitoso', { metodo: 'google' });
+
         void this.router.navigate(['/marketplace']);
       },
 
       error: (e: HttpErrorResponse) => {
         this.cargandoGoogle = false;
+
+        this.log.warn('Inicio de sesión fallido', { metodo: 'google', status: e.status });
 
         this.mensaje = e.error?.detail || 'No fue posible iniciar sesión con Google.';
 
@@ -137,11 +145,15 @@ export class Login implements AfterViewInit {
       next: () => {
         this.cargando = false;
 
+        this.log.info('Inicio de sesión exitoso', { metodo: 'correo' });
+
         void this.router.navigate(['/marketplace']);
       },
 
       error: (e: HttpErrorResponse) => {
         this.cargando = false;
+
+        this.log.warn('Inicio de sesión fallido', { metodo: 'correo', status: e.status });
 
         // 2. Excepción: Si el correo no está verificado, mostramos el aviso
         if (e.status === 403) {

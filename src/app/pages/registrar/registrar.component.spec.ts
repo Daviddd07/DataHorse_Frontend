@@ -5,6 +5,9 @@ import { of, throwError } from 'rxjs';
 import { RegistrarComponent } from './registrar.component';
 import { RegistroService } from '../../Services/Registro.service';
 import { AuthService } from '../../Services/auth.service';
+import { LogService } from '../../Services/log.service';
+
+const logMock = { debug: vi.fn(), info: vi.fn(), warn: vi.fn(), error: vi.fn(), flush: vi.fn() };
 
 describe('RegistrarComponent', () => {
   let fixture: ComponentFixture<RegistrarComponent>;
@@ -12,7 +15,11 @@ describe('RegistrarComponent', () => {
   let router: Router;
   const registro = { registrar: vi.fn() };
   const auth = { google: vi.fn() };
-  let google: { accounts: { id: { initialize: ReturnType<typeof vi.fn>; renderButton: ReturnType<typeof vi.fn> } } };
+  let google: {
+    accounts: {
+      id: { initialize: ReturnType<typeof vi.fn>; renderButton: ReturnType<typeof vi.fn> };
+    };
+  };
 
   const crear = () => {
     fixture = TestBed.createComponent(RegistrarComponent);
@@ -42,6 +49,7 @@ describe('RegistrarComponent', () => {
       imports: [RegistrarComponent],
       providers: [
         provideRouter([]),
+        { provide: LogService, useValue: logMock },
         { provide: RegistroService, useValue: registro },
         { provide: AuthService, useValue: auth },
       ],

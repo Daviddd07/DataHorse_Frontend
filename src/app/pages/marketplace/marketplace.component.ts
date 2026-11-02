@@ -8,6 +8,8 @@ import { AuthService } from '../../Services/auth.service';
 
 import { CaballoService, Publicacion } from '../../Services/caballo.service';
 
+import { LogService } from '../../Services/log.service';
+
 import { environment } from '../../../environments/environment';
 
 interface CaballoMarketplace {
@@ -69,6 +71,7 @@ export class MarketplaceComponent {
   private readonly auth = inject(AuthService);
   private readonly caballoService = inject(CaballoService);
   private readonly router = inject(Router);
+  private readonly log = inject(LogService);
 
   nombreUsuario = signal('');
 
@@ -453,6 +456,10 @@ export class MarketplaceComponent {
   }
 
   cerrarSesion(): void {
+    // Se registra antes del logout para que el backend aún asocie el usuario
+    this.log.info('Cierre de sesión');
+    this.log.flush();
+
     this.auth.logout().subscribe({
       next: () => {
         this.menuAbierto.set(false);

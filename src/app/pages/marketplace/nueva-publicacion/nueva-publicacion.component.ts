@@ -8,6 +8,8 @@ import { Router } from '@angular/router';
 
 import { CaballoService, Raza, NuevaPublicacion } from '../../../Services/caballo.service';
 
+import { LogService } from '../../../Services/log.service';
+
 type Paso = 'tipo' | 'formulario';
 
 @Component({
@@ -24,6 +26,8 @@ export class NuevaPublicacionComponent {
   private readonly caballoService = inject(CaballoService);
 
   private readonly router = inject(Router);
+
+  private readonly log = inject(LogService);
 
   // ======================================================
   // PASOS
@@ -380,6 +384,12 @@ export class NuevaPublicacionComponent {
         const finalizar = (): void => {
           this.enviando.set(false);
 
+          this.log.info('Caballo publicado', {
+            id_caballo: respuesta.id_caballo,
+            sexo: this.sexo(),
+            fotos: fotos.length,
+          });
+
           if (esYegua) {
             this.exito.set('Yegua registrada. Estará disponible en "Mis caballos".');
           } else {
@@ -398,6 +408,11 @@ export class NuevaPublicacionComponent {
 
           error: (err) => {
             console.error('ERROR SUBIENDO FOTOS:', err);
+
+            this.log.error('Caballo creado, pero fallaron las fotos', {
+              id_caballo: respuesta.id_caballo,
+              fotos: fotos.length,
+            });
 
             this.enviando.set(false);
 

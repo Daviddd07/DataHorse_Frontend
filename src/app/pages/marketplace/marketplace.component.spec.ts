@@ -4,6 +4,9 @@ import { of, throwError } from 'rxjs';
 import { MarketplaceComponent } from './marketplace.component';
 import { AuthService } from '../../Services/auth.service';
 import { CaballoService, Publicacion } from '../../Services/caballo.service';
+import { LogService } from '../../Services/log.service';
+
+const logMock = { debug: vi.fn(), info: vi.fn(), warn: vi.fn(), error: vi.fn(), flush: vi.fn() };
 
 const haceAnios = (anios: number, meses = 0) => {
   const d = new Date();
@@ -94,6 +97,7 @@ describe('MarketplaceComponent', () => {
       imports: [MarketplaceComponent],
       providers: [
         provideRouter([]),
+        { provide: LogService, useValue: logMock },
         { provide: AuthService, useValue: auth },
         { provide: CaballoService, useValue: caballos },
       ],
