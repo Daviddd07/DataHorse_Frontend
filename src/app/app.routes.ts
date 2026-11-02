@@ -4,6 +4,8 @@ import { Login } from './pages/login/login';
 
 import { authGuard } from './auth.guard';
 
+import { adminGuard } from './admin.guard';
+
 export const routes: Routes = [
   {
     path: '',
@@ -90,5 +92,25 @@ export const routes: Routes = [
       ),
 
     canActivate: [authGuard],
+  },
+
+  {
+    path: 'admin',
+
+    loadComponent: () =>
+      import('./pages/admin/panel-admin/panel-admin.component').then((m) => m.PanelAdminComponent),
+
+    canActivate: [authGuard, adminGuard],
+  },
+
+  {
+    path: 'admin/elegir',
+
+    loadComponent: () =>
+      import('./pages/admin/elegir-panel/elegir-panel.component').then(
+        (m) => m.ElegirPanelComponent,
+      ),
+
+    canActivate: [authGuard, adminGuard],
   },
 ];

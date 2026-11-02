@@ -3,6 +3,7 @@ import {
   ChangeDetectorRef,
   Component,
   ElementRef,
+  HostListener,
   NgZone,
   ViewChild,
   inject,
@@ -43,6 +44,11 @@ declare global {
 export class Login implements AfterViewInit {
   @ViewChild('googleButton')
   googleButton!: ElementRef<HTMLDivElement>;
+
+  @ViewChild('botonCrearContrasena')
+  botonCrearContrasena!: ElementRef<HTMLButtonElement>;
+
+  mostrarAvisoContrasena = false;
 
   private readonly auth = inject(AuthService);
 
@@ -110,12 +116,17 @@ export class Login implements AfterViewInit {
     this.cargandoGoogle = true;
 
     this.auth.google(credential).subscribe({
-      next: () => {
+      next: (respuesta) => {
         this.cargandoGoogle = false;
 
         this.log.info('Inicio de sesión exitoso', { metodo: 'google' });
 
-        void this.router.navigate(['/marketplace']);
+        if (respuesta?.requiere_contrasena) {
+          this.abrirAvisoContrasena();
+          return;
+        }
+
+        this.irSegunRol();
       },
 
       error: (e: HttpErrorResponse) => {
@@ -128,6 +139,35 @@ export class Login implements AfterViewInit {
         this.cdr.detectChanges();
       },
     });
+  }
+
+  private irSegunRol(): void {
+    this.auth.destinoTrasLogin().subscribe((destino) => void this.router.navigate([destino]));
+  }
+
+  // =====================================================
+  // AVISO: CUENTA QUE SOLO ENTRA CON GOOGLE
+  // =====================================================
+
+  private abrirAvisoContrasena(): void {
+    this.mostrarAvisoContrasena = true;
+    this.cdr.detectChanges();
+    this.botonCrearContrasena.nativeElement.focus();
+  }
+
+  crearContrasenaAhora(): void {
+    this.mostrarAvisoContrasena = false;
+    void this.router.navigate(['/recuperar-password'], { queryParams: { modo: 'crear' } });
+  }
+
+  omitirContrasena(): void {
+    this.mostrarAvisoContrasena = false;
+    this.irSegunRol();
+  }
+
+  @HostListener('document:keydown.escape')
+  cerrarAvisoConEscape(): void {
+    if (this.mostrarAvisoContrasena) this.omitirContrasena();
   }
 
   iniciarSesion(): void {
@@ -147,7 +187,7 @@ export class Login implements AfterViewInit {
 
         this.log.info('Inicio de sesión exitoso', { metodo: 'correo' });
 
-        void this.router.navigate(['/marketplace']);
+        this.irSegunRol();
       },
 
       error: (e: HttpErrorResponse) => {

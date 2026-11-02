@@ -60,6 +60,33 @@ describe('AuthService', () => {
     req.flush({ id: 1, correo: 'a@a.com', nombre: 'Ana' });
   });
 
+  describe('destinoTrasLogin', () => {
+    const destino = (respuesta: object | null) => {
+      let resultado = '';
+      service.destinoTrasLogin().subscribe((d) => (resultado = d));
+      const req = http.expectOne(`${api}/auth/me`);
+      if (respuesta) req.flush(respuesta);
+      else req.flush('error', { status: 500, statusText: 'Error' });
+      return resultado;
+    };
+
+    it('should send an administrator to choose a panel', () => {
+      expect(destino({ id: 1, correo: 'a@a.com', nombre: 'Ana', es_admin: true })).toBe(
+        '/admin/elegir',
+      );
+    });
+
+    it('should send a normal user to the marketplace', () => {
+      expect(destino({ id: 2, correo: 'b@b.com', nombre: 'Beto', es_admin: false })).toBe(
+        '/marketplace',
+      );
+    });
+
+    it('should fall back to the marketplace if the role cannot be checked', () => {
+      expect(destino(null)).toBe('/marketplace');
+    });
+  });
+
   it('logout should post an empty body', () => {
     service.logout().subscribe();
     const req = http.expectOne(`${api}/auth/logout`);

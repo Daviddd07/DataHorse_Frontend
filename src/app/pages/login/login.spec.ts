@@ -12,7 +12,7 @@ describe('Login', () => {
   let fixture: ComponentFixture<Login>;
   let component: Login;
   let router: Router;
-  const auth = { login: vi.fn(), google: vi.fn() };
+  const auth = { login: vi.fn(), google: vi.fn(), destinoTrasLogin: vi.fn() };
   let google: {
     accounts: {
       id: { initialize: ReturnType<typeof vi.fn>; renderButton: ReturnType<typeof vi.fn> };
@@ -28,7 +28,8 @@ describe('Login', () => {
   beforeEach(async () => {
     vi.useFakeTimers();
     vi.clearAllMocks();
-    google = { accounts: { id: { initialize: vi.fn(), renderButton: vi.fn() } } };
+    auth.destinoTrasLogin.mockReturnValue(of('/marketplace'));
+    google ={ accounts: { id: { initialize: vi.fn(), renderButton: vi.fn() } } };
     window.google = undefined;
     window.matchMedia = vi.fn().mockReturnValue({ matches: false }) as never;
 
@@ -85,6 +86,49 @@ describe('Login', () => {
       expect(component.cargandoGoogle).toBe(false);
     });
 
+    describe('Google account without its own password', () => {
+      const aviso = () => fixture.nativeElement.querySelector('[role="dialog"]') as HTMLElement;
+
+      beforeEach(() => {
+        auth.google.mockReturnValue(of({ mensaje: 'ok', requiere_contrasena: true }));
+        crear();
+        component.iniciarConGoogle('token');
+      });
+
+      it('should ask to create a password before continuing', () => {
+        expect(component.mostrarAvisoContrasena).toBe(true);
+        expect(aviso().textContent).toContain('solo podrás iniciar sesión con Google');
+        expect(document.activeElement?.textContent).toContain('Crear contraseña');
+        expect(router.navigate).not.toHaveBeenCalled();
+      });
+
+      it('"Crear contraseña" should open the create password screen', () => {
+        (aviso().querySelector('.aviso-primario') as HTMLButtonElement).click();
+        expect(component.mostrarAvisoContrasena).toBe(false);
+        expect(router.navigate).toHaveBeenCalledWith(['/recuperar-password'], {
+          queryParams: { modo: 'crear' },
+        });
+      });
+
+      it('"Ahora no" should continue to the normal destination', () => {
+        (aviso().querySelector('.aviso-secundario') as HTMLButtonElement).click();
+        expect(component.mostrarAvisoContrasena).toBe(false);
+        expect(router.navigate).toHaveBeenCalledWith(['/marketplace']);
+      });
+
+      it('Escape should behave like "Ahora no"', () => {
+        document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
+        expect(component.mostrarAvisoContrasena).toBe(false);
+        expect(router.navigate).toHaveBeenCalledWith(['/marketplace']);
+      });
+    });
+
+    it('Escape should do nothing when there is no notice', () => {
+      crear();
+      document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
+      expect(router.navigate).not.toHaveBeenCalled();
+    });
+
     it('should ignore an empty credential', () => {
       crear();
       component.iniciarConGoogle('');
@@ -129,6 +173,15 @@ describe('Login', () => {
       expect(router.navigate).toHaveBeenCalledWith(['/marketplace']);
       expect(component.cargando).toBe(false);
       expect(logMock.info).toHaveBeenCalledWith('Inicio de sesión exitoso', { metodo: 'correo' });
+    });
+
+    it('should go wherever the role says after logging in', () => {
+      auth.login.mockReturnValue(of({ mensaje: 'ok' }));
+      auth.destinoTrasLogin.mockReturnValue(of('/admin/elegir'));
+      component.correo = 'a@a.com';
+      component.password = 'Secreto123';
+      component.iniciarSesion();
+      expect(router.navigate).toHaveBeenCalledWith(['/admin/elegir']);
     });
 
     it('should ask for verification on 403', () => {

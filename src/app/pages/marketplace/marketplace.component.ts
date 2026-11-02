@@ -102,6 +102,8 @@ export class MarketplaceComponent {
 
   correoUsuario = signal('');
 
+  esAdmin = signal(false);
+
   error = signal('');
 
   alturaAscendente = signal(false);
@@ -264,6 +266,8 @@ export class MarketplaceComponent {
         this.nombreUsuario.set(primerNombre);
 
         this.correoUsuario.set(usuario.correo);
+
+        this.esAdmin.set(usuario.es_admin === true);
       },
 
       error: (err) => {
@@ -457,6 +461,11 @@ export class MarketplaceComponent {
   irAMisCaballos(): void {
     this.menuAbierto.set(false);
     void this.router.navigate(['/mis-caballos']);
+  }
+
+  irAlPanelAdmin(): void {
+    this.menuAbierto.set(false);
+    void this.router.navigate(['/admin']);
   }
 
   cerrarMenu(): void {

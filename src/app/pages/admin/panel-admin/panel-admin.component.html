@@ -1,0 +1,164 @@
+<div class="admin-container">
+  <!-- BARRA LATERAL -->
+  <aside class="admin-sidebar glass" aria-label="Menú de administración">
+    <img src="Logo_blanco.png" alt="DH" class="admin-logo" />
+
+    <nav class="admin-menu">
+      <button type="button" class="admin-btn active" title="Panel" aria-current="page">
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <rect x="3" y="3" width="7" height="9"></rect>
+          <rect x="14" y="3" width="7" height="5"></rect>
+          <rect x="14" y="12" width="7" height="9"></rect>
+          <rect x="3" y="16" width="7" height="5"></rect>
+        </svg>
+        <span>Panel</span>
+      </button>
+
+      <button type="button" class="admin-btn" title="Marketplace" (click)="irAlMarketplace()">
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+          <polyline points="9 22 9 12 15 12 15 22"></polyline>
+        </svg>
+        <span>Marketplace</span>
+      </button>
+    </nav>
+
+    <button type="button" class="admin-btn btn-logout" title="Cerrar sesión" (click)="cerrarSesion()">
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+      >
+        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+        <polyline points="16 17 21 12 16 7"></polyline>
+        <line x1="21" y1="12" x2="9" y2="12"></line>
+      </svg>
+      <span>Salir</span>
+    </button>
+  </aside>
+
+  <!-- CONTENIDO -->
+  <main class="admin-main">
+    <header class="admin-header">
+      <h1>Panel de administración</h1>
+      <p>Resumen de usuarios, caballos y publicaciones de DataHorse.</p>
+    </header>
+
+    <p class="admin-estado" *ngIf="cargando()">Cargando información…</p>
+
+    <div class="admin-error glass" *ngIf="error()" role="alert">
+      <span>{{ error() }}</span>
+      <button type="button" (click)="cargarDatos()">Reintentar</button>
+    </div>
+
+    <ng-container *ngIf="!cargando() && !error() && resumen() as r">
+      <!-- TOTALES -->
+      <section class="admin-tarjetas" aria-label="Totales">
+        <article class="tarjeta glass" *ngFor="let t of tarjetas()">
+          <h2>{{ t.titulo }}</h2>
+          <strong>{{ t.valor }}</strong>
+          <span>{{ t.detalle }}</span>
+        </article>
+      </section>
+
+      <!-- CABALLOS POR RAZA -->
+      <section class="admin-seccion glass" aria-labelledby="titulo-razas">
+        <h2 id="titulo-razas">Caballos por raza</h2>
+
+        <ul class="razas">
+          <li *ngFor="let raza of r.caballos.por_raza">
+            <span class="raza-nombre">{{ raza.raza }}</span>
+            <span class="raza-barra" aria-hidden="true">
+              <span [style.width]="anchoBarra(raza.total)"></span>
+            </span>
+            <span class="raza-total">{{ raza.total }}</span>
+          </li>
+        </ul>
+      </section>
+
+      <!-- USUARIOS -->
+      <section class="admin-seccion glass" aria-labelledby="titulo-usuarios">
+        <div class="seccion-cabecera">
+          <h2 id="titulo-usuarios">Usuarios ({{ usuariosFiltrados().length }})</h2>
+          <input
+            type="search"
+            class="admin-buscar"
+            placeholder="Buscar por nombre, correo o ciudad"
+            [value]="busqueda()"
+            (input)="busqueda.set($any($event.target).value)"
+            aria-label="Buscar usuarios"
+          />
+        </div>
+
+        <div class="tabla-scroll">
+          <table class="tabla-usuarios">
+            <thead>
+              <tr>
+                <th
+                  *ngFor="let col of columnas"
+                  scope="col"
+                  [class.numerica]="col.numerica"
+                  [attr.aria-sort]="ordenAria(col.clave)"
+                >
+                  <button type="button" (click)="ordenarPor(col.clave)">
+                    {{ col.etiqueta }}
+                    <span class="flecha" *ngIf="ordenColumna() === col.clave" aria-hidden="true">
+                      {{ ordenAscendente() ? '▲' : '▼' }}
+                    </span>
+                  </button>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let u of usuariosFiltrados()">
+                <td>{{ u.nombre }}</td>
+                <td>{{ u.correo }}</td>
+                <td>
+                  <span class="etiqueta" [class.etiqueta-admin]="u.rol === 'administrador'">{{
+                    u.rol
+                  }}</span>
+                </td>
+                <td>
+                  <span class="etiqueta" [class.etiqueta-pendiente]="u.estado === 'pendiente'">{{
+                    etiquetaEstado(u.estado)
+                  }}</span>
+                </td>
+                <td>{{ u.fecha_registro | date: 'dd/MM/yyyy' }}</td>
+                <td>{{ u.ciudad || '—' }}</td>
+                <td class="numerica">{{ u.caballos }}</td>
+                <td class="numerica">{{ u.machos }}</td>
+                <td class="numerica">{{ u.yeguas }}</td>
+                <td class="numerica">{{ u.publicaciones_activas }}</td>
+              </tr>
+              <tr *ngIf="usuariosFiltrados().length === 0">
+                <td class="sin-resultados" [attr.colspan]="columnas.length">
+                  No hay usuarios que coincidan con la búsqueda.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </ng-container>
+  </main>
+</div>

@@ -1,0 +1,130 @@
+:host {
+  --bg-glass: rgba(30, 35, 40, 0.5);
+  --border-glass: rgba(255, 255, 255, 0.15);
+  --text-main: #ffffff;
+  --text-muted: rgba(255, 255, 255, 0.7);
+  --accent-gold: #e6a817;
+
+  display: block;
+  min-height: 100vh;
+  font-family: 'Inter', sans-serif;
+  color: var(--text-main);
+  background-image:
+    linear-gradient(rgba(15, 20, 25, 0.65), rgba(15, 20, 25, 0.85)),
+    url('https://images.unsplash.com/photo-1553284965-83fd3e82fa5a?q=80&w=1920&auto=format&fit=crop');
+  background-size: cover;
+  background-position: center;
+}
+
+.glass {
+  background: var(--bg-glass);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border-glass);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+}
+
+.elegir-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 16px;
+  box-sizing: border-box;
+}
+
+.elegir-card {
+  width: 100%;
+  max-width: 640px;
+  padding: 40px 32px;
+  border-radius: 24px;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+.elegir-logo {
+  width: 64px;
+  height: 64px;
+  object-fit: contain;
+}
+
+h1 {
+  margin: 16px 0 4px;
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.elegir-subtitulo {
+  margin: 0 0 28px;
+  color: var(--text-muted);
+}
+
+.elegir-opciones {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.opcion {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 28px 20px;
+  border-radius: 18px;
+  border: 1px solid var(--border-glass);
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text-main);
+  font-family: inherit;
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.opcion:hover,
+.opcion:focus-visible {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: var(--accent-gold);
+  transform: translateY(-2px);
+}
+
+.opcion svg {
+  width: 36px;
+  height: 36px;
+  color: var(--accent-gold);
+}
+
+.opcion strong {
+  font-size: 17px;
+}
+
+.opcion span {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.btn-salir {
+  margin-top: 24px;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-family: inherit;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.btn-salir:hover {
+  color: var(--text-main);
+}
+
+@media (max-width: 560px) {
+  .elegir-card {
+    padding: 32px 20px;
+  }
+
+  .elegir-opciones {
+    grid-template-columns: 1fr;
+  }
+}

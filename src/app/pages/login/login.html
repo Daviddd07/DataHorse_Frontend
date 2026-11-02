@@ -110,4 +110,52 @@
       ¿No tienes cuenta? <a href="/registrar" (click)="irARegistro($event)"> Regístrate </a>
     </p>
   </div>
+
+  <!-- AVISO: LA CUENTA SOLO PUEDE ENTRAR CON GOOGLE -->
+  @if (mostrarAvisoContrasena) {
+    <div class="aviso-fondo">
+      <div
+        class="aviso-card"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="aviso-titulo"
+        aria-describedby="aviso-texto"
+      >
+        <div class="aviso-icono" aria-hidden="true">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+          </svg>
+        </div>
+
+        <h2 id="aviso-titulo">¿Quieres crear una contraseña?</h2>
+
+        <p id="aviso-texto">
+          Iniciaste sesión con Google. Si no creas una contraseña, solo podrás iniciar sesión con
+          Google.
+        </p>
+
+        <div class="aviso-acciones">
+          <button type="button" class="aviso-secundario" (click)="omitirContrasena()">
+            Ahora no
+          </button>
+          <button
+            #botonCrearContrasena
+            type="button"
+            class="aviso-primario"
+            (click)="crearContrasenaAhora()"
+          >
+            Crear contraseña
+          </button>
+        </div>
+      </div>
+    </div>
+  }
 </div>

@@ -1,0 +1,360 @@
+:host {
+  --bg-glass: rgba(30, 35, 40, 0.5);
+  --border-glass: rgba(255, 255, 255, 0.15);
+  --text-main: #ffffff;
+  --text-muted: rgba(255, 255, 255, 0.7);
+  --accent-gold: #e6a817;
+  --accent-green: #4ade80;
+
+  display: block;
+  min-height: 100vh;
+  font-family: 'Inter', sans-serif;
+  color: var(--text-main);
+  background-image:
+    linear-gradient(rgba(15, 20, 25, 0.7), rgba(15, 20, 25, 0.9)),
+    url('https://images.unsplash.com/photo-1553284965-83fd3e82fa5a?q=80&w=1920&auto=format&fit=crop');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+}
+
+.glass {
+  background: var(--bg-glass);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border-glass);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+}
+
+/* ======================================================
+   BARRA LATERAL
+====================================================== */
+.admin-sidebar {
+  position: fixed;
+  top: 24px;
+  left: 24px;
+  bottom: 24px;
+  width: 80px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px 0;
+  border-radius: 24px;
+  z-index: 10;
+  box-sizing: border-box;
+}
+
+.admin-logo {
+  width: 52px;
+  height: 52px;
+  object-fit: contain;
+  margin-bottom: 20px;
+}
+
+.admin-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.admin-btn {
+  width: 68px;
+  padding: 12px 0;
+  border-radius: 16px;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  font-family: inherit;
+  font-size: 11px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease;
+}
+
+.admin-btn svg {
+  width: 22px;
+  height: 22px;
+}
+
+.admin-btn:hover,
+.admin-btn:focus-visible,
+.admin-btn.active {
+  background: rgba(255, 255, 255, 0.12);
+  color: var(--text-main);
+}
+
+.admin-btn.active {
+  color: var(--accent-gold);
+}
+
+.btn-logout {
+  margin-top: auto;
+}
+
+/* ======================================================
+   CONTENIDO
+====================================================== */
+.admin-main {
+  margin-left: 128px;
+  padding: 24px 24px 48px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  min-width: 0;
+}
+
+.admin-header h1 {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.admin-header p,
+.admin-estado {
+  margin: 4px 0 0;
+  color: var(--text-muted);
+}
+
+.admin-error {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px 20px;
+  border-radius: 16px;
+}
+
+.admin-error button {
+  border: 1px solid var(--border-glass);
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-main);
+  border-radius: 10px;
+  padding: 8px 14px;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+/* Tarjetas de totales */
+.admin-tarjetas {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.tarjeta {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 20px;
+  border-radius: 20px;
+}
+
+.tarjeta h2 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.tarjeta strong {
+  font-size: 36px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.tarjeta span {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+/* Secciones */
+.admin-seccion {
+  padding: 20px;
+  border-radius: 20px;
+  min-width: 0;
+}
+
+.admin-seccion h2 {
+  margin: 0 0 16px;
+  font-size: 18px;
+}
+
+.seccion-cabecera {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.seccion-cabecera h2 {
+  margin: 0;
+}
+
+.admin-buscar {
+  width: min(320px, 100%);
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: 1px solid var(--border-glass);
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-main);
+  font-family: inherit;
+  box-sizing: border-box;
+}
+
+.admin-buscar::placeholder {
+  color: var(--text-muted);
+}
+
+/* Caballos por raza */
+.razas {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.razas li {
+  display: grid;
+  grid-template-columns: minmax(110px, 200px) 1fr 32px;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+}
+
+.raza-barra {
+  height: 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+}
+
+.raza-barra span {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: var(--accent-gold);
+}
+
+.raza-total {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Tabla de usuarios */
+.tabla-scroll {
+  overflow-x: auto;
+}
+
+.tabla-usuarios {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+.tabla-usuarios th,
+.tabla-usuarios td {
+  padding: 10px 12px;
+  text-align: left;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.tabla-usuarios th button {
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--text-muted);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.tabla-usuarios th button:hover,
+.tabla-usuarios th[aria-sort='ascending'] button,
+.tabla-usuarios th[aria-sort='descending'] button {
+  color: var(--text-main);
+}
+
+.tabla-usuarios .numerica {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.tabla-usuarios tbody tr:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.flecha {
+  font-size: 10px;
+}
+
+.etiqueta {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  background: rgba(74, 222, 128, 0.15);
+  color: var(--accent-green);
+}
+
+.etiqueta-admin {
+  background: rgba(230, 168, 23, 0.18);
+  color: var(--accent-gold);
+}
+
+.etiqueta-pendiente {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-muted);
+}
+
+.sin-resultados {
+  text-align: center;
+  color: var(--text-muted);
+}
+
+/* ======================================================
+   RESPONSIVE: la barra lateral pasa arriba
+====================================================== */
+@media (max-width: 1024px) {
+  .admin-sidebar {
+    position: sticky;
+    top: 12px;
+    left: auto;
+    bottom: auto;
+    width: auto;
+    margin: 12px 12px 0;
+    padding: 8px 12px;
+    flex-direction: row;
+    gap: 8px;
+  }
+
+  .admin-logo {
+    width: 36px;
+    height: 36px;
+    margin: 0 8px 0 0;
+  }
+
+  .admin-menu {
+    flex-direction: row;
+    gap: 8px;
+  }
+
+  .btn-logout {
+    margin: 0 0 0 auto;
+  }
+
+  .admin-main {
+    margin-left: 0;
+    padding: 20px 16px 40px;
+  }
+}

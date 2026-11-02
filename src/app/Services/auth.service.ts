@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 
 import { HttpClient } from '@angular/common/http';
 
-import { Observable } from 'rxjs';
+import { Observable, catchError, map, of } from 'rxjs';
 
 import { environment } from '../../environments/environment';
 
@@ -10,10 +10,14 @@ export interface UsuarioSesion {
   id: number;
   correo: string;
   nombre: string;
+  es_admin?: boolean;
 }
 
 export interface GoogleAuthResponse {
   mensaje: string;
+
+  // true si la cuenta solo puede entrar con Google (aún no creó su contraseña)
+  requiere_contrasena?: boolean;
 
   usuario: {
     id: number;
@@ -120,6 +124,18 @@ export class AuthService {
       {
         withCredentials: true,
       },
+    );
+  }
+
+  // =====================================================
+  // A DÓNDE IR DESPUÉS DE INICIAR SESIÓN
+  // =====================================================
+
+  // El administrador elige entre el panel y el marketplace; el resto va directo al marketplace.
+  destinoTrasLogin(): Observable<string> {
+    return this.me().pipe(
+      map((usuario) => (usuario.es_admin ? '/admin/elegir' : '/marketplace')),
+      catchError(() => of('/marketplace')),
     );
   }
 

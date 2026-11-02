@@ -346,6 +346,31 @@ describe('MarketplaceComponent', () => {
       expect(component.menuAbierto()).toBe(false);
       expect(router.navigate).toHaveBeenCalledWith(['/login']);
     });
+
+    it('should hide the admin button from a normal user', () => {
+      expect(component.esAdmin()).toBe(false);
+      expect(fixture.nativeElement.querySelector('[title="Panel de administración"]')).toBeNull();
+    });
+  });
+
+  describe('administrator', () => {
+    beforeEach(async () => {
+      auth['me'].mockReturnValue(
+        of({ id: 1, correo: 'admin@correo.com', nombre: 'Admin', es_admin: true }),
+      );
+      await crear();
+    });
+
+    it('should show the admin button and open the panel', () => {
+      expect(component.esAdmin()).toBe(true);
+      const boton = fixture.nativeElement.querySelector(
+        '[title="Panel de administración"]',
+      ) as HTMLButtonElement;
+      component.menuAbierto.set(true);
+      boton.click();
+      expect(component.menuAbierto()).toBe(false);
+      expect(router.navigate).toHaveBeenCalledWith(['/admin']);
+    });
   });
 
   describe('geolocation', () => {

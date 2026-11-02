@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { Router, provideRouter } from '@angular/router';
+import { ActivatedRoute, Router, convertToParamMap, provideRouter } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 import { of, throwError } from 'rxjs';
 import { RecuperarPasswordComponent } from './recuperar-password.component';
@@ -192,5 +192,86 @@ describe('RecuperarPasswordComponent', () => {
       component.cambiarPassword();
       expect(component.mensaje).toBe('No fue posible cambiar la contraseña.');
     });
+  });
+});
+
+describe('RecuperarPasswordComponent en modo crear', () => {
+  let fixture: ComponentFixture<RecuperarPasswordComponent>;
+  let component: RecuperarPasswordComponent;
+  let router: Router;
+  const auth = {
+    me: vi.fn(),
+    destinoTrasLogin: vi.fn(),
+    forgotPassword: vi.fn(),
+    resetPassword: vi.fn(),
+  };
+
+  const crear = async () => {
+    await TestBed.configureTestingModule({
+      imports: [RecuperarPasswordComponent],
+      providers: [
+        provideRouter([]),
+        { provide: AuthService, useValue: auth },
+        {
+          provide: ActivatedRoute,
+          useValue: { snapshot: { queryParamMap: convertToParamMap({ modo: 'crear' }) } },
+        },
+      ],
+    }).compileComponents();
+
+    router = TestBed.inject(Router);
+    vi.spyOn(router, 'navigate').mockResolvedValue(true);
+    fixture = TestBed.createComponent(RecuperarPasswordComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  };
+
+  const html = () => fixture.nativeElement as HTMLElement;
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    auth.me.mockReturnValue(of({ id: 14, correo: 'datahorse3@gmail.com', nombre: 'Data' }));
+    auth.destinoTrasLogin.mockReturnValue(of('/admin/elegir'));
+  });
+
+  it('should take the email from the session and lock the field', async () => {
+    await crear();
+    await fixture.whenStable();
+    const correo = html().querySelector('#correo') as HTMLInputElement;
+    expect(component.modoCrear).toBe(true);
+    expect(component.correo).toBe('datahorse3@gmail.com');
+    expect(correo.readOnly).toBe(true);
+    expect(html().querySelector('h1')?.textContent).toContain('Crear contraseña');
+    expect(html().textContent).toContain('Después podrás iniciar sesión con Google');
+  });
+
+  it('should send to login when there is no session', async () => {
+    auth.me.mockReturnValue(throwError(() => new HttpErrorResponse({ status: 401 })));
+    await crear();
+    expect(router.navigate).toHaveBeenCalledWith(['/login']);
+  });
+
+  it('"Ahora no" should continue to the normal destination', async () => {
+    await crear();
+    (html().querySelector('.pie .enlace') as HTMLButtonElement).click();
+    expect(router.navigate).toHaveBeenCalledWith(['/admin/elegir']);
+    expect(html().querySelector('.pie a')).toBeNull();
+  });
+
+  it('should continue instead of going to login after creating the password', async () => {
+    await crear();
+    auth.resetPassword.mockReturnValue(of({ mensaje: 'ok' }));
+    component.paso = 2;
+    fixture.detectChanges();
+    expect(html().querySelector('.primario')?.textContent).toContain('Crear contraseña');
+
+    component.codigo = '123456';
+    component.nuevaPassword = 'Secreto123';
+    component.confirmarPassword = 'Secreto123';
+    component.cambiarPassword();
+
+    expect(auth.resetPassword).toHaveBeenCalledWith('datahorse3@gmail.com', '123456', 'Secreto123');
+    expect(router.navigate).toHaveBeenCalledWith(['/admin/elegir']);
+    expect(router.navigate).not.toHaveBeenCalledWith(['/login']);
   });
 });

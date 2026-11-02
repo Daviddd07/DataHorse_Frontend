@@ -1,0 +1,50 @@
+<main class="elegir-container">
+  <section class="elegir-card glass" aria-labelledby="elegir-titulo">
+    <img src="Logo_blanco.png" alt="DataHorse" class="elegir-logo" />
+
+    <h1 id="elegir-titulo">
+      Hola{{ nombreUsuario() ? ', ' + nombreUsuario() : '' }}
+    </h1>
+    <p class="elegir-subtitulo">¿A dónde quieres ir?</p>
+
+    <div class="elegir-opciones">
+      <button type="button" class="opcion" (click)="irAlPanel()">
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <rect x="3" y="3" width="7" height="9"></rect>
+          <rect x="14" y="3" width="7" height="5"></rect>
+          <rect x="14" y="12" width="7" height="9"></rect>
+          <rect x="3" y="16" width="7" height="5"></rect>
+        </svg>
+        <strong>Panel de administración</strong>
+        <span>Usuarios, caballos y publicaciones registradas</span>
+      </button>
+
+      <button type="button" class="opcion" (click)="irAlMarketplace()">
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+          <polyline points="9 22 9 12 15 12 15 22"></polyline>
+        </svg>
+        <strong>Marketplace</strong>
+        <span>Usar DataHorse como cualquier usuario</span>
+      </button>
+    </div>
+
+    <button type="button" class="btn-salir" (click)="cerrarSesion()">Cerrar sesión</button>
+  </section>
+</main>

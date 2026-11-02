@@ -1,6 +1,6 @@
 import { Component, inject, ChangeDetectorRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 import { AuthService } from '../../Services/auth.service';
 
@@ -14,10 +14,17 @@ import { AuthService } from '../../Services/auth.service';
         <!-- Logo de DataHorse -->
         <img src="Logo_blanco.png" alt="DataHorse" class="logo" />
 
-        <h1>Recuperar contraseña</h1>
+        <h1>{{ modoCrear ? 'Crear contraseña' : 'Recuperar contraseña' }}</h1>
 
         @if (paso === 1) {
-          <p class="sub">Ingresa tu correo y te enviaremos un código de recuperación.</p>
+          @if (modoCrear) {
+            <p class="sub">
+              Te enviaremos un código a tu correo para crear tu contraseña. Después podrás iniciar
+              sesión con Google o con tu correo y contraseña.
+            </p>
+          } @else {
+            <p class="sub">Ingresa tu correo y te enviaremos un código de recuperación.</p>
+          }
 
           <div class="campo">
             <label for="correo">Correo electrónico</label>
@@ -25,6 +32,7 @@ import { AuthService } from '../../Services/auth.service';
               id="correo"
               type="email"
               [(ngModel)]="correo"
+              [readonly]="modoCrear"
               placeholder="ejemplo@correo.com"
               autocomplete="email"
             />
@@ -160,12 +168,16 @@ import { AuthService } from '../../Services/auth.service';
           }
 
           <button type="submit" class="primario" (click)="cambiarPassword()" [disabled]="cargando">
-            {{ cargando ? 'Actualizando...' : 'Cambiar contraseña' }}
+            {{ cargando ? 'Actualizando...' : textoBotonGuardar }}
           </button>
         }
 
         <p class="pie">
-          <a routerLink="/login">Volver al inicio de sesión</a>
+          @if (modoCrear) {
+            <button type="button" class="enlace" (click)="continuar()">Ahora no</button>
+          } @else {
+            <a routerLink="/login">Volver al inicio de sesión</a>
+          }
         </p>
       </section>
     </main>
@@ -407,6 +419,29 @@ import { AuthService } from '../../Services/auth.service';
         transition: color 0.15s ease;
       }
 
+      /* "Ahora no" del modo crear: se ve igual que el enlace */
+      .enlace {
+        padding: 0;
+        border: none;
+        background: none;
+        color: var(--accent-gold);
+        font-family: inherit;
+        font-size: inherit;
+        font-weight: 600;
+        cursor: pointer;
+        transition: color 0.15s ease;
+      }
+
+      .enlace:hover {
+        color: #ffffff;
+        text-decoration: underline;
+      }
+
+      input[readonly] {
+        opacity: 0.75;
+        cursor: default;
+      }
+
       a:hover {
         color: #ffffff;
         text-decoration: underline;
@@ -419,6 +454,11 @@ export class RecuperarPasswordComponent {
   private readonly router = inject(Router);
   private readonly cd = inject(ChangeDetectorRef);
 
+  // ?modo=crear: el usuario ya inició sesión con Google y crea su primera contraseña
+  readonly modoCrear = inject(ActivatedRoute).snapshot.queryParamMap.get('modo') === 'crear';
+
+  readonly textoBotonGuardar = this.modoCrear ? 'Crear contraseña' : 'Cambiar contraseña';
+
   paso = 1;
   correo = '';
   codigo = '';
@@ -430,6 +470,24 @@ export class RecuperarPasswordComponent {
 
   verPass = false;
   verConfirmar = false;
+
+  constructor() {
+    if (!this.modoCrear) return;
+
+    // El correo sale de la sesión: así no se puede crear la contraseña de otra cuenta.
+    this.auth.me().subscribe({
+      next: (usuario) => {
+        this.correo = usuario.correo;
+        this.cd.detectChanges();
+      },
+      error: () => void this.router.navigate(['/login']),
+    });
+  }
+
+  // Sigue al destino normal después de iniciar sesión (panel o marketplace).
+  continuar(): void {
+    this.auth.destinoTrasLogin().subscribe((destino) => void this.router.navigate([destino]));
+  }
 
   enviarCodigo(): void {
     const correo = this.correo.trim().toLowerCase();
@@ -486,6 +544,13 @@ export class RecuperarPasswordComponent {
     this.auth.resetPassword(this.correo, this.codigo.trim(), this.nuevaPassword).subscribe({
       next: () => {
         this.cargando = false;
+
+        // Con sesión abierta (modo crear) no hace falta volver a iniciar sesión.
+        if (this.modoCrear) {
+          this.continuar();
+          return;
+        }
+
         void this.router.navigate(['/login']);
       },
       error: (e: HttpErrorResponse) => {
