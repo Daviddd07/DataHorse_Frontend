@@ -213,7 +213,11 @@ describe('MarketplaceComponent', () => {
       expect(nombres()).toEqual([]);
       component.soloVerificados.set(false);
 
-      component.precioMax.set(40_000_000);
+      // En el tope del slider no se limita: aparecen también los de más de 6M
+      expect(component.precioMax()).toBe(component.PRECIO_MAX_SLIDER);
+      expect(nombres()).toContain('Trueno');
+
+      component.precioMax.set(4_000_000);
       expect(nombres()).not.toContain('Trueno');
       expect(nombres()).toContain('Luna');
 

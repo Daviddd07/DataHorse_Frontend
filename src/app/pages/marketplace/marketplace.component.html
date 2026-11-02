@@ -390,12 +390,17 @@
           <h3>Precio Máximo</h3>
           <input
             type="range"
-            step="1000000"
+            min="0"
+            [max]="PRECIO_MAX_SLIDER"
+            step="100000"
             [value]="precioMax()"
-            (input)="precioMax.set(+$any($event.target).value)"
+            (input)="precioMax.set($any($event.target).valueAsNumber)"
             aria-label="Filtrar por precio máximo"
           />
-          <p class="filter-value">Hasta {{ precioMax() | currency: 'COP' : 'symbol' : '1.0-0' }}</p>
+          <p class="filter-value">
+            Hasta {{ precioMax() | currency: 'COP' : 'symbol' : '1.0-0' }}
+            <span *ngIf="precioMax() >= PRECIO_MAX_SLIDER">o más</span>
+          </p>
         </div>
         <div class="filter-group" *ngIf="categoriaActiva() === 'Edad'">
           <h3>Edad Máxima</h3>

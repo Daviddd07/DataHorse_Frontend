@@ -87,7 +87,10 @@ export class MarketplaceComponent {
 
   soloVerificados = signal(false);
 
-  precioMax = signal(60_000_000);
+  // Tope del slider de precio: en este valor el filtro no limita (muestra 6M o más)
+  readonly PRECIO_MAX_SLIDER = 6_000_000;
+
+  precioMax = signal(this.PRECIO_MAX_SLIDER);
 
   edadMax = signal(20); // años
 
@@ -150,7 +153,12 @@ export class MarketplaceComponent {
       // 3. FILTRO POR VERIFICADOS
       .filter((caballo) => !soloVerificados || caballo.verificado)
       // 4. FILTRO POR PRECIO MÁXIMO
-      .filter((caballo) => caballo.precio === null || caballo.precio <= precioMaximo)
+      .filter(
+        (caballo) =>
+          precioMaximo >= this.PRECIO_MAX_SLIDER ||
+          caballo.precio === null ||
+          caballo.precio <= precioMaximo,
+      )
       // 5. FILTRO POR EDAD MÁXIMA
       .filter((caballo) => caballo.edad <= edadMaxima)
       // 6. FILTRO POR CATEGORÍA ACTIVA (Favoritos, Pedigrí, Proximidad)
