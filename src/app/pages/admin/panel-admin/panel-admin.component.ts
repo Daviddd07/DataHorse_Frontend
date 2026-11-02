@@ -87,6 +87,8 @@ export class PanelAdminComponent {
     ];
   });
 
+  urlGrafana = computed(() => this.resumen()?.enlaces?.grafana ?? null);
+
   private readonly maxPorRaza = computed(() =>
     Math.max(1, ...(this.resumen()?.caballos.por_raza ?? []).map((r) => r.total)),
   );

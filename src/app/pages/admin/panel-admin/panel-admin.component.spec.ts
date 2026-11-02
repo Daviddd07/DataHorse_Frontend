@@ -111,6 +111,24 @@ describe('PanelAdminComponent', () => {
       expect(html().textContent).toContain('Usuarios (3)');
     });
 
+    it('should hide the Grafana button when it is not configured', async () => {
+      await crear();
+      expect(component.urlGrafana()).toBeNull();
+      expect(html().querySelector('.btn-logs')).toBeNull();
+    });
+
+    it('should open Grafana in a new tab when configured', async () => {
+      admin['obtenerResumen'].mockReturnValue(
+        of({ ...RESUMEN, enlaces: { grafana: 'http://localhost:3000/d/datahorse-logs' } }),
+      );
+      await crear();
+      const enlace = html().querySelector('.btn-logs') as HTMLAnchorElement;
+      expect(enlace.href).toBe('http://localhost:3000/d/datahorse-logs');
+      expect(enlace.target).toBe('_blank');
+      expect(enlace.rel).toContain('noopener');
+      expect(enlace.textContent).toContain('Ver logs en Grafana');
+    });
+
     it('should scale breed bars against the largest breed', async () => {
       await crear();
       expect(component.anchoBarra(4)).toBe('100%');

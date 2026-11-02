@@ -33,6 +33,10 @@ export interface ResumenAdmin {
     total: number;
     activas: number;
   };
+  // Se configura en backend/app/config/settings.py (GRAFANA_URL); null oculta el botón
+  enlaces?: {
+    grafana: string | null;
+  };
 }
 
 /* =====================================================

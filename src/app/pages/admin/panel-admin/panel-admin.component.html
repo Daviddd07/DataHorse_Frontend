@@ -60,8 +60,34 @@
   <!-- CONTENIDO -->
   <main class="admin-main">
     <header class="admin-header">
-      <h1>Panel de administración</h1>
-      <p>Resumen de usuarios, caballos y publicaciones de DataHorse.</p>
+      <div>
+        <h1>Panel de administración</h1>
+        <p>Resumen de usuarios, caballos y publicaciones de DataHorse.</p>
+      </div>
+
+      <a
+        *ngIf="urlGrafana() as url"
+        class="btn-logs glass"
+        [href]="url"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <line x1="18" y1="20" x2="18" y2="10"></line>
+          <line x1="12" y1="20" x2="12" y2="4"></line>
+          <line x1="6" y1="20" x2="6" y2="14"></line>
+        </svg>
+        <span>Ver logs en Grafana</span>
+        <span class="sr-only">(se abre en una pestaña nueva)</span>
+      </a>
     </header>
 
     <p class="admin-estado" *ngIf="cargando()">Cargando información…</p>
