@@ -1,0 +1,43 @@
+name: Pruebas del frontend DataHorse
+
+on:
+  push:
+    branches: [pre]
+  pull_request:
+    branches: [pre]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  pruebas:
+    name: Ejecutar pruebas de Angular
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Descargar el repositorio
+        uses: actions/checkout@v6
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+          cache: npm
+
+      - name: Instalar dependencias del proyecto
+        run: npm ci
+
+      - name: Compilar la aplicación
+        run: npx ng build
+
+      - name: Ejecutar pruebas con cobertura
+        run: npx ng test --no-watch --coverage
+
+      - name: Guardar informe de cobertura
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cobertura-frontend
+          path: coverage/
+          if-no-files-found: ignore
