@@ -95,6 +95,40 @@ export const routes: Routes = [
   },
 
   {
+    path: 'compatibilidad/mis-resultados',
+
+    loadComponent: () =>
+      import('./pages/mis-resultados/mis-resultados.component').then(
+        (m) => m.MisResultadosComponent,
+      ),
+
+    canActivate: [authGuard],
+  },
+
+  // Va antes de :idCaballo/:idYegua para que "resultados" no se tome como id
+  {
+    path: 'compatibilidad/resultados/:idSolicitud',
+
+    loadComponent: () =>
+      import('./pages/compatibilidad-resultado/compatibilidad-resultado.component').then(
+        (m) => m.CompatibilidadResultadoComponent,
+      ),
+
+    canActivate: [authGuard],
+  },
+
+  {
+    path: 'compatibilidad/:idCaballo/:idYegua',
+
+    loadComponent: () =>
+      import('./pages/compatibilidad-resultado/compatibilidad-resultado.component').then(
+        (m) => m.CompatibilidadResultadoComponent,
+      ),
+
+    canActivate: [authGuard],
+  },
+
+  {
     path: 'admin',
 
     loadComponent: () =>

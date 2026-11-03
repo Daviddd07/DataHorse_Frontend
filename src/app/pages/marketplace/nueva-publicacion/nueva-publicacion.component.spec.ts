@@ -196,6 +196,20 @@ describe('NuevaPublicacionComponent', () => {
   describe('guardar submission', () => {
     beforeEach(() => crear());
 
+    it('should send the descendencia typed in the form section', () => {
+      llenar('Macho');
+      fixture.detectChanges();
+      const padre = fixture.nativeElement.querySelector('#desc-padre_nombre') as HTMLInputElement;
+      padre.value = 'Tormenta';
+      padre.dispatchEvent(new Event('input'));
+
+      component.guardar();
+
+      expect(caballos['crear']).toHaveBeenCalledWith(
+        expect.objectContaining({ descendencia: { padre_nombre: 'Tormenta' } }),
+      );
+    });
+
     it('should create a stallion, upload photos and go to the marketplace', () => {
       llenar('Macho');
       component.guardar();
@@ -209,6 +223,7 @@ describe('NuevaPublicacionComponent', () => {
         descripcion: 'Manso',
         disponibilidad: 'Disponible',
         precio: 1000000,
+        descendencia: {},
         id_raza: 1,
       });
       expect(caballos['subirFotos']).toHaveBeenCalledWith(99, [foto]);

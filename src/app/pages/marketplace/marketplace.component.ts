@@ -2,7 +2,7 @@ import { Component, computed, inject, signal } from '@angular/core';
 
 import { CommonModule, CurrencyPipe } from '@angular/common';
 
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 import { AuthService } from '../../Services/auth.service';
 
@@ -11,6 +11,8 @@ import { CaballoService, Publicacion } from '../../Services/caballo.service';
 import { LogService } from '../../Services/log.service';
 
 import { environment } from '../../../environments/environment';
+
+import { CompatibilidadSelectorComponent } from './compatibilidad/compatibilidad-selector.component';
 
 interface CaballoMarketplace {
   id: number;
@@ -61,7 +63,7 @@ interface CaballoMarketplace {
 
   standalone: true,
 
-  imports: [CommonModule, CurrencyPipe],
+  imports: [CommonModule, CurrencyPipe, CompatibilidadSelectorComponent],
 
   templateUrl: './marketplace.component.html',
 
@@ -71,6 +73,7 @@ export class MarketplaceComponent {
   private readonly auth = inject(AuthService);
   private readonly caballoService = inject(CaballoService);
   private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
   private readonly log = inject(LogService);
 
   nombreUsuario = signal('');
@@ -252,6 +255,12 @@ export class MarketplaceComponent {
     this.cargarUsuario();
     this.cargarRazas();
     this.cargarPublicaciones();
+
+    // ?categoria=Compatibilidad abre esa pestaña (p. ej. "Nueva evaluación" desde el resultado)
+    const categoria = this.route.snapshot.queryParamMap.get('categoria');
+    if (categoria && this.categorias.includes(categoria)) {
+      this.seleccionarCategoria(categoria);
+    }
   }
 
   // ======================================================
@@ -466,6 +475,11 @@ export class MarketplaceComponent {
   irAlPanelAdmin(): void {
     this.menuAbierto.set(false);
     void this.router.navigate(['/admin']);
+  }
+
+  irAMisResultados(): void {
+    this.menuAbierto.set(false);
+    void this.router.navigate(['/compatibilidad/mis-resultados']);
   }
 
   cerrarMenu(): void {

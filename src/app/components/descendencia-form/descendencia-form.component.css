@@ -1,0 +1,186 @@
+/* Mismo estilo que los formularios de "Nueva publicación" y "Editar caballo" */
+:host {
+  --border-glass: rgba(255, 255, 255, 0.15);
+  --text-main: #ffffff;
+  --text-muted: rgba(255, 255, 255, 0.7);
+  --accent-gold: #e6a817;
+
+  display: block;
+  grid-column: 1 / -1;
+}
+
+.desc {
+  border: 1px solid var(--border-glass);
+  border-radius: 18px;
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.desc-summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 16px;
+  padding: 18px 20px;
+  cursor: pointer;
+  list-style: none;
+  border-radius: 18px;
+}
+
+.desc-summary::-webkit-details-marker {
+  display: none;
+}
+
+/* Flecha que gira al abrir */
+.desc-summary::after {
+  content: '';
+  width: 9px;
+  height: 9px;
+  margin-left: auto;
+  border-right: 2px solid var(--accent-gold);
+  border-bottom: 2px solid var(--accent-gold);
+  transform: rotate(45deg);
+}
+
+.desc[open] > .desc-summary::after {
+  transform: rotate(-135deg);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .desc-summary::after {
+    transition: transform 0.2s ease;
+  }
+}
+
+.desc-summary:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.desc-summary:focus-visible {
+  outline: 2px solid var(--accent-gold);
+  outline-offset: 2px;
+}
+
+.desc-titulo {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.desc-titulo svg {
+  width: 20px;
+  height: 20px;
+  color: var(--accent-gold);
+}
+
+.desc-opcional {
+  font-weight: 400;
+  color: var(--text-muted);
+}
+
+.desc-contador {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.desc-ayuda {
+  margin: 0 20px 8px;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+/* Grupos */
+.desc-grupo {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px 22px;
+  margin: 0;
+  padding: 18px 20px 22px;
+  border: none;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.desc-grupo legend {
+  float: left;
+  grid-column: 1 / -1;
+  width: 100%;
+  margin-bottom: 4px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--accent-gold);
+}
+
+.desc-grupo label {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.desc-completo {
+  grid-column: 1 / -1;
+}
+
+/* Campos (copiados de .np-form / .ec-form) */
+.desc input,
+.desc select,
+.desc textarea {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 16px;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 13px 16px;
+  font-family: inherit;
+  font-size: 0.94rem;
+  color: var(--text-main);
+  outline: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .desc input,
+  .desc select,
+  .desc textarea {
+    transition:
+      border-color 0.2s ease,
+      box-shadow 0.2s ease,
+      background 0.2s ease;
+  }
+}
+
+.desc input::placeholder,
+.desc textarea::placeholder {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.desc select option {
+  background-color: #1e2328;
+  color: white;
+}
+
+.desc input:focus,
+.desc select:focus,
+.desc textarea:focus {
+  border-color: var(--accent-gold);
+  background: rgba(0, 0, 0, 0.5);
+  box-shadow: 0 0 0 4px rgba(230, 168, 23, 0.15);
+}
+
+.desc textarea {
+  min-height: 90px;
+  resize: vertical;
+}
+
+@media (max-width: 700px) {
+  .desc-grupo {
+    grid-template-columns: 1fr;
+  }
+}

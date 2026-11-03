@@ -23,6 +23,7 @@ const CABALLO: CaballoDetalle = {
     { id_foto: 1, ruta: '/uploads/a.png', es_principal: true, orden: 0 },
     { id_foto: 2, ruta: '/uploads/b.png', es_principal: false, orden: 1 },
   ],
+  descendencia: { padre_nombre: 'Tormenta', modalidad: 'Trocha' },
 };
 
 describe('EditarCaballoComponent', () => {
@@ -79,6 +80,13 @@ describe('EditarCaballoComponent', () => {
       expect(component.precio()).toBe(1000);
       expect(component.fotos()[0].urlCompleta).toContain('/uploads/a.png');
       expect(component.cargando()).toBe(false);
+      expect(component.descendencia()).toEqual({ padre_nombre: 'Tormenta', modalidad: 'Trocha' });
+    });
+
+    it('should start with an empty descendencia when none was saved', async () => {
+      caballos['obtenerCaballo'].mockReturnValue(of({ ...CABALLO, descendencia: null }));
+      await crear();
+      expect(component.descendencia()).toEqual({});
     });
 
     it('should reject an invalid id', async () => {
@@ -229,6 +237,7 @@ describe('EditarCaballoComponent', () => {
         descripcion: 'Manso',
         disponibilidad: 'Disponible',
         precio: 1000,
+        descendencia: { padre_nombre: 'Tormenta', modalidad: 'Trocha' },
         id_raza: 1,
       });
       expect(caballos['subirFotos']).not.toHaveBeenCalled();

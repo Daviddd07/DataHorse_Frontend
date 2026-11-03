@@ -1,0 +1,178 @@
+<main class="cr">
+  <!-- BARRA SUPERIOR -->
+  <div class="cr-top">
+    <button type="button" class="cr-volver" (click)="volverAlMarketplace()">
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+      >
+        <polyline points="15 18 9 12 15 6"></polyline>
+      </svg>
+      Marketplace
+    </button>
+    <app-cupo-compatibilidad [cupo]="cupo()" />
+  </div>
+
+  <div class="cr-encabezado">
+    <h1 class="cr-titulo">Estudio de compatibilidad</h1>
+    @if (evaluacion()?.fecha; as fecha) {
+      <p class="cr-muted">Estudio realizado el {{ fecha | date: 'dd/MM/yyyy, HH:mm' }}</p>
+    }
+  </div>
+
+  <!-- CARGANDO -->
+  @if (cargando()) {
+    <output class="cr-panel cr-cargando" aria-live="polite">
+      <span class="cr-spinner" aria-hidden="true"></span>
+      @if (esGuardado) {
+        <p>Cargando el estudio guardado…</p>
+      } @else {
+        <p>Analizando con inteligencia artificial…</p>
+        <p class="cr-muted">Esto puede tardar unos segundos.</p>
+      }
+    </output>
+  }
+
+  <!-- ERROR -->
+  @if (!cargando() && error()) {
+    <section class="cr-panel cr-error" role="alert">
+      <p>{{ error() }}</p>
+      <div class="cr-acciones">
+        <button type="button" class="cr-secundario" (click)="cargar()">Reintentar</button>
+        <button type="button" class="cr-primario" (click)="nuevaEvaluacion()">
+          Nueva evaluación
+        </button>
+      </div>
+    </section>
+  }
+
+  <!-- RESULTADO -->
+  @if (!cargando() && evaluacion(); as ev) {
+    <!-- PAR Y PUNTAJE -->
+    <section class="cr-panel cr-hero">
+      <div class="cr-par">
+        <div>
+          <p class="cr-tag">Caballo</p>
+          <h2>{{ ev.caballo.nombre }}</h2>
+          <p class="cr-muted">{{ ev.caballo.raza }} · de {{ ev.caballo.propietario }}</p>
+        </div>
+        <span class="cr-x" aria-hidden="true">×</span>
+        <div>
+          <p class="cr-tag">Yegua</p>
+          <h2>{{ ev.yegua.nombre }}</h2>
+          <p class="cr-muted">{{ ev.yegua.raza }} · de {{ ev.yegua.propietario }}</p>
+        </div>
+      </div>
+
+      <div class="cr-puntaje">
+        <div
+          [class]="'cr-anillo nivel-' + nivel(ev.resultado.puntuacion)"
+          [style.background]="fondoAnillo(ev.resultado.puntuacion)"
+        >
+          <span
+            ><span class="cr-oculto">Compatibilidad</span>
+            <strong>{{ ev.resultado.puntuacion }}</strong
+            >/100</span
+          >
+        </div>
+        <div class="cr-etiquetas">
+          <span [class]="'cr-chip confianza-' + ev.resultado.nivel_confianza">
+            {{ etiquetaConfianza(ev.resultado.nivel_confianza) }}
+          </span>
+          @if (ev.desde_cache) {
+            <span class="cr-chip cr-chip-guardado">Resultado guardado · no gastó estimación</span>
+          }
+        </div>
+      </div>
+    </section>
+
+    <!-- PUNTOS POR CATEGORÍA -->
+    <section class="cr-panel" aria-labelledby="cr-categorias">
+      <h3 id="cr-categorias">Puntos por categoría</h3>
+      <ul class="cr-barras">
+        @for (c of categorias(); track c.etiqueta) {
+          <li>
+            <span>{{ c.etiqueta }}</span>
+            <span class="cr-barra" aria-hidden="true">
+              <span [class]="'nivel-' + nivel(c.valor)" [style.width.%]="c.valor"></span>
+            </span>
+            <strong>{{ c.valor }}</strong>
+          </li>
+        }
+      </ul>
+    </section>
+
+    <!-- RESUMEN DE LA CRÍA -->
+    <section class="cr-panel" aria-labelledby="cr-resumen">
+      <h3 id="cr-resumen">Qué se podría esperar de la cría</h3>
+      <p class="cr-resumen">{{ ev.resultado.resumen_cria }}</p>
+    </section>
+
+    <!-- LISTAS -->
+    <div class="cr-listas">
+      <section class="cr-panel cr-lista cr-fortalezas">
+        <h3>Fortalezas</h3>
+        <ul>
+          @for (item of ev.resultado.fortalezas; track $index) {
+            <li>{{ item }}</li>
+          } @empty {
+            <li class="cr-muted">Sin datos</li>
+          }
+        </ul>
+      </section>
+
+      <section class="cr-panel cr-lista cr-riesgos">
+        <h3>Riesgos</h3>
+        <ul>
+          @for (item of ev.resultado.riesgos; track $index) {
+            <li>{{ item }}</li>
+          } @empty {
+            <li class="cr-muted">Sin datos</li>
+          }
+        </ul>
+      </section>
+
+      <section class="cr-panel cr-lista cr-recomendaciones">
+        <h3>Recomendaciones</h3>
+        <ul>
+          @for (item of ev.resultado.recomendaciones; track $index) {
+            <li>{{ item }}</li>
+          } @empty {
+            <li class="cr-muted">Sin datos</li>
+          }
+        </ul>
+      </section>
+
+      <section class="cr-panel cr-lista cr-faltantes">
+        <h3>Datos que mejorarían la estimación</h3>
+        <ul>
+          @for (item of ev.resultado.datos_faltantes_importantes; track $index) {
+            <li>{{ item }}</li>
+          } @empty {
+            <li class="cr-muted">Sin datos</li>
+          }
+        </ul>
+      </section>
+    </div>
+
+    <!-- AVISO -->
+    <p class="cr-aviso" role="note">{{ ev.aviso }}</p>
+
+    <div class="cr-acciones">
+      <button type="button" class="cr-secundario" (click)="volverAlMarketplace()">
+        Volver al marketplace
+      </button>
+      <button type="button" class="cr-secundario" (click)="irAMisResultados()">
+        Mis resultados
+      </button>
+      <button type="button" class="cr-primario" (click)="nuevaEvaluacion()">
+        Nueva evaluación
+      </button>
+    </div>
+  }
+</main>

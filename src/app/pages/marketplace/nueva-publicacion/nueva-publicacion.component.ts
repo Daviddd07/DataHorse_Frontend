@@ -6,7 +6,14 @@ import { FormsModule } from '@angular/forms';
 
 import { Router } from '@angular/router';
 
-import { CaballoService, Raza, NuevaPublicacion } from '../../../Services/caballo.service';
+import {
+  CaballoService,
+  Descendencia,
+  Raza,
+  NuevaPublicacion,
+} from '../../../Services/caballo.service';
+
+import { DescendenciaFormComponent } from '../../../components/descendencia-form/descendencia-form.component';
 
 import { LogService } from '../../../Services/log.service';
 
@@ -16,7 +23,7 @@ type Paso = 'tipo' | 'formulario';
   selector: 'app-nueva-publicacion',
   standalone: true,
 
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, DescendenciaFormComponent],
 
   templateUrl: './nueva-publicacion.component.html',
 
@@ -72,6 +79,12 @@ export class NuevaPublicacionComponent {
   // ======================================================
 
   precio = signal<number | null>(null);
+
+  // ======================================================
+  // DESCENDENCIA (opcional)
+  // ======================================================
+
+  descendencia = signal<Descendencia>({});
 
   // ======================================================
   // ESTADO
@@ -348,6 +361,8 @@ export class NuevaPublicacionComponent {
       disponibilidad: this.disponibilidad(),
 
       precio: this.sexo() === 'Macho' ? Number(this.precio()) : null,
+
+      descendencia: this.descendencia(),
     };
 
     // ==================================================

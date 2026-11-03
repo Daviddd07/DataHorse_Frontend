@@ -1,0 +1,81 @@
+<main class="cr">
+  <!-- BARRA SUPERIOR -->
+  <div class="cr-top">
+    <button type="button" class="cr-volver" (click)="volverAlMarketplace()">
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+      >
+        <polyline points="15 18 9 12 15 6"></polyline>
+      </svg>
+      Marketplace
+    </button>
+    <button type="button" class="cr-primario" (click)="nuevoEstudio()">Nuevo estudio</button>
+  </div>
+
+  <div class="cr-encabezado">
+    <h1 class="cr-titulo">Mis resultados</h1>
+    <p class="cr-muted">
+      Estudios de compatibilidad que has realizado. Ábrelos sin gastar estimaciones.
+    </p>
+  </div>
+
+  @if (cargando()) {
+    <output class="cr-panel cr-cargando" aria-live="polite">
+      <span class="cr-spinner" aria-hidden="true"></span>
+      <p>Cargando tus estudios…</p>
+    </output>
+  } @else if (error()) {
+    <section class="cr-panel cr-error" role="alert">
+      <p>{{ error() }}</p>
+      <div class="cr-acciones">
+        <button type="button" class="cr-secundario" (click)="cargar()">Reintentar</button>
+      </div>
+    </section>
+  } @else if (estudios().length === 0) {
+    <section class="cr-panel mr-vacio">
+      <p>Aún no has hecho estudios de compatibilidad.</p>
+      <button type="button" class="cr-primario" (click)="nuevoEstudio()">Hacer un estudio</button>
+    </section>
+  } @else {
+    <p class="cr-muted mr-total">
+      {{ estudios().length }} {{ estudios().length === 1 ? 'estudio' : 'estudios' }}
+    </p>
+    <ul class="mr-lista">
+      @for (e of estudios(); track e.id_solicitud) {
+        <li>
+          <button type="button" class="cr-panel mr-item" (click)="abrir(e)">
+            <span [class]="'mr-puntaje nivel-' + nivel(e.puntuacion)">
+              <strong>{{ e.puntuacion }}</strong>
+              <small>/100</small>
+            </span>
+
+            <span class="mr-par">
+              <span class="mr-nombres">
+                {{ e.caballo.nombre }} <span class="cr-x-chica" aria-hidden="true">×</span>
+                {{ e.yegua.nombre }}
+              </span>
+              <span class="cr-muted mr-detalle">
+                {{ e.caballo.raza }} (de {{ e.caballo.propietario }}) · {{ e.yegua.raza }}
+              </span>
+            </span>
+
+            <span class="mr-lado">
+              <span [class]="'cr-chip confianza-' + e.nivel_confianza">
+                Confianza {{ e.nivel_confianza }}
+              </span>
+              <span class="cr-muted mr-fecha">{{ e.fecha | date: 'dd/MM/yyyy, HH:mm' }}</span>
+            </span>
+
+            <span class="mr-flecha" aria-hidden="true">›</span>
+          </button>
+        </li>
+      }
+    </ul>
+  }
+</main>

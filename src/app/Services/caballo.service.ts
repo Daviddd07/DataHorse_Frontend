@@ -19,6 +19,58 @@ export interface Raza {
 }
 
 /* =====================================================
+   DESCENDENCIA (todo opcional)
+===================================================== */
+
+export const MODALIDADES = [
+  'Paso fino colombiano',
+  'Trocha',
+  'Trocha y galope',
+  'Trote y galope',
+  'Galope',
+  'Salto',
+  'Carreras',
+  'Trabajo de campo',
+  'Otra',
+] as const;
+
+export const TEMPERAMENTOS = ['Tranquilo', 'Dócil', 'Activo', 'Nervioso', 'Dominante'] as const;
+
+export interface Descendencia {
+  padre_nombre?: string | null;
+  padre_raza?: string | null;
+  padre_registro?: string | null;
+  padre_logros?: string | null;
+  madre_nombre?: string | null;
+  madre_raza?: string | null;
+  madre_registro?: string | null;
+  madre_logros?: string | null;
+
+  abuelo_paterno_nombre?: string | null;
+  abuelo_paterno_raza?: string | null;
+  abuela_paterna_nombre?: string | null;
+  abuela_paterna_raza?: string | null;
+  abuelo_materno_nombre?: string | null;
+  abuelo_materno_raza?: string | null;
+  abuela_materna_nombre?: string | null;
+  abuela_materna_raza?: string | null;
+
+  asociacion_registro?: string | null;
+  criadero_origen?: string | null;
+
+  modalidad?: string | null;
+  temperamento?: string | null;
+
+  condiciones_hereditarias?: string | null;
+  pruebas_geneticas?: string | null;
+
+  crias_anteriores?: number | null;
+  caracteristicas_crias?: string | null;
+
+  notas?: string | null;
+}
+
+/* =====================================================
    NUEVA PUBLICACIÓN
 ===================================================== */
 
@@ -44,6 +96,8 @@ export interface NuevaPublicacion {
   disponibilidad: string;
 
   precio?: number | null;
+
+  descendencia?: Descendencia | null;
 }
 
 /* =====================================================
@@ -381,6 +435,9 @@ export interface CaballoDetalle {
   precio: number | null;
 
   fotos: FotoCaballoDetalle[];
+
+  // null si nunca se registró
+  descendencia?: Descendencia | null;
 }
 
 export interface CaballoUpdatePayload {
@@ -394,4 +451,5 @@ export interface CaballoUpdatePayload {
   descripcion: string;
   disponibilidad: 'Disponible' | 'No disponible';
   precio?: number | null;
+  descendencia?: Descendencia | null;
 }

@@ -12,9 +12,12 @@ import {
   CaballoService,
   CaballoDetalle,
   CaballoUpdatePayload,
+  Descendencia,
   FotoCaballoDetalle,
   Raza,
 } from '../../Services/caballo.service';
+
+import { DescendenciaFormComponent } from '../../components/descendencia-form/descendencia-form.component';
 
 import { environment } from '../../../environments/environment';
 
@@ -26,7 +29,7 @@ interface FotoVista extends FotoCaballoDetalle {
   selector: 'app-editar-caballo',
   standalone: true,
 
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, DescendenciaFormComponent],
 
   templateUrl: './editar-caballo.component.html',
 
@@ -81,6 +84,7 @@ export class EditarCaballoComponent {
   descripcion = signal('');
   disponibilidad = signal<'Disponible' | 'No disponible'>('Disponible');
   precio = signal<number | null>(null);
+  descendencia = signal<Descendencia>({});
 
   // Fotos
   fotos = signal<FotoVista[]>([]);
@@ -158,6 +162,7 @@ export class EditarCaballoComponent {
         this.descripcion.set(data.descripcion);
         this.disponibilidad.set(data.disponibilidad as 'Disponible' | 'No disponible');
         this.precio.set(data.precio);
+        this.descendencia.set(data.descendencia ?? {});
 
         this.fotos.set(
           data.fotos.map((f) => ({
@@ -330,6 +335,7 @@ export class EditarCaballoComponent {
       descripcion: this.descripcion().trim(),
       disponibilidad: this.disponibilidad(),
       precio: cab.sexo === 'Macho' ? Number(this.precio()) : null,
+      descendencia: this.descendencia(),
     };
 
     if (this.razaEsOtro()) {

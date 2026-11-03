@@ -1,0 +1,87 @@
+<details class="desc">
+  <summary class="desc-summary">
+    <span class="desc-titulo">
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+      >
+        <circle cx="12" cy="5" r="2.5"></circle>
+        <circle cx="5" cy="19" r="2.5"></circle>
+        <circle cx="19" cy="19" r="2.5"></circle>
+        <path d="M12 7.5v4M12 11.5 5 16.5M12 11.5l7 5"></path>
+      </svg>
+      Descendencia <span class="desc-opcional">(opcional)</span>
+    </span>
+
+    <span class="desc-contador">{{ completados() }} de {{ totalCampos }} completados</span>
+  </summary>
+
+  <p class="desc-ayuda">
+    Llena solo lo que sepas. Mientras más completes, más precisa será la evaluación de
+    compatibilidad.
+  </p>
+
+  @for (grupo of grupos; track grupo.titulo) {
+    <fieldset class="desc-grupo">
+      <legend>{{ grupo.titulo }}</legend>
+
+      @for (campo of grupo.campos; track campo.clave) {
+        <label [for]="'desc-' + campo.clave" [class.desc-completo]="campo.completo">
+          {{ campo.etiqueta }}
+
+          @switch (campo.tipo) {
+            @case ('opciones') {
+              <select
+                [id]="'desc-' + campo.clave"
+                [value]="valor(campo.clave)"
+                (change)="actualizar(campo, $any($event.target).value)"
+              >
+                <option value="">Sin especificar</option>
+                @for (opcion of campo.opciones; track opcion) {
+                  <option [value]="opcion" [selected]="valor(campo.clave) === opcion">
+                    {{ opcion }}
+                  </option>
+                }
+              </select>
+            }
+            @case ('area') {
+              <textarea
+                [id]="'desc-' + campo.clave"
+                [attr.maxlength]="campo.max"
+                [attr.placeholder]="campo.placeholder ?? null"
+                [value]="valor(campo.clave)"
+                (input)="actualizar(campo, $any($event.target).value)"
+              ></textarea>
+            }
+            @case ('numero') {
+              <input
+                [id]="'desc-' + campo.clave"
+                type="number"
+                min="0"
+                step="1"
+                inputmode="numeric"
+                [value]="valor(campo.clave)"
+                (input)="actualizar(campo, $any($event.target).value)"
+              />
+            }
+            @default {
+              <input
+                [id]="'desc-' + campo.clave"
+                type="text"
+                [attr.maxlength]="campo.max"
+                [attr.placeholder]="campo.placeholder ?? null"
+                [value]="valor(campo.clave)"
+                (input)="actualizar(campo, $any($event.target).value)"
+              />
+            }
+          }
+        </label>
+      }
+    </fieldset>
+  }
+</details>

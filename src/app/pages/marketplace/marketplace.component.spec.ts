@@ -1,10 +1,12 @@
+import { Provider } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { Router, provideRouter } from '@angular/router';
+import { ActivatedRoute, Router, convertToParamMap, provideRouter } from '@angular/router';
 import { of, throwError } from 'rxjs';
 import { MarketplaceComponent } from './marketplace.component';
 import { AuthService } from '../../Services/auth.service';
 import { CaballoService, Publicacion } from '../../Services/caballo.service';
 import { LogService } from '../../Services/log.service';
+import { CompatibilidadService } from '../../Services/compatibilidad.service';
 
 const logMock = { debug: vi.fn(), info: vi.fn(), warn: vi.fn(), error: vi.fn(), flush: vi.fn() };
 
@@ -91,8 +93,11 @@ describe('MarketplaceComponent', () => {
   let router: Router;
   let auth: Record<string, ReturnType<typeof vi.fn>>;
   let caballos: Record<string, ReturnType<typeof vi.fn>>;
+  const compatibilidadMock = {
+    obtenerCupo: vi.fn().mockReturnValue(of({ limite: 5, usadas: 1, restantes: 4 })),
+  };
 
-  const crear = async () => {
+  const crear = async (extraProviders: Provider[] = []) => {
     await TestBed.configureTestingModule({
       imports: [MarketplaceComponent],
       providers: [
@@ -100,6 +105,8 @@ describe('MarketplaceComponent', () => {
         { provide: LogService, useValue: logMock },
         { provide: AuthService, useValue: auth },
         { provide: CaballoService, useValue: caballos },
+        { provide: CompatibilidadService, useValue: compatibilidadMock },
+        ...extraProviders,
       ],
     }).compileComponents();
     router = TestBed.inject(Router);
@@ -286,6 +293,43 @@ describe('MarketplaceComponent', () => {
     });
   });
 
+  describe('compatibility tab', () => {
+    const selector = () => fixture.nativeElement.querySelector('app-compatibilidad-selector');
+
+    it('should replace the cards with the compatibility wizard', async () => {
+      await crear();
+      expect(selector()).toBeNull();
+
+      component.seleccionarCategoria('Compatibilidad');
+      fixture.detectChanges();
+
+      expect(selector()).not.toBeNull();
+      expect(fixture.nativeElement.querySelector('.grid-cards')).toBeNull();
+    });
+
+    it('should open the tab from the query string', async () => {
+      await crear([
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            snapshot: { queryParamMap: convertToParamMap({ categoria: 'Compatibilidad' }) },
+          },
+        },
+      ]);
+      expect(component.categoriaActiva()).toBe('Compatibilidad');
+    });
+
+    it('should ignore an unknown category in the query string', async () => {
+      await crear([
+        {
+          provide: ActivatedRoute,
+          useValue: { snapshot: { queryParamMap: convertToParamMap({ categoria: 'Hackeo' }) } },
+        },
+      ]);
+      expect(component.categoriaActiva()).toBe('Todos');
+    });
+  });
+
   describe('favorites', () => {
     beforeEach(() => crear());
 
@@ -350,6 +394,16 @@ describe('MarketplaceComponent', () => {
     it('should hide the admin button from a normal user', () => {
       expect(component.esAdmin()).toBe(false);
       expect(fixture.nativeElement.querySelector('[title="Panel de administración"]')).toBeNull();
+    });
+
+    it('should open "Mis resultados" from the sidebar', () => {
+      const boton = fixture.nativeElement.querySelector(
+        '[title="Mis resultados de compatibilidad"]',
+      ) as HTMLButtonElement;
+      component.menuAbierto.set(true);
+      boton.click();
+      expect(component.menuAbierto()).toBe(false);
+      expect(router.navigate).toHaveBeenCalledWith(['/compatibilidad/mis-resultados']);
     });
   });
 

@@ -1,0 +1,184 @@
+<section class="cs" aria-labelledby="cs-titulo">
+  <!-- CABECERA -->
+  <header class="cs-header">
+    <div>
+      <h2 id="cs-titulo">Estudio de compatibilidad</h2>
+      <p class="cs-sub">Elige un caballo del marketplace y una de tus yeguas.</p>
+    </div>
+    <app-cupo-compatibilidad [cupo]="cupo()" />
+  </header>
+
+  <!-- PASOS -->
+  <ol class="cs-pasos" aria-label="Pasos del estudio">
+    @for (p of pasos; track p.numero) {
+      <li
+        [class.activo]="paso() === p.numero"
+        [class.hecho]="paso() > p.numero"
+        [attr.aria-current]="paso() === p.numero ? 'step' : null"
+      >
+        <button type="button" (click)="irAPaso(p.numero)" [disabled]="paso() <= p.numero">
+          <span class="cs-num">{{ paso() > p.numero ? '✓' : p.numero }}</span>
+          {{ p.etiqueta }}
+        </button>
+      </li>
+    }
+  </ol>
+
+  <!-- PASO 1: CABALLO DEL MARKETPLACE -->
+  @if (paso() === 1) {
+    <!-- La barra va arriba de las tarjetas para no taparlas -->
+    <div class="cs-barra">
+      @if (caballoSeleccionado(); as c) {
+        <p>
+          <strong>{{ c.nombre }}</strong> · {{ c.raza }} · {{ c.edad }} años · de
+          {{ c.propietario }}
+        </p>
+        <button type="button" class="cs-primario" (click)="confirmarCaballo()">
+          Confirmar caballo
+        </button>
+      } @else {
+        <p class="cs-ayuda">Selecciona un caballo para continuar.</p>
+      }
+    </div>
+
+    @if (machos().length === 0) {
+      <p class="cs-vacio">No hay caballos en el marketplace que coincidan con la búsqueda.</p>
+    } @else {
+      <ul class="cs-grid">
+        @for (c of machos(); track c.idCaballo) {
+          <li>
+            <button
+              type="button"
+              class="cs-card"
+              [class.seleccionada]="caballoSeleccionado()?.idCaballo === c.idCaballo"
+              [attr.aria-pressed]="caballoSeleccionado()?.idCaballo === c.idCaballo"
+              (click)="seleccionarCaballo(c)"
+            >
+              <div class="cs-media" [style.background]="c.fondo">
+                @if (c.fotoPrincipal) {
+                  <img [src]="c.fotoPrincipal" [alt]="c.nombre" />
+                } @else {
+                  <span class="cs-placeholder">DH</span>
+                }
+                @if (c.esMia) {
+                  <span class="cs-badge">Tuyo</span>
+                }
+                @if (caballoSeleccionado()?.idCaballo === c.idCaballo) {
+                  <span class="cs-check">✓ Seleccionado</span>
+                }
+              </div>
+              <div class="cs-body">
+                <p class="cs-tag">{{ c.raza }}</p>
+                <h3>{{ c.nombre }}</h3>
+                <p class="cs-meta">{{ c.edad }} años · {{ c.altura }} m</p>
+                <p class="cs-meta">de {{ c.propietario }} · {{ c.ubicacion }}</p>
+              </div>
+            </button>
+          </li>
+        }
+      </ul>
+    }
+  }
+
+  <!-- PASO 2: YEGUA DEL USUARIO -->
+  @if (paso() === 2) {
+    <div class="cs-barra">
+      <button type="button" class="cs-secundario" (click)="irAPaso(1)">Cambiar caballo</button>
+      <p>
+        Caballo: <strong>{{ caballoConfirmado()?.nombre }}</strong>
+        @if (yeguaSeleccionada(); as y) {
+          · Yegua: <strong>{{ y.nombre }}</strong> ({{ y.raza }}, {{ y.edad }} años)
+        } @else {
+          · <span class="cs-ayuda">Selecciona una de tus yeguas.</span>
+        }
+      </p>
+      @if (yeguaSeleccionada()) {
+        <button type="button" class="cs-primario" (click)="confirmarYegua()">
+          Confirmar yegua
+        </button>
+      }
+    </div>
+
+    @if (cargandoYeguas()) {
+      <p class="cs-vacio">Cargando tus yeguas...</p>
+    } @else if (errorYeguas()) {
+      <div class="cs-vacio">
+        <p>{{ errorYeguas() }}</p>
+        <button type="button" class="cs-secundario" (click)="reintentarYeguas()">Reintentar</button>
+      </div>
+    } @else if (yeguas().length === 0) {
+      <div class="cs-vacio">
+        <p>No tienes yeguas registradas.</p>
+        <button type="button" class="cs-primario" (click)="registrarYegua()">
+          Registrar yegua
+        </button>
+      </div>
+    } @else {
+      <ul class="cs-grid">
+        @for (y of yeguas(); track y.idCaballo) {
+          <li>
+            <button
+              type="button"
+              class="cs-card"
+              [class.seleccionada]="yeguaSeleccionada()?.idCaballo === y.idCaballo"
+              [attr.aria-pressed]="yeguaSeleccionada()?.idCaballo === y.idCaballo"
+              (click)="seleccionarYegua(y)"
+            >
+              <div class="cs-media">
+                @if (y.fotoPrincipal) {
+                  <img [src]="y.fotoPrincipal" [alt]="y.nombre" />
+                } @else {
+                  <span class="cs-placeholder">DH</span>
+                }
+                @if (yeguaSeleccionada()?.idCaballo === y.idCaballo) {
+                  <span class="cs-check">✓ Seleccionada</span>
+                }
+              </div>
+              <div class="cs-body">
+                <p class="cs-tag">{{ y.raza }}</p>
+                <h3>{{ y.nombre }}</h3>
+                <p class="cs-meta">{{ y.edad }} años · {{ y.altura }} m</p>
+                <p class="cs-meta">{{ y.ubicacion }}</p>
+              </div>
+            </button>
+          </li>
+        }
+      </ul>
+    }
+  }
+
+  <!-- PASO 3: CONFIRMAR -->
+  @if (paso() === 3) {
+    <div class="cs-resumen">
+      <div class="cs-par">
+        <div>
+          <p class="cs-tag">Caballo</p>
+          <h3>{{ caballoConfirmado()?.nombre }}</h3>
+          <p class="cs-meta">
+            {{ caballoConfirmado()?.raza }} · {{ caballoConfirmado()?.edad }} años · de
+            {{ caballoConfirmado()?.propietario }}
+          </p>
+        </div>
+        <span class="cs-x" aria-hidden="true">×</span>
+        <div>
+          <p class="cs-tag">Tu yegua</p>
+          <h3>{{ yeguaConfirmada()?.nombre }}</h3>
+          <p class="cs-meta">{{ yeguaConfirmada()?.raza }} · {{ yeguaConfirmada()?.edad }} años</p>
+        </div>
+      </div>
+
+      <p class="cs-nota">
+        La inteligencia artificial analizará raza, edad, altura, ubicación y descendencia. Usará 1
+        de tus estimaciones de hoy; si este par ya fue evaluado con los mismos datos, verás el
+        resultado guardado sin gastar estimación. El estudio queda guardado en "Mis resultados".
+      </p>
+
+      <div class="cs-acciones">
+        <button type="button" class="cs-secundario" (click)="irAPaso(2)">Cambiar yegua</button>
+        <button type="button" class="cs-primario" (click)="realizarEstudio()">
+          Realizar estudio
+        </button>
+      </div>
+    </div>
+  }
+</section>

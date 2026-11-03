@@ -66,6 +66,26 @@
       </button>
 
       <button
+        class="icon-btn"
+        (click)="irAMisResultados()"
+        title="Mis resultados de compatibilidad"
+      >
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <line x1="18" y1="20" x2="18" y2="10"></line>
+          <line x1="12" y1="20" x2="12" y2="4"></line>
+          <line x1="6" y1="20" x2="6" y2="14"></line>
+        </svg>
+        <span class="icon-label">Resultados</span>
+      </button>
+
+      <button
         *ngIf="esAdmin()"
         class="icon-btn"
         (click)="irAlPanelAdmin()"
@@ -277,109 +297,117 @@
 
     <!-- CONTENIDO -->
     <main class="content-area">
-      <div class="content-header">
-        <div class="header-title-wrapper">
-          <h2>Ejemplares disponibles</h2>
-          <p class="filter-indicator" *ngIf="categoriaActiva() === 'Edad'">
-            Filtrados por edad: {{ edadAscendente() ? 'de menor a mayor' : 'de mayor a menor' }}
-          </p>
-          <p class="filter-indicator" *ngIf="categoriaActiva() === 'Altura'">
-            Filtrados por altura: {{ alturaAscendente() ? 'de menor a mayor' : 'de mayor a menor' }}
-          </p>
+      <!-- PESTAÑA COMPATIBILIDAD: asistente para elegir caballo y yegua -->
+      @if (categoriaActiva() === 'Compatibilidad') {
+        <app-compatibilidad-selector [caballos]="publicacionesFiltradas()" />
+      } @else {
+        <div class="content-header">
+          <div class="header-title-wrapper">
+            <h2>Ejemplares disponibles</h2>
+            <p class="filter-indicator" *ngIf="categoriaActiva() === 'Edad'">
+              Filtrados por edad: {{ edadAscendente() ? 'de menor a mayor' : 'de mayor a menor' }}
+            </p>
+            <p class="filter-indicator" *ngIf="categoriaActiva() === 'Altura'">
+              Filtrados por altura:
+              {{ alturaAscendente() ? 'de menor a mayor' : 'de mayor a menor' }}
+            </p>
 
-          <div class="proximity-status" *ngIf="categoriaActiva() === 'Proximidad'">
-            <div class="radius-control" *ngIf="userLat() && userLng()">
-              <span class="filter-indicator"
-                >Distancia: <strong>{{ radioMax() }} km</strong></span
-              >
-              <input
-                type="range"
-                min="5"
-                max="500"
-                step="5"
-                [value]="radioMax()"
-                (input)="radioMax.set($any($event.target).valueAsNumber)"
-                class="range-slider-small"
-                aria-label="Ajustar distancia máxima en kilómetros"
-              />
-            </div>
-            <p class="filter-indicator error" *ngIf="errorUbicacion()">{{ errorUbicacion() }}</p>
-            <div class="location-btn-wrapper" *ngIf="!userLat() && !errorUbicacion()">
-              <p class="filter-indicator">
-                Activa tu ubicación para encontrar los ejemplares más cercanos.
-              </p>
-              <button
-                class="btn-location-small"
-                (click)="pedirUbicacion()"
-                [disabled]="cargandoUbicacion()"
-              >
-                <svg
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  width="14"
-                  height="14"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
+            <div class="proximity-status" *ngIf="categoriaActiva() === 'Proximidad'">
+              <div class="radius-control" *ngIf="userLat() && userLng()">
+                <span class="filter-indicator"
+                  >Distancia: <strong>{{ radioMax() }} km</strong></span
                 >
-                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-                  <circle cx="12" cy="10" r="3"></circle>
-                </svg>
-                {{ cargandoUbicacion() ? 'Buscando...' : 'Permitir ubicación' }}
+                <input
+                  type="range"
+                  min="5"
+                  max="500"
+                  step="5"
+                  [value]="radioMax()"
+                  (input)="radioMax.set($any($event.target).valueAsNumber)"
+                  class="range-slider-small"
+                  aria-label="Ajustar distancia máxima en kilómetros"
+                />
+              </div>
+              <p class="filter-indicator error" *ngIf="errorUbicacion()">{{ errorUbicacion() }}</p>
+              <div class="location-btn-wrapper" *ngIf="!userLat() && !errorUbicacion()">
+                <p class="filter-indicator">
+                  Activa tu ubicación para encontrar los ejemplares más cercanos.
+                </p>
+                <button
+                  class="btn-location-small"
+                  (click)="pedirUbicacion()"
+                  [disabled]="cargandoUbicacion()"
+                >
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    width="14"
+                    height="14"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                    <circle cx="12" cy="10" r="3"></circle>
+                  </svg>
+                  {{ cargandoUbicacion() ? 'Buscando...' : 'Permitir ubicación' }}
+                </button>
+              </div>
+            </div>
+          </div>
+          <button class="btn-filter" (click)="toggleFiltros()">Filtros y Búsqueda</button>
+        </div>
+
+        <section class="grid-cards">
+          <p class="empty-state" *ngIf="cargando()">Cargando ejemplares...</p>
+
+          <button
+            class="card glass"
+            type="button"
+            *ngFor="let h of publicacionesFiltradas()"
+            (click)="irADetalle(h)"
+            (keydown.enter)="irADetalle(h)"
+            (keydown.space.prevent)="irADetalle(h)"
+          >
+            <div class="card-media" [style.background]="h.fondo">
+              <img
+                *ngIf="h.fotoPrincipal; else placeholderCard"
+                [src]="h.fotoPrincipal"
+                [alt]="h.nombre"
+                class="card-img"
+              />
+              <ng-template #placeholderCard><div class="placeholder-mark">DH</div></ng-template>
+              <span class="badge-tuyo" *ngIf="h.esMia">Tuyo</span>
+              <button
+                class="btn-fav"
+                type="button"
+                [class.active]="h.esFavorito"
+                (click)="$event.stopPropagation(); toggleFavorito(h)"
+              >
+                {{ h.esFavorito ? '♥' : '♡' }}
               </button>
             </div>
-          </div>
-        </div>
-        <button class="btn-filter" (click)="toggleFiltros()">Filtros y Búsqueda</button>
-      </div>
-
-      <section class="grid-cards">
-        <p class="empty-state" *ngIf="cargando()">Cargando ejemplares...</p>
-
-        <button
-          class="card glass"
-          type="button"
-          *ngFor="let h of publicacionesFiltradas()"
-          (click)="irADetalle(h)"
-          (keydown.enter)="irADetalle(h)"
-          (keydown.space.prevent)="irADetalle(h)"
-        >
-          <div class="card-media" [style.background]="h.fondo">
-            <img
-              *ngIf="h.fotoPrincipal; else placeholderCard"
-              [src]="h.fotoPrincipal"
-              [alt]="h.nombre"
-              class="card-img"
-            />
-            <ng-template #placeholderCard><div class="placeholder-mark">DH</div></ng-template>
-            <span class="badge-tuyo" *ngIf="h.esMia">Tuyo</span>
-            <button
-              class="btn-fav"
-              type="button"
-              [class.active]="h.esFavorito"
-              (click)="$event.stopPropagation(); toggleFavorito(h)"
-            >
-              {{ h.esFavorito ? '♥' : '♡' }}
-            </button>
-          </div>
-          <div class="card-body">
-            <p class="card-tag">{{ h.raza }} · {{ h.sexo }}</p>
-            <h3 class="card-title">{{ h.nombre }}</h3>
-            <p class="card-loc">{{ h.ubicacion }}</p>
-            <div class="card-footer">
-              <span class="price" *ngIf="h.precio !== null">{{
-                h.precio | currency: 'COP' : 'symbol' : '1.0-0'
-              }}</span>
-              <span class="price" *ngIf="h.precio === null">Sin precio</span>
+            <div class="card-body">
+              <p class="card-tag">{{ h.raza }} · {{ h.sexo }}</p>
+              <h3 class="card-title">{{ h.nombre }}</h3>
+              <p class="card-loc">{{ h.ubicacion }}</p>
+              <div class="card-footer">
+                <span class="price" *ngIf="h.precio !== null">{{
+                  h.precio | currency: 'COP' : 'symbol' : '1.0-0'
+                }}</span>
+                <span class="price" *ngIf="h.precio === null">Sin precio</span>
+              </div>
             </div>
-          </div>
-        </button>
+          </button>
 
-        <p class="empty-state" *ngIf="!cargando() && publicacionesFiltradas().length === 0">
-          {{ categoriaActiva() === 'Favoritos' ? 'No tienes favoritos.' : 'No hay coincidencias.' }}
-        </p>
-      </section>
+          <p class="empty-state" *ngIf="!cargando() && publicacionesFiltradas().length === 0">
+            {{
+              categoriaActiva() === 'Favoritos' ? 'No tienes favoritos.' : 'No hay coincidencias.'
+            }}
+          </p>
+        </section>
+      }
     </main>
   </div>
 
