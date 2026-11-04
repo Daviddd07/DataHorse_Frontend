@@ -2,8 +2,12 @@
   <section class="elegir-card glass" aria-labelledby="elegir-titulo">
     <img src="Logo_blanco.png" alt="DataHorse" class="elegir-logo" />
 
-    <h1 id="elegir-titulo">
-      Hola{{ nombreUsuario() ? ', ' + nombreUsuario() : '' }}
+    <h1 id="elegir-titulo" [attr.aria-busy]="cargandoNombre()">
+      @if (cargandoNombre()) {
+        Hola <span class="skeleton nombre-esqueleto" aria-hidden="true"></span>
+      } @else {
+        <span class="entrada">Hola{{ nombreUsuario() ? ', ' + nombreUsuario() : '' }}</span>
+      }
     </h1>
     <p class="elegir-subtitulo">¿A dónde quieres ir?</p>
 

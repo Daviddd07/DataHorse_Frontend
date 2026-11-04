@@ -14,6 +14,10 @@ import { environment } from '../../../environments/environment';
 
 import { CompatibilidadSelectorComponent } from './compatibilidad/compatibilidad-selector.component';
 
+import { LogoIaComponent } from '../../components/logo-ia/logo-ia.component';
+
+import { DockDirective } from '../../directives/dock.directive';
+
 interface CaballoMarketplace {
   id: number;
 
@@ -63,11 +67,17 @@ interface CaballoMarketplace {
 
   standalone: true,
 
-  imports: [CommonModule, CurrencyPipe, CompatibilidadSelectorComponent],
+  imports: [
+    CommonModule,
+    CurrencyPipe,
+    CompatibilidadSelectorComponent,
+    LogoIaComponent,
+    DockDirective,
+  ],
 
   templateUrl: './marketplace.component.html',
 
-  styleUrl: './marketplace.component.css',
+  styleUrls: ['../../components/barra-lateral/barra-lateral.css', './marketplace.component.css'],
 })
 export class MarketplaceComponent {
   private readonly auth = inject(AuthService);
@@ -83,6 +93,9 @@ export class MarketplaceComponent {
   busqueda = signal('');
 
   categorias = ['Todos', 'Edad', 'Altura', 'Proximidad', 'Compatibilidad', 'Pedigrí'];
+
+  // Pestañas visibles pero aún sin implementar (el backend no maneja pedigrí todavía)
+  readonly categoriasProximamente = ['Pedigrí'];
 
   categoriaActiva = signal('Todos');
 
@@ -100,6 +113,13 @@ export class MarketplaceComponent {
   caballos = signal<CaballoMarketplace[]>([]);
 
   cargando = signal(true);
+
+  cargandoUsuario = signal(true);
+
+  totalMisCaballos = signal(0);
+
+  // Cantidad de tarjetas esqueleto mientras llegan las publicaciones
+  readonly esqueletos = Array.from({ length: 8 }, (_, i) => i);
 
   menuAbierto = signal(false);
 
@@ -170,10 +190,6 @@ export class MarketplaceComponent {
       .filter((caballo) => {
         if (categoria === 'Favoritos') {
           return caballo.esFavorito;
-        }
-
-        if (categoria === 'En venta') {
-          return caballo.disponibilidad === 'Disponible';
         }
 
         if (categoria === 'Pedigrí') {
@@ -255,6 +271,7 @@ export class MarketplaceComponent {
     this.cargarUsuario();
     this.cargarRazas();
     this.cargarPublicaciones();
+    this.cargarTotalMisCaballos();
 
     // ?categoria=Compatibilidad abre esa pestaña (p. ej. "Nueva evaluación" desde el resultado)
     const categoria = this.route.snapshot.queryParamMap.get('categoria');
@@ -277,12 +294,16 @@ export class MarketplaceComponent {
         this.correoUsuario.set(usuario.correo);
 
         this.esAdmin.set(usuario.es_admin === true);
+
+        this.cargandoUsuario.set(false);
       },
 
       error: (err) => {
         console.error('Error cargando usuario:', err);
 
         this.nombreUsuario.set('');
+
+        this.cargandoUsuario.set(false);
       },
     });
   }
@@ -290,6 +311,19 @@ export class MarketplaceComponent {
   // ======================================================
   // CARGAR RAZAS
   // ======================================================
+  // ======================================================
+  // CANTIDAD DE MIS CABALLOS (contador del menú de usuario)
+  // ======================================================
+
+  // Incluye los no publicados; /caballos/mios ya excluye los eliminados.
+  // Si falla, el contador simplemente no se muestra.
+  private cargarTotalMisCaballos(): void {
+    this.caballoService.listarMisCaballos().subscribe({
+      next: (mios) => this.totalMisCaballos.set(mios.length),
+      error: () => this.totalMisCaballos.set(0),
+    });
+  }
+
   private cargarRazas(): void {
     this.caballoService.listarRazas().subscribe({
       next: (razas) => {
@@ -309,6 +343,10 @@ export class MarketplaceComponent {
   // ======================================================
   // CARGAR PUBLICACIONES
   // ======================================================
+
+  reintentarPublicaciones(): void {
+    this.cargarPublicaciones();
+  }
 
   private cargarPublicaciones(): void {
     this.cargando.set(true);
@@ -454,8 +492,12 @@ export class MarketplaceComponent {
   // IR AL DETALLE DE LA PUBLICACIÓN
   // ======================================================
 
+  // Conserva cada tarjeta al marcar favorito, buscar u ordenar (no recarga la foto ni repite la
+  // animación). Incluye la pestaña para que al cambiarla las tarjetas se creen de nuevo y entren animadas.
+  trackPorId = (_: number, caballo: CaballoMarketplace): string =>
+    `${this.categoriaActiva()}-${caballo.id}`;
+
   irADetalle(caballo: CaballoMarketplace): void {
-    console.log('Navegando al caballo con ID:', caballo.id);
     void this.router.navigate(['/publicaciones', caballo.id]);
   }
 

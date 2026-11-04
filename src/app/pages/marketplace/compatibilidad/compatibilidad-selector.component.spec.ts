@@ -177,6 +177,10 @@ describe('CompatibilidadSelectorComponent', () => {
     clic(boton('Confirmar yegua'));
     expect(component.paso()).toBe(3);
     expect(html().querySelector('.cs-resumen')?.textContent).toContain('Sara');
+    expect(
+      Array.from(html().querySelectorAll('.cs-factores li')).map((li) => li.textContent?.trim()),
+    ).toEqual(component.factoresIa);
+    expect(boton('Realizar estudio con IA')?.classList).toContain('cs-boton-ia');
 
     clic(boton('Realizar estudio'));
     expect(router.navigate).toHaveBeenCalledWith(['/compatibilidad', 10, 8]);

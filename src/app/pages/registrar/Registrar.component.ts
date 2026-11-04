@@ -218,7 +218,6 @@ export class RegistrarComponent implements AfterViewInit {
 
     if (this.form.invalid) {
       this.form.markAllAsTouched();
-      console.log('Campos inválidos:', this.form.controls);
       this.mensaje.set({
         tipo: 'error',
         texto: 'Revisa los campos marcados.',

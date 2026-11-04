@@ -1,0 +1,177 @@
+/* Barra lateral compartida (marketplace y panel de administración).
+   La magnificación tipo Dock y el tooltip los maneja DockDirective. */
+
+/* Píldora de vidrio con un tono cálido (cuero) que se desvanece hacia abajo */
+.sidebar {
+  position: fixed;
+  top: 24px;
+  left: 24px;
+  bottom: 24px;
+  width: 68px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 14px 0;
+  z-index: 1000;
+  box-sizing: border-box;
+  border-radius: 34px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background:
+    linear-gradient(
+      180deg,
+      rgba(181, 101, 29, 0.28),
+      rgba(181, 101, 29, 0.05) 45%,
+      rgba(20, 24, 28, 0.35)
+    ),
+    rgba(30, 35, 40, 0.45);
+  backdrop-filter: blur(20px) saturate(140%);
+  -webkit-backdrop-filter: blur(20px) saturate(140%);
+  box-shadow:
+    0 10px 36px rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.18);
+}
+
+/* Logo, botones y separadores no se encogen: en pantallas bajas la magnificación
+   le quitaba espacio al logo y lo achataba */
+.sidebar-logo,
+.icon-btn,
+.sidebar-separador {
+  flex-shrink: 0;
+}
+
+/* Solo el logo, sin círculo de fondo: queda integrado en el vidrio de la barra */
+.sidebar-logo {
+  margin-bottom: 8px;
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+}
+
+.logo-img {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.35));
+}
+
+.sidebar-separador {
+  display: block;
+  width: 22px;
+  height: 2px;
+  margin: 6px 0;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.18);
+}
+
+.sidebar-menu {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+}
+
+.sidebar-bottom {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Botón circular. La magnificación tipo Dock la maneja DockDirective con --dock-escala:
+   escala el botón (y con él el círculo del activo) y le da margen para separar a sus vecinos. */
+.icon-btn {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.78);
+  cursor: pointer;
+  transform: scale(var(--dock-escala, 1));
+  margin-block: calc((var(--dock-escala, 1) - 1) * 23px);
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.icon-btn svg {
+  width: 21px;
+  height: 21px;
+}
+
+.icon-btn:hover,
+.icon-btn:focus-visible {
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+}
+
+.icon-btn:focus-visible {
+  outline: 2px solid var(--accent-gold, #e6a817);
+  outline-offset: 2px;
+}
+
+/* Activo: círculo de vidrio claro, como el de la referencia */
+.icon-btn.active {
+  background: rgba(255, 255, 255, 0.22);
+  color: #fff;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.35),
+    0 6px 16px rgba(0, 0, 0, 0.3);
+}
+
+.btn-logout:hover,
+.btn-logout:focus-visible {
+  background: rgba(255, 107, 107, 0.18);
+  color: #ffb4b4;
+}
+
+/* Avatar con la inicial del usuario y punto verde de "en línea" */
+.sidebar-avatar {
+  width: 48px;
+  height: 48px;
+  margin-block: calc((var(--dock-escala, 1) - 1) * 24px);
+}
+
+.avatar-inicial {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.55);
+  background: linear-gradient(135deg, var(--accent-gold, #e6a817), var(--accent-leather, #b5651d));
+  color: #fff;
+  font-size: 17px;
+  font-weight: 800;
+}
+
+.sidebar-avatar:hover,
+.sidebar-avatar:focus-visible {
+  background: transparent;
+}
+
+.avatar-en-linea {
+  position: absolute;
+  right: 3px;
+  bottom: 3px;
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  border: 2px solid #1b1f24;
+  background: var(--accent-green, #4ade80);
+}
+
+/* Ítems que todavía no hacen nada (p. ej. "Mi cuenta" en el admin): muestran su tooltip
+   pero sin la manito de enlace */
+.icon-btn[aria-disabled='true'] {
+  cursor: default;
+}

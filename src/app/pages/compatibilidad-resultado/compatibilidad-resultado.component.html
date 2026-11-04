@@ -28,11 +28,22 @@
   <!-- CARGANDO -->
   @if (cargando()) {
     <output class="cr-panel cr-cargando" aria-live="polite">
-      <span class="cr-spinner" aria-hidden="true"></span>
+      <span class="cr-orbe" aria-hidden="true">
+        <span class="cr-onda"></span>
+        <span class="cr-onda"></span>
+        <app-logo-ia [tamano]="esGuardado ? 64 : 88" [pensando]="true" />
+      </span>
       @if (esGuardado) {
         <p>Cargando el estudio guardado…</p>
       } @else {
-        <p>Analizando con inteligencia artificial…</p>
+        <p class="cr-ia-titulo">
+          <span class="texto-ia">Analizando con inteligencia artificial…</span>
+        </p>
+        <!-- Cada paso se vuelve a crear para repetir su animación de entrada -->
+        @for (texto of [pasoAnalisis()]; track texto) {
+          <p class="cr-ia-paso" aria-hidden="true">{{ texto }}</p>
+        }
+        <span class="cr-ia-progreso" aria-hidden="true"><span></span></span>
         <p class="cr-muted">Esto puede tardar unos segundos.</p>
       }
     </output>
@@ -81,6 +92,10 @@
           >
         </div>
         <div class="cr-etiquetas">
+          <span class="chip-ia cr-sello-ia">
+            <app-logo-ia [tamano]="14" />
+            Análisis generado por IA
+          </span>
           <span [class]="'cr-chip confianza-' + ev.resultado.nivel_confianza">
             {{ etiquetaConfianza(ev.resultado.nivel_confianza) }}
           </span>

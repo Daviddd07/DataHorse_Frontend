@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, DestroyRef, computed, inject, signal } from '@angular/core';
 
 import { DatePipe } from '@angular/common';
 
@@ -15,6 +15,20 @@ import {
 
 import { CupoCompatibilidadComponent } from '../../components/cupo-compatibilidad/cupo-compatibilidad.component';
 
+import { LogoIaComponent } from '../../components/logo-ia/logo-ia.component';
+
+// Mensajes que rotan mientras la IA analiza (en el mismo orden en que se muestran los puntos)
+export const PASOS_ANALISIS = [
+  'Comparando razas y linaje…',
+  'Evaluando edad y madurez reproductiva…',
+  'Analizando altura y conformación…',
+  'Calculando la distancia entre ubicaciones…',
+  'Revisando genealogía y descendencia…',
+  'Redactando recomendaciones para la cría…',
+];
+
+export const MS_POR_PASO = 1800;
+
 const ETIQUETAS_CONFIANZA: Record<NivelConfianza, string> = {
   alta: 'Confianza alta',
   media: 'Confianza media',
@@ -24,7 +38,7 @@ const ETIQUETAS_CONFIANZA: Record<NivelConfianza, string> = {
 @Component({
   selector: 'app-compatibilidad-resultado',
   standalone: true,
-  imports: [CupoCompatibilidadComponent, DatePipe],
+  imports: [CupoCompatibilidadComponent, DatePipe, LogoIaComponent],
   templateUrl: './compatibilidad-resultado.component.html',
   styleUrl: './compatibilidad-resultado.component.css',
 })
@@ -47,6 +61,9 @@ export class CompatibilidadResultadoComponent {
   evaluacion = signal<EvaluacionCompatibilidad | null>(null);
   cupo = signal<CupoCompatibilidad | null>(null);
 
+  pasoAnalisis = signal(PASOS_ANALISIS[0]);
+  private intervaloPasos: ReturnType<typeof setInterval> | undefined;
+
   // Puntos por categoría, en el orden en que se muestran
   categorias = computed(() => {
     const r = this.evaluacion()?.resultado;
@@ -62,6 +79,7 @@ export class CompatibilidadResultadoComponent {
   });
 
   constructor() {
+    inject(DestroyRef).onDestroy(() => this.detenerPasos());
     this.cargar();
   }
 
@@ -76,6 +94,7 @@ export class CompatibilidadResultadoComponent {
 
     this.cargando.set(true);
     this.error.set('');
+    if (!this.esGuardado) this.iniciarPasos();
 
     const peticion = this.esGuardado
       ? this.compatibilidad.obtenerResultado(this.idSolicitud)
@@ -83,11 +102,13 @@ export class CompatibilidadResultadoComponent {
 
     peticion.subscribe({
       next: (evaluacion) => {
+        this.detenerPasos();
         this.evaluacion.set(evaluacion);
         this.cargando.set(false);
         this.actualizarCupo();
       },
       error: (e: HttpErrorResponse) => {
+        this.detenerPasos();
         const detalle = e.error?.detail;
         this.error.set(
           typeof detalle === 'string'
@@ -98,6 +119,24 @@ export class CompatibilidadResultadoComponent {
         this.actualizarCupo();
       },
     });
+  }
+
+  // Rota los mensajes de lo que la IA está evaluando; el último se queda fijo si tarda más
+  private iniciarPasos(): void {
+    this.detenerPasos();
+    let indice = 0;
+    this.pasoAnalisis.set(PASOS_ANALISIS[0]);
+
+    this.intervaloPasos = setInterval(() => {
+      indice = Math.min(indice + 1, PASOS_ANALISIS.length - 1);
+      this.pasoAnalisis.set(PASOS_ANALISIS[indice]);
+      if (indice === PASOS_ANALISIS.length - 1) this.detenerPasos();
+    }, MS_POR_PASO);
+  }
+
+  private detenerPasos(): void {
+    clearInterval(this.intervaloPasos);
+    this.intervaloPasos = undefined;
   }
 
   private actualizarCupo(): void {

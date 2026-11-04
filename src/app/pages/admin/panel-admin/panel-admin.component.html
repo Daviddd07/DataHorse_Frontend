@@ -1,10 +1,18 @@
 <div class="admin-container">
-  <!-- BARRA LATERAL -->
-  <aside class="admin-sidebar glass" aria-label="Menú de administración">
-    <img src="Logo_blanco.png" alt="DH" class="admin-logo" />
+  <!-- BARRA LATERAL: la misma del marketplace (estilos en components/barra-lateral) -->
+  <aside class="sidebar" appDock aria-label="Menú de administración">
+    <div class="sidebar-logo">
+      <img src="Logo_blanco.png" alt="DataHorse" class="logo-img" />
+    </div>
 
-    <nav class="admin-menu">
-      <button type="button" class="admin-btn active" title="Panel" aria-current="page">
+    <nav class="sidebar-menu">
+      <button
+        type="button"
+        data-dock-item
+        aria-label="Panel de administración"
+        class="icon-btn active"
+        aria-current="page"
+      >
         <svg
           viewBox="0 0 24 24"
           fill="none"
@@ -14,15 +22,22 @@
           stroke-linejoin="round"
           aria-hidden="true"
         >
-          <rect x="3" y="3" width="7" height="9"></rect>
-          <rect x="14" y="3" width="7" height="5"></rect>
-          <rect x="14" y="12" width="7" height="9"></rect>
-          <rect x="3" y="16" width="7" height="5"></rect>
+          <rect x="3" y="3" width="7" height="9" rx="1.5"></rect>
+          <rect x="14" y="3" width="7" height="5" rx="1.5"></rect>
+          <rect x="14" y="12" width="7" height="9" rx="1.5"></rect>
+          <rect x="3" y="16" width="7" height="5" rx="1.5"></rect>
         </svg>
-        <span>Panel</span>
       </button>
 
-      <button type="button" class="admin-btn" title="Marketplace" (click)="irAlMarketplace()">
+      <span class="sidebar-separador" aria-hidden="true"></span>
+
+      <button
+        type="button"
+        data-dock-item
+        aria-label="Marketplace"
+        class="icon-btn"
+        (click)="irAlMarketplace()"
+      >
         <svg
           viewBox="0 0 24 24"
           fill="none"
@@ -32,29 +47,52 @@
           stroke-linejoin="round"
           aria-hidden="true"
         >
-          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-          <polyline points="9 22 9 12 15 12 15 22"></polyline>
+          <path d="M3 10.5 12 3l9 7.5"></path>
+          <path d="M5 9.5V20h14V9.5"></path>
+          <path d="M10 20v-6h4v6"></path>
         </svg>
-        <span>Marketplace</span>
       </button>
     </nav>
 
-    <button type="button" class="admin-btn btn-logout" title="Cerrar sesión" (click)="cerrarSesion()">
-      <svg
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        aria-hidden="true"
+    <div class="sidebar-bottom">
+      <button
+        type="button"
+        data-dock-item
+        data-dock-peligro
+        aria-label="Cerrar sesión"
+        class="icon-btn btn-logout"
+        (click)="cerrarSesion()"
       >
-        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
-        <polyline points="16 17 21 12 16 7"></polyline>
-        <line x1="21" y1="12" x2="9" y2="12"></line>
-      </svg>
-      <span>Salir</span>
-    </button>
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+          <polyline points="16 17 21 12 16 7"></polyline>
+          <line x1="21" y1="12" x2="9" y2="12"></line>
+        </svg>
+      </button>
+
+      <span class="sidebar-separador" aria-hidden="true"></span>
+
+      <!-- Avatar con la inicial del administrador. "Mi cuenta" aún no existe: aria-disabled
+           (no disabled) para que siga recibiendo el mouse y muestre su tooltip. -->
+      <button
+        type="button"
+        data-dock-item
+        aria-label="Mi cuenta (próximamente)"
+        aria-disabled="true"
+        class="icon-btn sidebar-avatar"
+      >
+        <span class="avatar-inicial" aria-hidden="true">{{ inicial() }}</span>
+        <span class="avatar-en-linea" aria-hidden="true"></span>
+      </button>
+    </div>
   </aside>
 
   <!-- CONTENIDO -->
@@ -90,7 +128,41 @@
       </a>
     </header>
 
-    <p class="admin-estado" *ngIf="cargando()">Cargando información…</p>
+    <!-- ESQUELETO: misma estructura del panel mientras llegan los datos -->
+    <div class="admin-esqueleto" *ngIf="cargando()" role="status" aria-label="Cargando información">
+      <section class="admin-tarjetas" aria-hidden="true">
+        <div class="tarjeta glass" *ngFor="let i of esqueletoTarjetas">
+          <span class="skeleton sk-linea sk-titulo-tarjeta"></span>
+          <span class="skeleton sk-numero"></span>
+          <span class="skeleton sk-linea sk-detalle"></span>
+        </div>
+      </section>
+
+      <section class="admin-seccion glass" aria-hidden="true">
+        <span class="skeleton sk-linea sk-titulo-seccion"></span>
+        <ul class="razas">
+          <li *ngFor="let ancho of esqueletoBarras">
+            <span class="skeleton sk-linea sk-raza"></span>
+            <span class="skeleton raza-barra" [style.width]="ancho"></span>
+            <span class="skeleton sk-linea sk-total"></span>
+          </li>
+        </ul>
+      </section>
+
+      <section class="admin-seccion glass" aria-hidden="true">
+        <div class="seccion-cabecera">
+          <span class="skeleton sk-linea sk-titulo-seccion"></span>
+          <span class="skeleton sk-buscar"></span>
+        </div>
+        <div class="sk-fila" *ngFor="let i of esqueletoFilas">
+          <span class="skeleton sk-linea"></span>
+          <span class="skeleton sk-linea"></span>
+          <span class="skeleton sk-linea sk-corta"></span>
+          <span class="skeleton sk-linea sk-corta"></span>
+          <span class="skeleton sk-linea"></span>
+        </div>
+      </section>
+    </div>
 
     <div class="admin-error glass" *ngIf="error()" role="alert">
       <span>{{ error() }}</span>
@@ -98,32 +170,86 @@
     </div>
 
     <ng-container *ngIf="!cargando() && !error() && resumen() as r">
-      <!-- TOTALES -->
+      <!-- TOTALES: entran escalonadas, el número cuenta hasta su valor y suben al pasar el mouse -->
       <section class="admin-tarjetas" aria-label="Totales">
-        <article class="tarjeta glass" *ngFor="let t of tarjetas()">
-          <h2>{{ t.titulo }}</h2>
-          <strong>{{ t.valor }}</strong>
-          <span>{{ t.detalle }}</span>
+        <article
+          [class]="'tarjeta glass admin-entra tarjeta-' + t.icono"
+          *ngFor="let t of tarjetas(); let i = index"
+          [style.--i]="i"
+        >
+          <div class="tarjeta-datos">
+            <h2>{{ t.titulo }}</h2>
+            <strong [appContador]="t.valor" [contadorRetraso]="250 + i * 90"></strong>
+            <span>{{ t.detalle }}</span>
+          </div>
+          <span class="tarjeta-icono" aria-hidden="true">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              @switch (t.icono) {
+                @case ('usuarios') {
+                  <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="9" cy="7" r="4"></circle>
+                  <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
+                  <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                }
+                @case ('nuevos') {
+                  <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="9" cy="7" r="4"></circle>
+                  <line x1="19" y1="8" x2="19" y2="14"></line>
+                  <line x1="22" y1="11" x2="16" y2="11"></line>
+                }
+                @case ('caballos') {
+                  <path d="M7 20H5v-3C3 14 3 8 6 5a8.5 8.5 0 0 1 12 0c3 3 3 9 1 12v3h-2"></path>
+                  <line x1="7" y1="9" x2="7.01" y2="9"></line>
+                  <line x1="17" y1="9" x2="17.01" y2="9"></line>
+                }
+                @case ('publicaciones') {
+                  <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                  <line x1="3" y1="6" x2="21" y2="6"></line>
+                  <path d="M16 10a4 4 0 0 1-8 0"></path>
+                }
+              }
+            </svg>
+          </span>
         </article>
       </section>
 
-      <!-- CABALLOS POR RAZA -->
-      <section class="admin-seccion glass" aria-labelledby="titulo-razas">
+      <!-- CABALLOS POR RAZA: las barras crecen una tras otra -->
+      <section
+        class="admin-seccion glass admin-entra"
+        style="--i: 4"
+        aria-labelledby="titulo-razas"
+      >
         <h2 id="titulo-razas">Caballos por raza</h2>
 
         <ul class="razas">
-          <li *ngFor="let raza of r.caballos.por_raza">
+          <li *ngFor="let raza of r.caballos.por_raza; let i = index" [style.--i]="i">
             <span class="raza-nombre">{{ raza.raza }}</span>
             <span class="raza-barra" aria-hidden="true">
               <span [style.width]="anchoBarra(raza.total)"></span>
             </span>
-            <span class="raza-total">{{ raza.total }}</span>
+            <span
+              class="raza-total"
+              [appContador]="raza.total"
+              [contadorRetraso]="RETRASO_BARRAS_MS + i * PASO_BARRAS_MS"
+              [contadorDuracion]="900"
+            ></span>
           </li>
         </ul>
       </section>
 
       <!-- USUARIOS -->
-      <section class="admin-seccion glass" aria-labelledby="titulo-usuarios">
+      <section
+        class="admin-seccion glass admin-entra"
+        style="--i: 5"
+        aria-labelledby="titulo-usuarios"
+      >
         <div class="seccion-cabecera">
           <h2 id="titulo-usuarios">Usuarios ({{ usuariosFiltrados().length }})</h2>
           <input

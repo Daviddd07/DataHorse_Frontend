@@ -219,12 +219,10 @@
 }
 
 /* Bloque nuevo para la accesibilidad */
-@media (prefers-reduced-motion: no-preference) {
-  .registrar-logo {
-    transition:
-      scale 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
-      rotate 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-  }
+.registrar-logo {
+  transition:
+    scale 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
+    rotate 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .card > .registrar-logo {
@@ -525,13 +523,11 @@
 }
 
 /* Y la animación va aquí abajo */
-@media (prefers-reduced-motion: no-preference) {
-  .mensaje.error-msg {
-    animation: errorIn 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97) backwards;
-  }
-  .mensaje.ok-msg {
-    animation: okIn 0.45s cubic-bezier(0.16, 1, 0.3, 1) backwards;
-  }
+.mensaje.error-msg {
+  animation: errorIn 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97) backwards;
+}
+.mensaje.ok-msg {
+  animation: okIn 0.45s cubic-bezier(0.16, 1, 0.3, 1) backwards;
 }
 
 @keyframes errorIn {

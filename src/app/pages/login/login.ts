@@ -117,11 +117,10 @@ export class Login implements AfterViewInit {
 
     this.auth.google(credential).subscribe({
       next: (respuesta) => {
-        this.cargandoGoogle = false;
-
         this.log.info('Inicio de sesión exitoso', { metodo: 'google' });
 
         if (respuesta?.requiere_contrasena) {
+          this.cargandoGoogle = false;
           this.abrirAvisoContrasena();
           return;
         }
@@ -141,8 +140,18 @@ export class Login implements AfterViewInit {
     });
   }
 
+  // El botón sigue en "Ingresando..." hasta que la siguiente pantalla abre,
+  // así no queda un hueco sin respuesta mientras se consulta el rol y carga la ruta.
   private irSegunRol(): void {
-    this.auth.destinoTrasLogin().subscribe((destino) => void this.router.navigate([destino]));
+    this.cargando = true;
+
+    this.auth.destinoTrasLogin().subscribe((destino) => {
+      void this.router.navigate([destino]).finally(() => {
+        this.cargando = false;
+        this.cargandoGoogle = false;
+        this.cdr.markForCheck();
+      });
+    });
   }
 
   // =====================================================
@@ -183,8 +192,6 @@ export class Login implements AfterViewInit {
 
     this.auth.login(this.correo.trim().toLowerCase(), this.password).subscribe({
       next: () => {
-        this.cargando = false;
-
         this.log.info('Inicio de sesión exitoso', { metodo: 'correo' });
 
         this.irSegunRol();

@@ -15,11 +15,18 @@ export class ElegirPanelComponent {
   private readonly router = inject(Router);
 
   nombreUsuario = signal('');
+  cargandoNombre = signal(true);
 
   constructor() {
     this.auth.me().subscribe({
-      next: (usuario) => this.nombreUsuario.set(usuario.nombre.trim().split(/\s+/)[0]),
-      error: () => this.nombreUsuario.set(''),
+      next: (usuario) => {
+        this.nombreUsuario.set(usuario.nombre.trim().split(/\s+/)[0]);
+        this.cargandoNombre.set(false);
+      },
+      error: () => {
+        this.nombreUsuario.set('');
+        this.cargandoNombre.set(false);
+      },
     });
   }
 

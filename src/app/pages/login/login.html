@@ -88,7 +88,12 @@
         </a>
       </p>
 
-      <button type="submit" [disabled]="cargando">
+      <button
+        type="submit"
+        [disabled]="cargando || cargandoGoogle"
+        [class.ingresando]="cargando"
+        [attr.aria-busy]="cargando"
+      >
         {{ cargando ? 'Ingresando...' : 'Iniciar sesión' }}
       </button>
     </form>

@@ -82,14 +82,12 @@
 }
 
 /* Bloque nuevo de accesibilidad */
-@media (prefers-reduced-motion: no-preference) {
-  .ec-icon-btn {
-    /* Cambiamos 'all' por las propiedades específicas */
-    transition:
-      background-color 0.2s ease,
-      border-color 0.2s ease,
-      color 0.2s ease;
-  }
+.ec-icon-btn {
+  /* Cambiamos 'all' por las propiedades específicas */
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
 }
 
 .ec-icon-btn:hover {
@@ -178,13 +176,11 @@
 }
 
 /*  Bloque de accesibilidad con las propiedades específicas */
-@media (prefers-reduced-motion: no-preference) {
-  .ec-user-list button {
-    /* Especificamos qué queremos animar (fondo y texto son los más comunes aquí) */
-    transition:
-      background-color 0.2s ease,
-      color 0.2s ease;
-  }
+.ec-user-list button {
+  /* Especificamos qué queremos animar (fondo y texto son los más comunes aquí) */
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
 }
 .ec-user-list button:hover {
   background: rgba(230, 168, 23, 0.1);
@@ -195,11 +191,9 @@
 }
 
 /* Bloque de accesibilidad para el icono */
-@media (prefers-reduced-motion: no-preference) {
-  .ec-user-list svg {
-    /* Especificamos que solo se anime el color */
-    transition: color 0.2s ease;
-  }
+.ec-user-list svg {
+  /* Especificamos que solo se anime el color */
+  transition: color 0.2s ease;
 }
 .ec-user-list button:hover svg {
   color: var(--accent-gold);
@@ -257,13 +251,11 @@
 }
 
 /* ✅ Bloque nuevo para accesibilidad y transiciones específicas */
-@media (prefers-reduced-motion: no-preference) {
-  .ec-back-btn {
-    transition:
-      background-color 0.3s ease,
-      color 0.3s ease,
-      box-shadow 0.3s ease;
-  }
+.ec-back-btn {
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease,
+    box-shadow 0.3s ease;
 }
 
 .ec-back-btn svg {
@@ -272,10 +264,8 @@
 }
 
 /* Bloque de accesibilidad */
-@media (prefers-reduced-motion: no-preference) {
-  .ec-back-btn svg {
-    transition: transform 0.3s ease;
-  }
+.ec-back-btn svg {
+  transition: transform 0.3s ease;
 }
 .ec-back-btn:hover {
   background: rgba(255, 255, 255, 0.15);
@@ -353,15 +343,13 @@
 }
 
 /* Bloque nuevo para la accesibilidad y las propiedades específicas */
-@media (prefers-reduced-motion: no-preference) {
-  .ec-form input,
-  .ec-form select,
-  .ec-form textarea {
-    transition:
-      border-color 0.2s ease,
-      background-color 0.2s ease,
-      box-shadow 0.2s ease;
-  }
+.ec-form input,
+.ec-form select,
+.ec-form textarea {
+  transition:
+    border-color 0.2s ease,
+    background-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .ec-form input::placeholder,
@@ -567,15 +555,13 @@
 }
 
 /* Bloque nuevo para la accesibilidad y transiciones específicas */
-@media (prefers-reduced-motion: no-preference) {
-  .ec-btn {
-    /* Cambiamos 'all' por las propiedades que suelen cambiar en un botón */
-    transition:
-      background-color 0.2s ease,
-      color 0.2s ease,
-      box-shadow 0.2s ease,
-      transform 0.2s ease;
-  }
+.ec-btn {
+  /* Cambiamos 'all' por las propiedades que suelen cambiar en un botón */
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
 }
 
 .ec-btn:disabled {

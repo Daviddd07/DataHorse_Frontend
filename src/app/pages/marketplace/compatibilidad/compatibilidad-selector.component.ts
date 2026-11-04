@@ -11,6 +11,8 @@ import {
 
 import { CupoCompatibilidadComponent } from '../../../components/cupo-compatibilidad/cupo-compatibilidad.component';
 
+import { LogoIaComponent } from '../../../components/logo-ia/logo-ia.component';
+
 import { environment } from '../../../../environments/environment';
 
 // Lo que necesita el selector de cada tarjeta del marketplace
@@ -57,7 +59,7 @@ type Paso = 1 | 2 | 3;
 @Component({
   selector: 'app-compatibilidad-selector',
   standalone: true,
-  imports: [CupoCompatibilidadComponent],
+  imports: [CupoCompatibilidadComponent, LogoIaComponent],
   templateUrl: './compatibilidad-selector.component.html',
   styleUrl: './compatibilidad-selector.component.css',
 })
@@ -76,6 +78,9 @@ export class CompatibilidadSelectorComponent {
     { numero: 2, etiqueta: 'Tu yegua' },
     { numero: 3, etiqueta: 'Estudio' },
   ];
+
+  // Lo que evalúa el modelo (se muestra antes de lanzar el estudio)
+  readonly factoresIa = ['Raza', 'Edad y madurez', 'Altura', 'Ubicación', 'Descendencia'];
 
   paso = signal<Paso>(1);
 

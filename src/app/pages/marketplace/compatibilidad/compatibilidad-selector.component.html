@@ -1,9 +1,18 @@
 <section class="cs" aria-labelledby="cs-titulo">
   <!-- CABECERA -->
   <header class="cs-header">
-    <div>
-      <h2 id="cs-titulo">Estudio de compatibilidad</h2>
-      <p class="cs-sub">Elige un caballo del marketplace y una de tus yeguas.</p>
+    <div class="cs-titular">
+      <span class="cs-logo">
+        <app-logo-ia [tamano]="46" [pensando]="true" />
+      </span>
+      <div>
+        <span class="chip-ia">Impulsado por inteligencia artificial</span>
+        <h2 id="cs-titulo">Estudio de compatibilidad <span class="texto-ia">con IA</span></h2>
+        <p class="cs-sub">
+          Elige un caballo del marketplace y una de tus yeguas. La IA estima qué tan compatibles
+          son y qué se podría esperar de la cría.
+        </p>
+      </div>
     </div>
     <app-cupo-compatibilidad [cupo]="cupo()" />
   </header>
@@ -46,7 +55,7 @@
     } @else {
       <ul class="cs-grid">
         @for (c of machos(); track c.idCaballo) {
-          <li>
+          <li class="tarjeta-entra" [style.--i]="$index">
             <button
               type="button"
               class="cs-card"
@@ -64,6 +73,7 @@
                   <span class="cs-badge">Tuyo</span>
                 }
                 @if (caballoSeleccionado()?.idCaballo === c.idCaballo) {
+                  <span class="cs-escaneo" aria-hidden="true"></span>
                   <span class="cs-check">✓ Seleccionado</span>
                 }
               </div>
@@ -116,7 +126,7 @@
     } @else {
       <ul class="cs-grid">
         @for (y of yeguas(); track y.idCaballo) {
-          <li>
+          <li class="tarjeta-entra" [style.--i]="$index">
             <button
               type="button"
               class="cs-card"
@@ -131,6 +141,7 @@
                   <span class="cs-placeholder">DH</span>
                 }
                 @if (yeguaSeleccionada()?.idCaballo === y.idCaballo) {
+                  <span class="cs-escaneo" aria-hidden="true"></span>
                   <span class="cs-check">✓ Seleccionada</span>
                 }
               </div>
@@ -159,7 +170,9 @@
             {{ caballoConfirmado()?.propietario }}
           </p>
         </div>
-        <span class="cs-x" aria-hidden="true">×</span>
+        <span class="cs-union" aria-hidden="true">
+          <app-logo-ia [tamano]="58" [pensando]="true" />
+        </span>
         <div>
           <p class="cs-tag">Tu yegua</p>
           <h3>{{ yeguaConfirmada()?.nombre }}</h3>
@@ -167,16 +180,25 @@
         </div>
       </div>
 
+      <div class="cs-factores">
+        <p class="cs-tag">La IA analizará</p>
+        <ul>
+          @for (f of factoresIa; track f) {
+            <li>{{ f }}</li>
+          }
+        </ul>
+      </div>
+
       <p class="cs-nota">
-        La inteligencia artificial analizará raza, edad, altura, ubicación y descendencia. Usará 1
-        de tus estimaciones de hoy; si este par ya fue evaluado con los mismos datos, verás el
-        resultado guardado sin gastar estimación. El estudio queda guardado en "Mis resultados".
+        Usará 1 de tus estimaciones de hoy; si este par ya fue evaluado con los mismos datos, verás
+        el resultado guardado sin gastar estimación. El estudio queda guardado en "Mis resultados".
       </p>
 
       <div class="cs-acciones">
         <button type="button" class="cs-secundario" (click)="irAPaso(2)">Cambiar yegua</button>
-        <button type="button" class="cs-primario" (click)="realizarEstudio()">
-          Realizar estudio
+        <button type="button" class="cs-boton-ia" (click)="realizarEstudio()">
+          <app-logo-ia [tamano]="20" />
+          Realizar estudio con IA
         </button>
       </div>
     </div>

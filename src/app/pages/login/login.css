@@ -89,13 +89,11 @@
 }
 
 /* La transición con accesibilidad y propiedades específicas */
-@media (prefers-reduced-motion: no-preference) {
-  .form-group input {
-    transition:
-      border-color 0.2s ease,
-      background-color 0.2s ease,
-      box-shadow 0.2s ease;
-  }
+.form-group input {
+  transition:
+    border-color 0.2s ease,
+    background-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .form-group input::placeholder {
@@ -129,13 +127,11 @@ button[type='submit'] {
 }
 
 /* Bloque para respetar el movimiento reducido y especificar propiedades */
-@media (prefers-reduced-motion: no-preference) {
-  button[type='submit'] {
-    transition:
-      background-color 0.15s ease,
-      transform 0.15s ease,
-      box-shadow 0.15s ease;
-  }
+button[type='submit'] {
+  transition:
+    background-color 0.15s ease,
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
 }
 
 button[type='submit']:hover {
@@ -257,13 +253,11 @@ button[type='submit']:active {
 }
 
 /*  Bloque de accesibilidad con las propiedades específicas */
-@media (prefers-reduced-motion: no-preference) {
-  .btn-ojo {
-    /* Cambiamos 'all' por las propiedades que realmente cambian en tu :hover */
-    transition:
-      background-color 0.2s ease,
-      color 0.2s ease;
-  }
+.btn-ojo {
+  /* Cambiamos 'all' por las propiedades que realmente cambian en tu :hover */
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
 }
 
 .btn-ojo:hover {
@@ -324,10 +318,8 @@ button[type='submit']:active {
   border-radius: 24px;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .aviso-card {
-    animation: avisoEntrada 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-  }
+.aviso-card {
+  animation: avisoEntrada 0.35s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 @keyframes avisoEntrada {
@@ -398,14 +390,12 @@ button[type='submit']:active {
   color: var(--text-main);
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .aviso-primario,
-  .aviso-secundario {
-    transition:
-      background-color 0.15s ease,
-      transform 0.15s ease,
-      box-shadow 0.15s ease;
-  }
+.aviso-primario,
+.aviso-secundario {
+  transition:
+    background-color 0.15s ease,
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
 }
 
 .aviso-primario:hover {

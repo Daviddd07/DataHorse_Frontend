@@ -478,7 +478,7 @@ export class RecuperarPasswordComponent {
     this.auth.me().subscribe({
       next: (usuario) => {
         this.correo = usuario.correo;
-        this.cd.detectChanges();
+        this.cd.markForCheck();
       },
       error: () => void this.router.navigate(['/login']),
     });

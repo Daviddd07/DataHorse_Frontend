@@ -75,7 +75,7 @@ describe('Login', () => {
       expect(google.accounts.id.initialize).toHaveBeenCalledTimes(1);
     });
 
-    it('the Google callback should log in with the credential', () => {
+    it('the Google callback should log in with the credential', async () => {
       window.google = google;
       auth.google.mockReturnValue(of({}));
       crear();
@@ -83,6 +83,9 @@ describe('Login', () => {
       callback({ credential: 'token' });
       expect(auth.google).toHaveBeenCalledWith('token');
       expect(router.navigate).toHaveBeenCalledWith(['/marketplace']);
+      expect(component.cargandoGoogle).toBe(true);
+
+      await Promise.resolve(); // termina la navegación
       expect(component.cargandoGoogle).toBe(false);
     });
 
@@ -164,15 +167,29 @@ describe('Login', () => {
       expect(auth.login).not.toHaveBeenCalled();
     });
 
-    it('should normalize the email and navigate on success', () => {
+    it('should normalize the email and navigate on success', async () => {
       auth.login.mockReturnValue(of({ mensaje: 'ok' }));
       component.correo = '  A@A.com ';
       component.password = 'Secreto123';
       component.iniciarSesion();
       expect(auth.login).toHaveBeenCalledWith('a@a.com', 'Secreto123');
       expect(router.navigate).toHaveBeenCalledWith(['/marketplace']);
-      expect(component.cargando).toBe(false);
       expect(logMock.info).toHaveBeenCalledWith('Inicio de sesión exitoso', { metodo: 'correo' });
+
+      // Sigue cargando hasta que la siguiente pantalla abre
+      expect(component.cargando).toBe(true);
+      await Promise.resolve();
+      expect(component.cargando).toBe(false);
+    });
+
+    it('should re-enable the button if the navigation is cancelled', async () => {
+      auth.login.mockReturnValue(of({ mensaje: 'ok' }));
+      vi.mocked(router.navigate).mockResolvedValue(false);
+      component.correo = 'a@a.com';
+      component.password = 'Secreto123';
+      component.iniciarSesion();
+      await Promise.resolve();
+      expect(component.cargando).toBe(false);
     });
 
     it('should go wherever the role says after logging in', () => {

@@ -16,22 +16,87 @@
   gap: 22px;
 }
 
-/* Cabecera */
+/* Cabecera: panel de la IA con un resplandor violeta/cian que se mueve lento */
 .cs-header {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
-  padding: 0 5px;
+  gap: 16px;
+  padding: 22px 24px;
+  border-radius: 24px;
+  border: 1px solid rgba(139, 92, 246, 0.35);
+  background: rgba(18, 16, 32, 0.7);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.35),
+    inset 0 0 40px rgba(139, 92, 246, 0.08);
+}
+
+.cs-header::before {
+  content: '';
+  position: absolute;
+  inset: -60%;
+  z-index: -1;
+  background:
+    radial-gradient(circle at 30% 40%, rgba(139, 92, 246, 0.35), transparent 35%),
+    radial-gradient(circle at 70% 60%, rgba(34, 211, 238, 0.22), transparent 35%);
+}
+
+/* Cuadrícula tenue, como de circuito */
+.cs-header::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-image:
+    linear-gradient(rgba(196, 181, 253, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(196, 181, 253, 0.06) 1px, transparent 1px);
+  background-size: 22px 22px;
+  mask-image: linear-gradient(90deg, #000, transparent 75%);
+  -webkit-mask-image: linear-gradient(90deg, #000, transparent 75%);
+}
+
+.cs-header::before {
+  animation: aurora-ia 14s ease-in-out infinite alternate;
+}
+
+@keyframes aurora-ia {
+  to {
+    transform: translate(12%, -8%) rotate(25deg);
+  }
+}
+
+.cs-titular {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-width: 0;
+}
+
+.cs-logo {
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  flex-shrink: 0;
+  border-radius: 18px;
+  border: 1px solid rgba(139, 92, 246, 0.45);
+  background: radial-gradient(circle, rgba(139, 92, 246, 0.3), rgba(18, 16, 32, 0.6) 70%);
 }
 
 .cs-header h2 {
-  margin: 0;
+  margin: 8px 0 0;
+  font-size: 1.5rem;
 }
 
 .cs-sub {
   margin: 4px 0 0;
+  max-width: 560px;
   color: var(--text-muted);
   font-size: 0.9rem;
 }
@@ -65,7 +130,8 @@
 }
 
 .cs-pasos .activo button {
-  border-color: var(--accent-gold);
+  border-color: var(--ia-violeta);
+  box-shadow: 0 0 14px rgba(139, 92, 246, 0.35);
   color: var(--text-main);
 }
 
@@ -89,8 +155,8 @@
 
 .activo .cs-num,
 .hecho .cs-num {
-  background: var(--accent-gold);
-  color: #000;
+  background: var(--ia-degradado);
+  color: #120a24;
 }
 
 /* Tarjetas (como las del marketplace) */
@@ -105,6 +171,19 @@
 
 .cs-grid li {
   display: flex;
+}
+
+/* Entrada de las tarjetas (misma que en el marketplace) */
+.tarjeta-entra {
+  animation: tarjeta-entra 0.38s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+  animation-delay: calc(min(var(--i, 0), 8) * 35ms);
+}
+
+@keyframes tarjeta-entra {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.97);
+  }
 }
 
 .cs-card {
@@ -124,13 +203,11 @@
   cursor: pointer;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .cs-card {
-    transition:
-      transform 0.25s ease,
-      border-color 0.25s ease,
-      box-shadow 0.25s ease;
-  }
+.cs-card {
+  transition:
+    transform 0.25s ease,
+    border-color 0.25s ease,
+    box-shadow 0.25s ease;
 }
 
 .cs-card:hover {
@@ -143,19 +220,65 @@
 }
 
 .cs-card.seleccionada {
-  border-color: var(--accent-gold);
-  box-shadow: 0 0 0 4px rgba(230, 168, 23, 0.25);
+  border-color: transparent;
+  background:
+    linear-gradient(rgba(30, 28, 48, 0.9), rgba(30, 28, 48, 0.9)) padding-box,
+    var(--ia-degradado) border-box;
+  box-shadow:
+    0 0 0 4px rgba(139, 92, 246, 0.2),
+    0 0 28px rgba(34, 211, 238, 0.25);
 }
 
+/* Línea de escaneo sobre la foto de la tarjeta elegida: la IA "lee" al ejemplar */
+.cs-escaneo {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(180deg, rgba(139, 92, 246, 0.25), transparent 45%);
+}
+
+.cs-escaneo::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 2px;
+  background: var(--ia-cian);
+  box-shadow: 0 0 12px 3px rgba(34, 211, 238, 0.7);
+}
+
+.cs-escaneo::after {
+  animation: escanear 2.2s ease-in-out infinite;
+}
+
+@keyframes escanear {
+  0%,
+  100% {
+    top: 0;
+  }
+  50% {
+    top: calc(100% - 2px);
+  }
+}
+
+/* La foto queda dentro de su caja: sin overflow hidden se salía y tapaba
+   el nombre y los datos de la tarjeta (la caja es position: relative y se pinta encima). */
 .cs-media {
   position: relative;
+  flex-shrink: 0;
   height: 160px;
+  overflow: hidden;
   background: #222;
   display: grid;
   place-items: center;
 }
 
 .cs-media img {
+  position: absolute;
+  inset: 0;
+  display: block;
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -168,6 +291,7 @@
 }
 
 .cs-check {
+  z-index: 2;
   position: absolute;
   right: 12px;
   bottom: 12px;
@@ -185,6 +309,7 @@
 }
 
 .cs-badge {
+  z-index: 2;
   position: absolute;
   top: 12px;
   left: 12px;
@@ -271,10 +396,11 @@
   max-width: 640px;
   padding: 26px;
   border-radius: 24px;
-  background: rgba(30, 35, 40, 0.65);
+  background: rgba(24, 22, 40, 0.72);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border: 1px solid var(--border-glass);
+  border: 1px solid rgba(139, 92, 246, 0.35);
+  box-shadow: 0 0 40px rgba(139, 92, 246, 0.12);
 }
 
 .cs-par {
@@ -284,9 +410,113 @@
   gap: 16px;
 }
 
-.cs-x {
-  font-size: 2rem;
-  color: var(--accent-gold);
+.cs-union {
+  display: grid;
+  place-items: center;
+  width: 82px;
+  height: 82px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(139, 92, 246, 0.35), transparent 70%);
+}
+
+/* Factores que analiza la IA */
+.cs-factores .cs-tag {
+  color: var(--ia-lila);
+}
+
+.cs-factores ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.cs-factores li {
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(139, 92, 246, 0.4);
+  background: rgba(139, 92, 246, 0.12);
+  font-size: 0.85rem;
+}
+
+.cs-factores li {
+  animation: entrada-aparecer 0.45s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+}
+
+.cs-factores li:nth-child(2) {
+  animation-delay: 0.08s;
+}
+.cs-factores li:nth-child(3) {
+  animation-delay: 0.16s;
+}
+.cs-factores li:nth-child(4) {
+  animation-delay: 0.24s;
+}
+.cs-factores li:nth-child(5) {
+  animation-delay: 0.32s;
+}
+
+/* Botón principal de la IA: degradado que fluye y brillo al pasar el mouse */
+.cs-boton-ia {
+  position: relative;
+  overflow: hidden;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 22px;
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(90deg, #6d28d9, var(--ia-violeta), #0891b2, #6d28d9);
+  background-size: 300% 100%;
+  color: #fff;
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 8px 24px -6px rgba(139, 92, 246, 0.7);
+}
+
+.cs-boton-ia::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  transform: translateX(-120%);
+  background: linear-gradient(
+    110deg,
+    transparent 35%,
+    rgba(255, 255, 255, 0.3) 50%,
+    transparent 65%
+  );
+}
+
+.cs-boton-ia:hover {
+  box-shadow: 0 10px 30px -6px rgba(34, 211, 238, 0.7);
+}
+
+/* Sobre el degradado del botón el logo se perdía: se aclara */
+.cs-boton-ia app-logo-ia {
+  filter: brightness(1.8) drop-shadow(0 0 4px rgba(255, 255, 255, 0.6));
+}
+
+.cs-boton-ia:focus-visible {
+  outline: 2px solid var(--ia-cian);
+  outline-offset: 2px;
+}
+
+.cs-boton-ia {
+  animation: ia-fluir 5s ease-in-out infinite;
+}
+
+.cs-boton-ia:hover::after {
+  animation: brillo-boton-ia 0.9s ease;
+}
+
+@keyframes brillo-boton-ia {
+  to {
+    transform: translateX(120%);
+  }
 }
 
 .cs-nota {
@@ -353,7 +583,17 @@
 
   .cs-par {
     grid-template-columns: 1fr;
+    justify-items: center;
     text-align: center;
+  }
+
+  .cs-header {
+    padding: 18px;
+  }
+
+  .cs-logo {
+    width: 52px;
+    height: 52px;
   }
 
   .cs-barra p {

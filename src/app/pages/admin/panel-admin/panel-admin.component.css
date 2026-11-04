@@ -27,76 +27,6 @@
 }
 
 /* ======================================================
-   BARRA LATERAL
-====================================================== */
-.admin-sidebar {
-  position: fixed;
-  top: 24px;
-  left: 24px;
-  bottom: 24px;
-  width: 80px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 20px 0;
-  border-radius: 24px;
-  z-index: 10;
-  box-sizing: border-box;
-}
-
-.admin-logo {
-  width: 52px;
-  height: 52px;
-  object-fit: contain;
-  margin-bottom: 20px;
-}
-
-.admin-menu {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.admin-btn {
-  width: 68px;
-  padding: 12px 0;
-  border-radius: 16px;
-  border: none;
-  background: transparent;
-  color: var(--text-muted);
-  font-family: inherit;
-  font-size: 11px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-  cursor: pointer;
-  transition:
-    background 0.2s ease,
-    color 0.2s ease;
-}
-
-.admin-btn svg {
-  width: 22px;
-  height: 22px;
-}
-
-.admin-btn:hover,
-.admin-btn:focus-visible,
-.admin-btn.active {
-  background: rgba(255, 255, 255, 0.12);
-  color: var(--text-main);
-}
-
-.admin-btn.active {
-  color: var(--accent-gold);
-}
-
-.btn-logout {
-  margin-top: auto;
-}
-
-/* ======================================================
    CONTENIDO
 ====================================================== */
 .admin-main {
@@ -192,12 +122,87 @@
   gap: 16px;
 }
 
+/* Entrada del panel: tarjetas y secciones suben con un leve zoom, una tras otra (--i) */
+.admin-entra {
+  animation: admin-entra 0.55s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+  animation-delay: calc(var(--i, 0) * 90ms);
+}
+
+@keyframes admin-entra {
+  from {
+    opacity: 0;
+    transform: translateY(24px) scale(0.95);
+  }
+}
+
+/* Tarjeta de totales: datos a la izquierda, ícono con degradado a la derecha.
+   Al pasar el mouse sube 5 px, se ilumina el borde y el ícono gira un poco. */
 .tarjeta {
+  --tarjeta-color: #8b5cf6;
+  --tarjeta-degradado: linear-gradient(135deg, #a78bfa, #6d28d9);
+
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 20px;
+  border-radius: 20px;
+  transition:
+    transform 0.25s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.25s ease,
+    border-color 0.25s ease;
+}
+
+.tarjeta:hover {
+  transform: translateY(-5px);
+  border-color: color-mix(in srgb, var(--tarjeta-color) 60%, transparent);
+  box-shadow:
+    0 14px 34px rgba(0, 0, 0, 0.4),
+    0 0 24px color-mix(in srgb, var(--tarjeta-color) 35%, transparent);
+}
+
+.tarjeta-nuevos {
+  --tarjeta-color: #4ade80;
+  --tarjeta-degradado: linear-gradient(135deg, #86efac, #059669);
+}
+
+.tarjeta-caballos {
+  --tarjeta-color: #e6a817;
+  --tarjeta-degradado: linear-gradient(135deg, #f5c95a, #b5651d);
+}
+
+.tarjeta-publicaciones {
+  --tarjeta-color: #22d3ee;
+  --tarjeta-degradado: linear-gradient(135deg, #67e8f9, #0e7490);
+}
+
+.tarjeta-datos {
   display: flex;
   flex-direction: column;
   gap: 6px;
-  padding: 20px;
-  border-radius: 20px;
+  min-width: 0;
+}
+
+.tarjeta-icono {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 46px;
+  height: 46px;
+  border-radius: 14px;
+  background: var(--tarjeta-degradado);
+  color: #fff;
+  box-shadow: 0 8px 20px color-mix(in srgb, var(--tarjeta-color) 40%, transparent);
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.tarjeta-icono svg {
+  width: 22px;
+  height: 22px;
+}
+
+.tarjeta:hover .tarjeta-icono {
+  transform: rotate(-8deg) scale(1.08);
 }
 
 .tarjeta h2 {
@@ -284,10 +289,49 @@
 }
 
 .raza-barra span {
+  position: relative;
   display: block;
   height: 100%;
   border-radius: 999px;
-  background: var(--accent-gold);
+  overflow: hidden;
+  background: linear-gradient(90deg, #b5651d, var(--accent-gold) 70%, #f5c95a);
+  box-shadow: 0 0 12px rgba(230, 168, 23, 0.35);
+  transform-origin: left center;
+}
+
+/* Brillo que recorre la barra una vez, al terminar de crecer */
+.raza-barra span::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.45), transparent);
+}
+
+/* Las barras crecen desde la izquierda, una tras otra (--i = posición).
+   700ms y 90ms coinciden con RETRASO_BARRAS_MS y PASO_BARRAS_MS del componente. */
+.razas li {
+  --retraso-barra: calc(700ms + var(--i, 0) * 90ms);
+}
+
+.razas li .raza-barra span {
+  animation: crecer-barra 0.9s cubic-bezier(0.22, 1, 0.36, 1) var(--retraso-barra) backwards;
+}
+
+.razas li .raza-barra span::after {
+  animation: brillo-barra 0.8s ease-out calc(var(--retraso-barra) + 0.7s);
+}
+
+@keyframes crecer-barra {
+  from {
+    transform: scaleX(0);
+  }
+}
+
+@keyframes brillo-barra {
+  to {
+    transform: translateX(100%);
+  }
 }
 
 .raza-total {
@@ -369,34 +413,113 @@
 }
 
 /* ======================================================
+   ESQUELETO DE CARGA
+====================================================== */
+.admin-esqueleto {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.sk-linea {
+  height: 12px;
+}
+
+.sk-titulo-tarjeta {
+  width: 45%;
+  height: 14px;
+}
+
+.sk-numero {
+  width: 35%;
+  height: 36px;
+  margin: 4px 0;
+  border-radius: 10px;
+}
+
+.sk-detalle {
+  width: 70%;
+}
+
+.sk-titulo-seccion {
+  width: 180px;
+  height: 18px;
+  margin-bottom: 16px;
+}
+
+.seccion-cabecera .sk-titulo-seccion {
+  margin-bottom: 0;
+}
+
+.sk-raza {
+  width: 80%;
+}
+
+.sk-total {
+  width: 24px;
+  justify-self: end;
+}
+
+.sk-buscar {
+  width: min(320px, 100%);
+  height: 40px;
+  border-radius: 12px;
+}
+
+.sk-fila {
+  display: grid;
+  grid-template-columns: 1.2fr 1.6fr 0.7fr 0.7fr 1fr;
+  gap: 16px;
+  padding: 14px 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.sk-corta {
+  width: 70%;
+}
+
+/* ======================================================
    RESPONSIVE: la barra lateral pasa arriba
 ====================================================== */
 @media (max-width: 1024px) {
-  .admin-sidebar {
+  /* En horizontal DockDirective no actúa (la magnificación es vertical) */
+  .sidebar {
     position: sticky;
     top: 12px;
     left: auto;
     bottom: auto;
     width: auto;
     margin: 12px 12px 0;
-    padding: 8px 12px;
+    padding: 8px 14px;
     flex-direction: row;
-    gap: 8px;
+    border-radius: 999px;
   }
 
-  .admin-logo {
+  .sidebar-logo {
+    width: 40px;
+    height: 40px;
+    margin: 0 4px 0 0;
+  }
+
+  .logo-img {
     width: 36px;
     height: 36px;
-    margin: 0 8px 0 0;
   }
 
-  .admin-menu {
+  .sidebar-menu,
+  .sidebar-bottom {
     flex-direction: row;
-    gap: 8px;
+    width: auto;
   }
 
-  .btn-logout {
+  .sidebar-bottom {
     margin: 0 0 0 auto;
+  }
+
+  .sidebar-separador {
+    width: 2px;
+    height: 22px;
+    margin: 0 6px;
   }
 
   .admin-main {

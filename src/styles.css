@@ -49,3 +49,205 @@ button:active:not(.ver):not(.dh-icon-btn):not(.ec-icon-btn):not(.btn-ojo) {
 .dp-btn-chat:hover::after {
   left: 100%;
 }
+
+/* =========================================
+   3. ESQUELETOS DE CARGA (reemplazan a los spinners)
+   ========================================= */
+.skeleton {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.skeleton::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.12), transparent);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .skeleton::after {
+    animation: skeleton-brillo 1.4s ease-in-out infinite;
+  }
+}
+
+@keyframes skeleton-brillo {
+  to {
+    transform: translateX(100%);
+  }
+}
+
+/* Entrada suave del contenido real cuando reemplaza al esqueleto.
+   --i (índice del elemento) escalona la entrada. El escalonado se corta en 6
+   para que todo esté visible en ~0,6 s aunque haya muchas tarjetas (con 12 y
+   60 ms la última fila tardaba más de un segundo en aparecer).
+   "backwards" para no bloquear el transform del :hover una vez termina. */
+@media (prefers-reduced-motion: no-preference) {
+  .entrada {
+    animation: entrada-aparecer 0.35s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+    animation-delay: calc(min(var(--i, 0), 6) * 40ms);
+  }
+}
+
+@keyframes entrada-aparecer {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+/* =========================================
+   4. IDENTIDAD DE LA IA (compatibilidad)
+   Violeta + cian para distinguir lo que hace la IA del dorado del resto de la app.
+   ========================================= */
+:root {
+  --ia-violeta: #8b5cf6;
+  --ia-lila: #c4b5fd;
+  --ia-cian: #22d3ee;
+  --ia-degradado: linear-gradient(90deg, var(--ia-lila), var(--ia-violeta) 45%, var(--ia-cian));
+}
+
+/* Texto con el degradado de la IA */
+.texto-ia {
+  background: var(--ia-degradado);
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Etiqueta pequeña "IA" / "Impulsado por IA" */
+.chip-ia {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(139, 92, 246, 0.55);
+  background: rgba(139, 92, 246, 0.16);
+  color: #e9e3ff;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .texto-ia {
+    animation: ia-fluir 6s ease-in-out infinite;
+  }
+}
+
+@keyframes ia-fluir {
+  50% {
+    background-position: 100% 0;
+  }
+}
+
+/* =========================================
+   5. REDUCIR MOVIMIENTO (único lugar donde se respeta la preferencia)
+   Los componentes declaran sus animaciones sin envolverlas en
+   @media (prefers-reduced-motion: no-preference): Angular renombra los
+   @keyframes de cada componente pero no reescribe `animation:` dentro de
+   un @media, y esas animaciones quedaban apuntando a keyframes inexistentes.
+   Este bloque global las apaga todas para quien pidió menos movimiento.
+   ========================================= */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-delay: 0ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* =========================================
+   6. TOOLTIP DE LA BARRA LATERAL (DockDirective)
+   Uno solo para toda la barra, montado en <body>. La posición vertical
+   (--dock-tooltip-y) la mueve un resorte en JS; aquí solo van la entrada,
+   la salida y el fundido del texto.
+   ========================================= */
+.dock-tooltip {
+  position: fixed;
+  top: var(--dock-tooltip-y, 0px);
+  left: 0;
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 26px;
+  padding: 0 10px;
+  box-sizing: border-box;
+  overflow: hidden;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(30, 30, 30, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+  color: rgba(255, 255, 255, 0.9);
+  font:
+    500 12px/1 'Inter',
+    sans-serif;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transform: translate(-6px, -50%) scale(0.95);
+  transform-origin: left center;
+  transition:
+    opacity 150ms ease-out,
+    transform 150ms ease-out,
+    width 150ms ease-out;
+}
+
+.dock-tooltip-visible {
+  opacity: 1;
+  transform: translate(0, -50%) scale(1);
+}
+
+/* Al salir de la barra: se desvanece y se corre un poco a la izquierda, sin moverse en vertical */
+.dock-tooltip-saliendo {
+  opacity: 0;
+  transform: translate(-4px, -50%) scale(1);
+  transition-duration: 120ms;
+}
+
+.dock-tooltip-texto {
+  transition: opacity 100ms ease;
+}
+
+.dock-tooltip-cambiando .dock-tooltip-texto {
+  opacity: 0;
+}
+
+/* Acción destructiva (Cerrar sesión) */
+.dock-tooltip-peligro {
+  color: #f87171;
+}
+
+/* Ítem activo: punto dorado como el del logo */
+.dock-tooltip-activo::before {
+  content: '';
+  flex-shrink: 0;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #e6a817;
+}
+
+/* Reducir movimiento: el tooltip solo aparece y desaparece con fundido */
+@media (prefers-reduced-motion: reduce) {
+  .dock-tooltip,
+  .dock-tooltip-visible,
+  .dock-tooltip-saliendo {
+    transform: translate(0, -50%) !important;
+    transition: opacity 150ms ease !important;
+  }
+}

@@ -54,6 +54,18 @@ h1 {
   font-weight: 700;
 }
 
+.entrada {
+  display: inline-block;
+}
+
+.nombre-esqueleto {
+  display: inline-block;
+  width: 120px;
+  height: 0.8em;
+  margin-left: 6px;
+  vertical-align: -0.05em;
+}
+
 .elegir-subtitulo {
   margin: 0 0 28px;
   color: var(--text-muted);

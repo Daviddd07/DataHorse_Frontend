@@ -1,7 +1,7 @@
 import { Provider } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, convertToParamMap, provideRouter } from '@angular/router';
-import { of, throwError } from 'rxjs';
+import { NEVER, of, throwError } from 'rxjs';
 import { MarketplaceComponent } from './marketplace.component';
 import { AuthService } from '../../Services/auth.service';
 import { CaballoService, Publicacion } from '../../Services/caballo.service';
@@ -118,6 +118,14 @@ describe('MarketplaceComponent', () => {
 
   const nombres = () => component.publicacionesFiltradas().map((c) => c.nombre);
 
+  // Botón de la barra lateral por su nombre (la píldora que aparece al pasar el mouse)
+  const botonLateral = (nombre: string) =>
+    (
+      Array.from(
+        fixture.nativeElement.querySelectorAll('.sidebar .icon-btn'),
+      ) as HTMLButtonElement[]
+    ).find((b) => b.getAttribute('aria-label') === nombre);
+
   beforeEach(() => {
     vi.spyOn(console, 'error').mockImplementation(() => undefined);
     vi.spyOn(console, 'log').mockImplementation(() => undefined);
@@ -134,6 +142,7 @@ describe('MarketplaceComponent', () => {
         ]),
       ),
       listarPublicaciones: vi.fn().mockReturnValue(of(PUBLICACIONES)),
+      listarMisCaballos: vi.fn().mockReturnValue(of([{ id_caballo: 1 }, { id_caballo: 2 }])),
       agregarFavorito: vi.fn().mockReturnValue(of({})),
       quitarFavorito: vi.fn().mockReturnValue(of({})),
     };
@@ -169,6 +178,60 @@ describe('MarketplaceComponent', () => {
     });
   });
 
+  describe('skeletons', () => {
+    const html = () => fixture.nativeElement as HTMLElement;
+
+    it('should show skeleton cards and avatar while loading', async () => {
+      auth['me'].mockReturnValue(NEVER);
+      caballos['listarPublicaciones'].mockReturnValue(NEVER);
+      await crear();
+      expect(html().querySelectorAll('.card-esqueleto').length).toBe(component.esqueletos.length);
+      expect(html().querySelector('.grid-cards')?.getAttribute('aria-busy')).toBe('true');
+      expect(html().querySelector('[role="status"]')?.getAttribute('aria-label')).toBe(
+        'Cargando ejemplares',
+      );
+      expect(html().querySelector('.avatar-esqueleto')).not.toBeNull();
+      expect(html().textContent).not.toContain('No hay coincidencias');
+    });
+
+    it('should replace the skeletons with the real cards', async () => {
+      await crear();
+      expect(html().querySelector('.card-esqueleto')).toBeNull();
+      expect(html().querySelector('.avatar-esqueleto')).toBeNull();
+      expect(html().querySelectorAll('.grid-cards .card').length).toBe(4);
+    });
+
+    it('should recreate the cards (to animate them) only when the tab changes', async () => {
+      await crear();
+      const tarjeta = (nombre: string) =>
+        Array.from(html().querySelectorAll('.grid-cards .card')).find((c) =>
+          c.textContent?.includes(nombre),
+        );
+
+      component.seleccionarCategoria('Edad');
+      fixture.detectChanges();
+      const enEdad = tarjeta('Rayo');
+      expect(enEdad).toBeDefined();
+
+      // Volver a hacer clic invierte el orden: la tarjeta se mueve, no se vuelve a crear
+      component.seleccionarCategoria('Edad');
+      fixture.detectChanges();
+      expect(tarjeta('Rayo')).toBe(enEdad);
+
+      component.seleccionarCategoria('Altura');
+      fixture.detectChanges();
+      expect(tarjeta('Rayo')).not.toBe(enEdad);
+    });
+
+    it('should keep the same card when toggling a favorite', async () => {
+      await crear();
+      const antes = html().querySelector('.grid-cards .card');
+      component.toggleFavorito(component.caballos()[0]);
+      fixture.detectChanges();
+      expect(html().querySelector('.grid-cards .card')).toBe(antes);
+    });
+  });
+
   it('should not count a birthday that has not happened yet this year', async () => {
     const fecha = new Date();
     fecha.setFullYear(fecha.getFullYear() - 5);
@@ -180,7 +243,45 @@ describe('MarketplaceComponent', () => {
     expect(component.caballos()[0].edad).toBe(4);
   });
 
+  describe('my horses counter', () => {
+    const badge = () => fixture.nativeElement.querySelector('.user-menu .menu-badge');
+
+    it('should show the real number of my horses in the user menu', async () => {
+      await crear();
+      component.menuAbierto.set(true);
+      fixture.detectChanges();
+      expect(component.totalMisCaballos()).toBe(2);
+      expect(badge()?.textContent?.trim()).toBe('2');
+    });
+
+    it('should hide the counter when there are none or it fails', async () => {
+      caballos['listarMisCaballos'].mockReturnValue(throwError(() => new Error('500')));
+      await crear();
+      component.menuAbierto.set(true);
+      fixture.detectChanges();
+      expect(component.totalMisCaballos()).toBe(0);
+      expect(badge()).toBeNull();
+    });
+  });
+
   describe('loading errors', () => {
+    it('should show the error with a retry instead of "no matches"', async () => {
+      caballos['listarPublicaciones'].mockReturnValueOnce(throwError(() => new Error('500')));
+      await crear();
+      const html = fixture.nativeElement as HTMLElement;
+
+      expect(html.querySelector('.estado-error')?.textContent).toContain(
+        'No se pudieron cargar las publicaciones.',
+      );
+      expect(html.textContent).not.toContain('No hay coincidencias');
+
+      (html.querySelector('.btn-reintentar') as HTMLButtonElement).click();
+      fixture.detectChanges();
+      expect(caballos['listarPublicaciones']).toHaveBeenCalledTimes(2);
+      expect(html.querySelector('.estado-error')).toBeNull();
+      expect(component.caballos().length).toBe(4);
+    });
+
     it('should handle failures from every service', async () => {
       auth['me'].mockReturnValue(throwError(() => new Error('401')));
       caballos['listarRazas'].mockReturnValue(throwError(() => new Error('500')));
@@ -232,11 +333,9 @@ describe('MarketplaceComponent', () => {
       expect(nombres()).toEqual(['Luna', 'Sin fecha']);
     });
 
-    it('should filter by Favoritos, En venta and Pedigrí', () => {
+    it('should filter by Favoritos and Pedigrí', () => {
       component.categoriaActiva.set('Favoritos');
       expect(nombres()).toEqual(['Luna']);
-      component.categoriaActiva.set('En venta');
-      expect(nombres()).not.toContain('Luna');
       component.categoriaActiva.set('Pedigrí');
       expect(nombres()).toEqual([]);
     });
@@ -295,6 +394,23 @@ describe('MarketplaceComponent', () => {
 
   describe('compatibility tab', () => {
     const selector = () => fixture.nativeElement.querySelector('app-compatibilidad-selector');
+
+    it('should mark the compatibility tab as an AI feature', async () => {
+      await crear();
+      const pestanas = Array.from(
+        fixture.nativeElement.querySelectorAll('.nav-link'),
+      ) as HTMLElement[];
+      const ia = pestanas.filter((p) => p.classList.contains('nav-ia'));
+
+      expect(ia.length).toBe(1);
+      expect(ia[0].textContent).toContain('Compatibilidad');
+      expect(ia[0].querySelector('.nav-badge-ia')?.textContent).toBe('IA');
+      expect(ia[0].querySelector('app-logo-ia')?.classList).not.toContain('pensando');
+
+      component.seleccionarCategoria('Compatibilidad');
+      fixture.detectChanges();
+      expect(ia[0].querySelector('app-logo-ia')?.classList).toContain('pensando');
+    });
 
     it('should replace the cards with the compatibility wizard', async () => {
       await crear();
@@ -391,15 +507,45 @@ describe('MarketplaceComponent', () => {
       expect(router.navigate).toHaveBeenCalledWith(['/login']);
     });
 
+    it('should show the user initial at the bottom and open the account menu', () => {
+      const avatar = botonLateral('Mi cuenta') as HTMLButtonElement;
+      expect(avatar.querySelector('.avatar-inicial')?.textContent?.trim()).toBe('A');
+      avatar.click();
+      fixture.detectChanges();
+      expect(component.menuAbierto()).toBe(true);
+      expect(avatar.getAttribute('aria-expanded')).toBe('true');
+    });
+
+    it('should mark the options that do not exist yet as "Próximamente"', () => {
+      component.menuAbierto.set(true);
+      fixture.detectChanges();
+      const pronto = Array.from(
+        fixture.nativeElement.querySelectorAll('.user-menu-list button.menu-pronto'),
+      ) as HTMLButtonElement[];
+      expect(pronto.map((b) => b.textContent?.replace('Próximamente', '').trim())).toEqual([
+        'Mi cuenta',
+        'Mensajes',
+        'Pedigrí y documentos',
+        'Configuración',
+      ]);
+      expect(pronto.every((b) => b.disabled && b.textContent?.includes('Próximamente'))).toBe(true);
+    });
+
+    it('should show the Pedigrí tab as coming soon and not selectable', () => {
+      const pestana = (
+        Array.from(fixture.nativeElement.querySelectorAll('.nav-link')) as HTMLButtonElement[]
+      ).find((b) => b.textContent?.includes('Pedigrí'));
+      expect(pestana?.disabled).toBe(true);
+      expect(pestana?.querySelector('.pronto')?.textContent).toBe('Pronto');
+    });
+
     it('should hide the admin button from a normal user', () => {
       expect(component.esAdmin()).toBe(false);
-      expect(fixture.nativeElement.querySelector('[title="Panel de administración"]')).toBeNull();
+      expect(botonLateral('Panel de administración')).toBeUndefined();
     });
 
     it('should open "Mis resultados" from the sidebar', () => {
-      const boton = fixture.nativeElement.querySelector(
-        '[title="Mis resultados de compatibilidad"]',
-      ) as HTMLButtonElement;
+      const boton = botonLateral('Mis resultados') as HTMLButtonElement;
       component.menuAbierto.set(true);
       boton.click();
       expect(component.menuAbierto()).toBe(false);
@@ -417,9 +563,7 @@ describe('MarketplaceComponent', () => {
 
     it('should show the admin button and open the panel', () => {
       expect(component.esAdmin()).toBe(true);
-      const boton = fixture.nativeElement.querySelector(
-        '[title="Panel de administración"]',
-      ) as HTMLButtonElement;
+      const boton = botonLateral('Panel de administración') as HTMLButtonElement;
       component.menuAbierto.set(true);
       boton.click();
       expect(component.menuAbierto()).toBe(false);

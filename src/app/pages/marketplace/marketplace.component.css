@@ -42,74 +42,38 @@
 /* ======================================================
    1. BARRA LATERAL
 ====================================================== */
-.sidebar {
-  position: fixed;
-  top: 24px;
-  left: 24px;
-  bottom: 24px;
-  width: 70px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 20px 0;
-  z-index: 1000;
-  border-radius: 24px;
-}
-
-.sidebar-logo {
-  margin-bottom: 20px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-.logo-img {
-  width: 55px;
-  height: 55px;
-  object-fit: contain;
-}
-.sidebar-menu {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  width: 100%;
-  align-items: center;
-}
-
-.icon-btn {
-  width: 60px;
-  padding: 12px 0;
-  border-radius: 16px;
-  background: transparent;
-  border: none;
+/* Opciones que todavía no existen: se ven, pero no se pueden usar */
+.pronto {
+  margin-left: auto;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.14);
   color: var(--text-muted);
-  cursor: pointer;
-  transition: all 0.3s ease; /* Actualizado para no dar error en SonarQube, aunque all no es ideal, aquí funciona bien visualmente */
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  gap: 6px;
-}
-.icon-btn svg {
-  width: 22px;
-  height: 22px;
-}
-.icon-label {
   font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.5px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
 }
-.icon-btn:hover {
-  background: rgba(255, 255, 255, 0.1);
-  color: white;
+
+.nav-link .pronto {
+  margin-left: 6px;
 }
-.icon-btn.active {
-  background: white;
-  color: #17171c;
-  box-shadow: 0 4px 15px rgba(255, 255, 255, 0.2);
+
+.nav-link:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
 }
-.sidebar-bottom {
-  margin-top: auto;
+
+.nav-link:disabled:hover {
+  color: var(--text-muted);
+}
+
+.user-menu-list button.menu-pronto {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.user-menu-list button.menu-pronto:hover {
+  background: transparent;
 }
 
 /* ======================================================
@@ -144,7 +108,7 @@
 }
 
 .nav-brand {
-  font-size: 20px;
+  font-size: 22px;
   font-weight: 700;
   white-space: nowrap;
 }
@@ -165,7 +129,7 @@
   background: transparent;
   border: none;
   color: var(--text-muted);
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 600;
   cursor: pointer;
   white-space: nowrap;
@@ -182,6 +146,35 @@
 .nav-link.active {
   background: rgba(255, 255, 255, 0.15);
 }
+
+/* Pestaña de la IA: logo, etiqueta y borde con el degradado violeta/cian */
+.nav-link.nav-ia {
+  gap: 6px;
+  border: 1px solid rgba(139, 92, 246, 0.45);
+  color: #e9e3ff;
+}
+
+.nav-link.nav-ia:hover {
+  background: rgba(139, 92, 246, 0.15);
+}
+
+.nav-link.nav-ia.active {
+  border-color: transparent;
+  background:
+    linear-gradient(rgba(28, 22, 48, 0.92), rgba(28, 22, 48, 0.92)) padding-box,
+    var(--ia-degradado) border-box;
+  box-shadow: 0 0 18px rgba(139, 92, 246, 0.45);
+}
+
+.nav-badge-ia {
+  padding: 1px 6px;
+  border-radius: 6px;
+  background: var(--ia-degradado);
+  color: #120a24;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+}
 .search-bar {
   width: 160px;
   background: rgba(0, 0, 0, 0.3);
@@ -196,7 +189,7 @@
   border: none;
   color: white;
   outline: none;
-  font-size: 13px;
+  font-size: 14px;
 }
 .header-actions {
   display: flex;
@@ -212,7 +205,7 @@
   font-weight: 600;
   cursor: pointer;
   transition: 0.2s;
-  font-size: 13px;
+  font-size: 14px;
 }
 
 /* ======================================================
@@ -408,6 +401,39 @@
   color: #ff6b6b;
 }
 
+/* Error al cargar publicaciones: ocupa todo el ancho de la cuadrícula */
+.estado-error {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 32px 20px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 107, 107, 0.4);
+  background: rgba(30, 35, 40, 0.6);
+  text-align: center;
+}
+
+.estado-error p {
+  margin: 0;
+}
+
+.btn-reintentar {
+  padding: 10px 20px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  font-family: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-reintentar:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
 .btn-filter {
   background: rgba(255, 255, 255, 0.1);
   color: white;
@@ -449,6 +475,65 @@
 .card:hover {
   transform: translateY(-5px);
   background: rgba(45, 50, 55, 0.8);
+}
+
+/* Entrada de las tarjetas: corre al crearse cada una (al cargar y al cambiar de pestaña).
+   "backwards" para no bloquear el transform del :hover cuando termina. Corta y escalonada solo hasta la 8.ª tarjeta, para que la cuadrícula completa
+   se vea en menos de medio segundo. */
+.tarjeta-entra {
+  animation: tarjeta-entra 0.38s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+  animation-delay: calc(min(var(--i, 0), 8) * 35ms);
+}
+
+@keyframes tarjeta-entra {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.97);
+  }
+}
+
+/* Tarjeta esqueleto: misma medida que la real, sin interacción */
+.card-esqueleto {
+  cursor: default;
+  pointer-events: none;
+}
+
+.esqueleto-media {
+  border-radius: 0;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.esqueleto-linea {
+  height: 12px;
+  margin-bottom: 12px;
+}
+
+.esqueleto-tag {
+  width: 40%;
+  height: 10px;
+}
+
+.esqueleto-titulo {
+  width: 70%;
+  height: 20px;
+}
+
+.esqueleto-loc {
+  width: 55%;
+  margin-bottom: 18px;
+}
+
+.esqueleto-precio {
+  width: 35%;
+  height: 16px;
+  margin-bottom: 0;
+}
+
+.avatar-esqueleto {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.18);
 }
 .card-media {
   position: relative;

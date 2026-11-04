@@ -12,20 +12,27 @@ import { AdminService, ResumenAdmin, UsuarioAdmin } from '../../../Services/admi
 
 import { LogService } from '../../../Services/log.service';
 
+import { ContadorDirective } from '../../../directives/contador.directive';
+
+import { DockDirective } from '../../../directives/dock.directive';
+
 export type ColumnaUsuarios = Exclude<keyof UsuarioAdmin, 'id_usuario' | 'departamento'>;
+
+type IconoTarjeta = 'usuarios' | 'nuevos' | 'caballos' | 'publicaciones';
 
 interface Tarjeta {
   titulo: string;
   valor: number;
   detalle: string;
+  icono: IconoTarjeta;
 }
 
 @Component({
   selector: 'app-panel-admin',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, ContadorDirective, DockDirective],
   templateUrl: './panel-admin.component.html',
-  styleUrls: ['./panel-admin.component.css'],
+  styleUrls: ['../../../components/barra-lateral/barra-lateral.css', './panel-admin.component.css'],
 })
 export class PanelAdminComponent {
   private readonly auth = inject(AuthService);
@@ -45,6 +52,19 @@ export class PanelAdminComponent {
     { clave: 'yeguas', etiqueta: 'Yeguas', numerica: true },
     { clave: 'publicaciones_activas', etiqueta: 'Publicaciones', numerica: true },
   ];
+
+  // Esqueleto de carga: cantidad de tarjetas y filas, y anchos variados para las barras
+  readonly esqueletoTarjetas = [0, 1, 2, 3];
+  readonly esqueletoBarras = ['85%', '60%', '72%', '40%', '28%'];
+  readonly esqueletoFilas = [0, 1, 2, 3, 4, 5];
+
+  // Las barras de razas empiezan a crecer cuando la sección ya entró, una tras otra.
+  // Deben coincidir con los tiempos de "crecer-barra" en el CSS.
+  readonly RETRASO_BARRAS_MS = 700;
+  readonly PASO_BARRAS_MS = 90;
+
+  // Inicial del administrador para el avatar de la barra lateral
+  inicial = signal('?');
 
   resumen = signal<ResumenAdmin | null>(null);
   usuarios = signal<UsuarioAdmin[]>([]);
@@ -68,21 +88,25 @@ export class PanelAdminComponent {
         titulo: 'Usuarios',
         valor: r.usuarios.total,
         detalle: `${r.usuarios.activos} activos · ${r.usuarios.pendientes} pendientes`,
+        icono: 'usuarios',
       },
       {
         titulo: 'Nuevos (30 días)',
         valor: r.usuarios.nuevos_ultimos_30_dias,
         detalle: `${r.usuarios.administradores} administradores`,
+        icono: 'nuevos',
       },
       {
         titulo: 'Caballos',
         valor: r.caballos.total,
         detalle: `${r.caballos.machos} machos · ${r.caballos.yeguas} yeguas`,
+        icono: 'caballos',
       },
       {
         titulo: 'Publicaciones',
         valor: r.publicaciones.total,
         detalle: `${r.publicaciones.activas} activas`,
+        icono: 'publicaciones',
       },
     ];
   });
@@ -115,6 +139,10 @@ export class PanelAdminComponent {
 
   constructor() {
     this.cargarDatos();
+    this.auth.me().subscribe({
+      next: (usuario) => this.inicial.set(usuario.nombre.trim().charAt(0).toUpperCase() || '?'),
+      error: () => this.inicial.set('?'),
+    });
   }
 
   cargarDatos(): void {

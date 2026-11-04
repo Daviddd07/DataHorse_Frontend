@@ -1,8 +1,12 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ActivatedRoute, Router, convertToParamMap, provideRouter } from '@angular/router';
-import { of, throwError } from 'rxjs';
-import { CompatibilidadResultadoComponent } from './compatibilidad-resultado.component';
+import { NEVER, of, throwError } from 'rxjs';
+import {
+  CompatibilidadResultadoComponent,
+  MS_POR_PASO,
+  PASOS_ANALISIS,
+} from './compatibilidad-resultado.component';
 import {
   CompatibilidadService,
   EvaluacionCompatibilidad,
@@ -154,6 +158,46 @@ describe('CompatibilidadResultadoComponent', () => {
     component.cargando.set(true);
     fixture.detectChanges();
     expect(html().textContent).toContain('Analizando con inteligencia artificial');
+  });
+
+  describe('AI analysis', () => {
+    afterEach(() => vi.useRealTimers());
+
+    it('should rotate what the AI is analyzing and stop on the last step', async () => {
+      vi.useFakeTimers();
+      compatibilidad['evaluar'].mockReturnValue(NEVER);
+      await crear();
+      const paso = () => html().querySelector('.cr-ia-paso')?.textContent?.trim();
+
+      expect(html().querySelector('.cr-orbe app-logo-ia')).not.toBeNull();
+      expect(paso()).toBe(PASOS_ANALISIS[0]);
+
+      vi.advanceTimersByTime(MS_POR_PASO);
+      fixture.detectChanges();
+      expect(paso()).toBe(PASOS_ANALISIS[1]);
+
+      vi.advanceTimersByTime(MS_POR_PASO * PASOS_ANALISIS.length * 2);
+      fixture.detectChanges();
+      expect(paso()).toBe(PASOS_ANALISIS.at(-1));
+      expect(vi.getTimerCount()).toBe(0);
+    });
+
+    it('should stop rotating once the result arrives', async () => {
+      vi.useFakeTimers();
+      await crear();
+      expect(vi.getTimerCount()).toBe(0);
+      expect(html().querySelector('.cr-sello-ia')?.textContent).toContain(
+        'Análisis generado por IA',
+      );
+    });
+
+    it('should not rotate messages when opening a saved study', async () => {
+      vi.useFakeTimers();
+      compatibilidad['obtenerResultado'].mockReturnValue(NEVER);
+      await crear({ idSolicitud: '5' });
+      expect(html().querySelector('.cr-ia-paso')).toBeNull();
+      expect(vi.getTimerCount()).toBe(0);
+    });
   });
 
   it('should navigate back to the marketplace or start a new evaluation', async () => {

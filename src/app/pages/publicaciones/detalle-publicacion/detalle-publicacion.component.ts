@@ -159,9 +159,4 @@ export class DetallePublicacionComponent {
       },
     });
   }
-
-  chatearConVendedor(): void {
-    // implementar chat
-    console.log('Chatear con el vendedor — pendiente');
-  }
 }

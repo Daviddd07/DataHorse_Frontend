@@ -107,13 +107,11 @@ input {
 }
 
 /* Bloque de accesibilidad para las transiciones */
-@media (prefers-reduced-motion: no-preference) {
-  input {
-    transition:
-      border-color 0.2s ease,
-      background-color 0.2s ease,
-      box-shadow 0.2s ease;
-  }
+input {
+  transition:
+    border-color 0.2s ease,
+    background-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 /* Contenedor del ojito */
@@ -189,14 +187,12 @@ input.invalido:focus {
 }
 
 /* Bloque para respetar la accesibilidad y especificar propiedades */
-@media (prefers-reduced-motion: no-preference) {
-  .ver {
-    /* Cambiamos 'all' por lo que suele cambiar en estos botones */
-    transition:
-      background-color 0.2s ease,
-      color 0.2s ease,
-      transform 0.1s ease;
-  }
+.ver {
+  /* Cambiamos 'all' por lo que suele cambiar en estos botones */
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    transform 0.1s ease;
 }
 
 .ver:hover {
@@ -297,14 +293,12 @@ input.invalido:focus {
 }
 
 /* Bloque de accesibilidad */
-@media (prefers-reduced-motion: no-preference) {
-  .primario {
-    /* Cambiamos 'all' por las propiedades típicas de un botón primario */
-    transition:
-      background-color 0.2s ease,
-      box-shadow 0.2s ease,
-      transform 0.2s ease;
-  }
+.primario {
+  /* Cambiamos 'all' por las propiedades típicas de un botón primario */
+  transition:
+    background-color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
 }
 
 .primario:hover:not(:disabled) {

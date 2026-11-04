@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router, provideRouter } from '@angular/router';
-import { of, throwError } from 'rxjs';
+import { NEVER, of, throwError } from 'rxjs';
 import { ElegirPanelComponent } from './elegir-panel.component';
 import { AuthService } from '../../../Services/auth.service';
 
@@ -43,6 +43,14 @@ describe('ElegirPanelComponent', () => {
     expect(component.nombreUsuario()).toBe('');
     expect(texto()).toContain('Hola');
     expect(texto()).not.toContain('Hola,');
+  });
+
+  it('should show a skeleton instead of the name while it loads', async () => {
+    auth['me'].mockReturnValue(NEVER);
+    await crear();
+    expect(component.cargandoNombre()).toBe(true);
+    expect(fixture.nativeElement.querySelector('.nombre-esqueleto')).not.toBeNull();
+    expect(fixture.nativeElement.querySelector('h1').getAttribute('aria-busy')).toBe('true');
   });
 
   it('should navigate to the panel or the marketplace', async () => {

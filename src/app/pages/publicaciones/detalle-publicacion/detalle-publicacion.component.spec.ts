@@ -184,11 +184,16 @@ describe('DetallePublicacionComponent', () => {
     });
   });
 
-  it('volver and chatearConVendedor', async () => {
+  it('volver should go back to the marketplace', async () => {
     await crear();
     component.volver();
     expect(router.navigate).toHaveBeenCalledWith(['/marketplace']);
-    component.chatearConVendedor();
-    expect(console.log).toHaveBeenCalled();
+  });
+
+  it('the chat with the seller should be disabled until it exists', async () => {
+    await crear();
+    const chat = fixture.nativeElement.querySelector('.dp-btn-chat') as HTMLButtonElement;
+    expect(chat.disabled).toBe(true);
+    expect(chat.textContent).toContain('Próximamente');
   });
 });

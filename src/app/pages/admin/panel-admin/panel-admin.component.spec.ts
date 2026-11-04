@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router, provideRouter } from '@angular/router';
-import { of, throwError } from 'rxjs';
+import { NEVER, of, throwError } from 'rxjs';
 import { PanelAdminComponent } from './panel-admin.component';
 import { AuthService } from '../../../Services/auth.service';
 import { AdminService, ResumenAdmin, UsuarioAdmin } from '../../../Services/admin.service';
@@ -92,14 +92,71 @@ describe('PanelAdminComponent', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    auth = { logout: vi.fn().mockReturnValue(of({})) };
+    auth = {
+      logout: vi.fn().mockReturnValue(of({})),
+      me: vi.fn().mockReturnValue(of({ id: 14, correo: 'admin@correo.com', nombre: 'data horse' })),
+    };
     admin = {
       obtenerResumen: vi.fn().mockReturnValue(of(RESUMEN)),
       listarUsuarios: vi.fn().mockReturnValue(of(USUARIOS)),
     };
   });
 
+  describe('sidebar', () => {
+    const itemsBarra = () =>
+      Array.from(html().querySelectorAll('.sidebar [data-dock-item]')).map((b) =>
+        b.getAttribute('aria-label'),
+      );
+
+    it('should use the same dock sidebar as the marketplace', async () => {
+      await crear();
+      expect(itemsBarra()).toEqual([
+        'Panel de administración',
+        'Marketplace',
+        'Cerrar sesión',
+        'Mi cuenta (próximamente)',
+      ]);
+      expect(html().querySelector('.sidebar .icon-btn.active')?.getAttribute('aria-label')).toBe(
+        'Panel de administración',
+      );
+    });
+
+    it('should show the admin initial in the avatar', async () => {
+      await crear();
+      expect(html().querySelector('.avatar-inicial')?.textContent?.trim()).toBe('D');
+      expect(html().querySelector('.sidebar-avatar')?.getAttribute('aria-disabled')).toBe('true');
+    });
+
+    it('should navigate to the marketplace from the sidebar', async () => {
+      await crear();
+      (html().querySelector('[aria-label="Marketplace"]') as HTMLButtonElement).click();
+      expect(router.navigate).toHaveBeenCalledWith(['/marketplace']);
+    });
+  });
+
   describe('loading', () => {
+    it('should show a skeleton of the panel while loading', async () => {
+      admin['obtenerResumen'].mockReturnValue(NEVER);
+      await crear();
+      const esqueleto = html().querySelector('.admin-esqueleto');
+      expect(esqueleto?.getAttribute('role')).toBe('status');
+      expect(esqueleto?.querySelectorAll('.tarjeta').length).toBe(4);
+      expect(esqueleto?.querySelectorAll('.razas li').length).toBe(
+        component.esqueletoBarras.length,
+      );
+      expect(esqueleto?.querySelectorAll('.sk-fila').length).toBe(component.esqueletoFilas.length);
+      expect(html().querySelector('table')).toBeNull();
+    });
+
+    it('should show the final numbers once loaded', async () => {
+      await crear();
+      expect(html().querySelector('.admin-esqueleto')).toBeNull();
+      const numeros = [...html().querySelectorAll('.tarjeta strong')].map((e) => e.textContent);
+      expect(numeros).toEqual(['3', '2', '6', '5']);
+      const totales = [...html().querySelectorAll('.raza-total')].map((e) => e.textContent);
+      expect(totales).toEqual(['4', '2', '0']);
+    });
+
     it('should show the totals, breeds and users', async () => {
       await crear();
       expect(component.cargando()).toBe(false);

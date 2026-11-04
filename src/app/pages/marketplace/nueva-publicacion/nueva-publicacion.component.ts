@@ -108,8 +108,6 @@ export class NuevaPublicacionComponent {
   constructor() {
     this.caballoService.listarRazas().subscribe({
       next: (razas) => {
-        console.log('RAZAS:', razas);
-
         this.razas.set(razas);
       },
 
@@ -197,8 +195,6 @@ export class NuevaPublicacionComponent {
     }
 
     this.precio.set(numero);
-
-    console.log('PRECIO ACTUAL:', numero);
   }
 
   // ======================================================
@@ -254,10 +250,6 @@ export class NuevaPublicacionComponent {
   // ======================================================
 
   guardar(): void {
-    console.log('ENTRÓ A GUARDAR');
-
-    console.log('PRECIO ANTES DE GUARDAR:', this.precio());
-
     this.error.set('');
 
     // ==================================================
@@ -375,8 +367,6 @@ export class NuevaPublicacionComponent {
       datos.id_raza = this.idRazaSeleccionada()!;
     }
 
-    console.log('JSON FINAL A ENVIAR:', datos);
-
     // ==================================================
     // ENVIAR
     // ==================================================
@@ -385,8 +375,6 @@ export class NuevaPublicacionComponent {
 
     this.caballoService.crear(datos).subscribe({
       next: (respuesta) => {
-        console.log('PUBLICACIÓN GUARDADA:', respuesta);
-
         const fotos = this.fotosSeleccionadas();
 
         // Si es yegua, NO redirigir: mostrar banner de éxito

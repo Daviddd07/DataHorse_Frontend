@@ -129,12 +129,10 @@
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .nombre-de-tu-clase-aqui {
-    transition:
-      transform 0.3s ease,
-      box-shadow 0.3s ease;
-  }
+.nombre-de-tu-clase-aqui {
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
 }
 
 .dp-back-btn svg {
@@ -142,10 +140,8 @@
   height: 22px;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .tu-clase-aqui {
-    transition: transform 0.3s ease;
-  }
+.tu-clase-aqui {
+  transition: transform 0.3s ease;
 }
 
 .dp-back-btn:hover {
@@ -280,10 +276,8 @@
   cursor: pointer;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .mi-elemento {
-    transition: transform 0.2s ease;
-  }
+.mi-elemento {
+  transition: transform 0.2s ease;
 }
 
 .dp-miniatura:hover {
@@ -435,12 +429,10 @@
 }
 
 /* El bloque de la transición, respetando la accesibilidad */
-@media (prefers-reduced-motion: no-preference) {
-  .dp-btn {
-    transition:
-      background-color 0.2s ease,
-      transform 0.2s ease;
-  }
+.dp-btn {
+  transition:
+    background-color 0.2s ease,
+    transform 0.2s ease;
 }
 
 .dp-btn:hover {
@@ -554,12 +546,32 @@
 /* =========================================
    ANIMACIONES CON ACCESIBILIDAD
    ========================================= */
-@media (prefers-reduced-motion: no-preference) {
-  .dp-galeria {
-    animation: slideInLeft 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  }
+.dp-galeria {
+  animation: slideInLeft 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
 
-  .dp-info {
-    animation: slideInRight 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  }
+.dp-info {
+  animation: slideInRight 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Chat con el vendedor: aún no existe */
+.dp-btn-chat:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+  transform: none;
+}
+
+.dp-btn-chat:disabled::after {
+  display: none;
+}
+
+.pronto {
+  margin-left: 8px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.18);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  vertical-align: middle;
 }
