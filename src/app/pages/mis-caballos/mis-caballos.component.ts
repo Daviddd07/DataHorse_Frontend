@@ -8,6 +8,8 @@ import { AuthService } from '../../Services/auth.service';
 
 import { CaballoService, CaballoMio } from '../../Services/caballo.service';
 
+import { NotificacionesService } from '../../Services/notificaciones.service';
+
 import { environment } from '../../../environments/environment';
 
 interface CaballoVista extends CaballoMio {
@@ -30,6 +32,9 @@ export class MisCaballosComponent {
   private readonly caballoService = inject(CaballoService);
 
   private readonly router = inject(Router);
+
+  // Mensajes sin leer, para el menú de la cuenta
+  readonly noLeidos = inject(NotificacionesService).noLeidos;
 
   nombreUsuario = signal('');
 
@@ -161,6 +166,11 @@ export class MisCaballosComponent {
   irAMisCaballos(): void {
     this.menuAbierto.set(false);
     void this.router.navigate(['/mis-caballos']);
+  }
+
+  irAMensajes(): void {
+    this.menuAbierto.set(false);
+    void this.router.navigate(['/conversaciones']);
   }
 
   cerrarSesion(): void {

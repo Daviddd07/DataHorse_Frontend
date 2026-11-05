@@ -4,6 +4,8 @@ import { of, throwError } from 'rxjs';
 import { MisCaballosComponent } from './mis-caballos.component';
 import { AuthService } from '../../Services/auth.service';
 import { CaballoMio, CaballoService } from '../../Services/caballo.service';
+import { NotificacionesService } from '../../Services/notificaciones.service';
+import { signal } from '@angular/core';
 
 const caballo = (c: Partial<CaballoMio>): CaballoMio => ({
   id_caballo: 1,
@@ -31,11 +33,15 @@ describe('MisCaballosComponent', () => {
   let auth: Record<string, ReturnType<typeof vi.fn>>;
   let caballos: Record<string, ReturnType<typeof vi.fn>>;
 
+  const notificaciones = { noLeidos: signal(0) };
+
   const crear = async () => {
+    notificaciones.noLeidos.set(0);
     await TestBed.configureTestingModule({
       imports: [MisCaballosComponent],
       providers: [
         provideRouter([]),
+        { provide: NotificacionesService, useValue: notificaciones },
         { provide: AuthService, useValue: auth },
         { provide: CaballoService, useValue: caballos },
       ],
@@ -154,6 +160,18 @@ describe('MisCaballosComponent', () => {
       component.irAMisCaballos();
       expect(component.menuAbierto()).toBe(false);
       expect(router.navigate).toHaveBeenCalledWith(['/mis-caballos']);
+    });
+
+    it('should open the messages and show the unread count', () => {
+      notificaciones.noLeidos.set(2);
+      component.toggleMenu();
+      fixture.detectChanges();
+      expect(fixture.nativeElement.querySelector('.dh-avatar-aviso').textContent).toBe('2');
+      expect(fixture.nativeElement.querySelector('.dh-menu-badge').textContent).toBe('2');
+
+      component.irAMensajes();
+      expect(component.menuAbierto()).toBe(false);
+      expect(router.navigate).toHaveBeenCalledWith(['/conversaciones']);
     });
 
     it('should log out on success and on error', () => {

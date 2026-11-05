@@ -5,6 +5,9 @@ export const environment = {
   apiUrl: 'http://localhost:8000',
   uploadsUrl: 'http://localhost:8000',
 
+  // WebSocket del chat (mismo servidor que la API)
+  wsUrl: 'ws://localhost:8000',
+
   // Puedes dejar este mismo Client ID si configuras Google, o crear uno nuevo
   googleClientId: '942711166900-mj0cag572gl4fdhh22b5u51qju6bc80t.apps.googleusercontent.com',
 

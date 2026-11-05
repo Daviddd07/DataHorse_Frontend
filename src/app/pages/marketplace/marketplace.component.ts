@@ -10,6 +10,8 @@ import { CaballoService, Publicacion } from '../../Services/caballo.service';
 
 import { LogService } from '../../Services/log.service';
 
+import { NotificacionesService } from '../../Services/notificaciones.service';
+
 import { environment } from '../../../environments/environment';
 
 import { CompatibilidadSelectorComponent } from './compatibilidad/compatibilidad-selector.component';
@@ -85,6 +87,9 @@ export class MarketplaceComponent {
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
   private readonly log = inject(LogService);
+
+  // Contador de mensajes sin leer (icono de Mensajes y menú de la cuenta)
+  readonly noLeidos = inject(NotificacionesService).noLeidos;
 
   nombreUsuario = signal('');
 
@@ -512,6 +517,11 @@ export class MarketplaceComponent {
   irAMisCaballos(): void {
     this.menuAbierto.set(false);
     void this.router.navigate(['/mis-caballos']);
+  }
+
+  irAMensajes(): void {
+    this.menuAbierto.set(false);
+    void this.router.navigate(['/conversaciones']);
   }
 
   irAlPanelAdmin(): void {

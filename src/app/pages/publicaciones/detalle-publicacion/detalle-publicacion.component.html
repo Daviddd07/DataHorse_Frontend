@@ -223,10 +223,11 @@
           </button>
 
           <button
+            *ngIf="!p.es_mia"
             type="button"
             class="dp-btn dp-btn-chat"
-            disabled
-            title="El chat con el vendedor estará disponible pronto"
+            [disabled]="abriendoChat()"
+            (click)="chatearConVendedor()"
           >
             <svg
               viewBox="0 0 24 24"
@@ -241,10 +242,10 @@
             >
               <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
             </svg>
-            Chatear con el vendedor
-            <span class="pronto">Próximamente</span>
+            {{ abriendoChat() ? 'Abriendo chat…' : 'Chatear con el vendedor' }}
           </button>
         </div>
+        <p class="dp-chat-error" role="alert" *ngIf="errorChat()">{{ errorChat() }}</p>
       </section>
     </div>
   </ng-container>

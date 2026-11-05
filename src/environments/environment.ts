@@ -11,6 +11,9 @@ export const environment = {
 
   uploadsUrl: `http://${host}:8000`,
 
+  // WebSocket del chat (mismo servidor que la API)
+  wsUrl: `ws://${host}:8000`,
+
   googleClientId: '942711166900-mj0cag572gl4fdhh22b5u51qju6bc80t.apps.googleusercontent.com',
 
   // Nivel mínimo de logs que se envían al backend: debug | info | warn | error

@@ -1,0 +1,141 @@
+<main class="cr cv">
+  <!-- BARRA SUPERIOR -->
+  <div class="cr-top">
+    <button type="button" class="cr-volver" (click)="volverAlMarketplace()">
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+      >
+        <polyline points="15 18 9 12 15 6"></polyline>
+      </svg>
+      Marketplace
+    </button>
+  </div>
+
+  <div class="cr-encabezado">
+    <h1 class="cr-titulo">Mensajes</h1>
+    <p class="cr-muted">Conversaciones con otros propietarios sobre sus publicaciones.</p>
+  </div>
+
+  <div class="cv-layout" [class.cv-con-activa]="idActiva() !== null">
+    <!-- LISTA DE CONVERSACIONES -->
+    <aside class="cr-panel cv-lista">
+      @if (cargandoLista()) {
+        <p class="cr-muted">Cargando conversaciones…</p>
+      } @else if (errorLista()) {
+        <div role="alert">
+          <p>{{ errorLista() }}</p>
+          <button type="button" class="cr-secundario" (click)="cargarLista()">Reintentar</button>
+        </div>
+      } @else if (lista().length === 0) {
+        <p class="cr-muted">
+          Aún no tienes conversaciones. Abre una publicación y pulsa «Chatear con el vendedor».
+        </p>
+      } @else {
+        <ul>
+          @for (c of lista(); track c.id_conversacion) {
+            <li>
+              <button
+                type="button"
+                class="cv-item"
+                [class.activa]="c.id_conversacion === idActiva()"
+                (click)="abrir(c)"
+              >
+                <span class="cv-item-nombre">
+                  {{ c.otro_usuario.nombre }}
+                  @if (c.no_leidos > 0) {
+                    <span class="cv-no-leidos" [attr.aria-label]="c.no_leidos + ' sin leer'">
+                      {{ c.no_leidos }}
+                    </span>
+                  }
+                </span>
+                <span class="cv-item-titulo">
+                  {{ c.soy_vendedor ? 'Interesado en' : 'Vendedor de' }} {{ c.titulo_publicacion }}
+                </span>
+                <span class="cr-muted cv-item-ultimo">
+                  @if (c.ultimo_mensaje) {
+                    {{ c.ultimo_mensaje_es_mio ? 'Tú: ' : '' }}{{ c.ultimo_mensaje }}
+                  } @else {
+                    Sin mensajes todavía
+                  }
+                </span>
+              </button>
+            </li>
+          }
+        </ul>
+      }
+    </aside>
+
+    <!-- CONVERSACIÓN ACTIVA -->
+    <section class="cr-panel cv-chat">
+      @if (idActiva() === null) {
+        <p class="cr-muted cv-vacio">Elige una conversación para ver los mensajes.</p>
+      } @else if (cargandoMensajes()) {
+        <p class="cr-muted cv-vacio">Cargando mensajes…</p>
+      } @else if (errorMensajes()) {
+        <div class="cv-vacio" role="alert">
+          <p>{{ errorMensajes() }}</p>
+          <button type="button" class="cr-secundario" (click)="volverALista()">Volver</button>
+        </div>
+      } @else if (activa(); as a) {
+        <header class="cv-cabecera">
+          <button type="button" class="cv-atras" (click)="volverALista()" aria-label="Volver a la lista">
+            ‹
+          </button>
+          <div>
+            <h2>{{ a.otro_usuario.nombre }}</h2>
+            <p class="cr-muted">{{ a.titulo_publicacion }}</p>
+          </div>
+          <span [class]="'cv-estado cv-estado-' + chat.estado()">
+            @switch (chat.estado()) {
+              @case ('conectado') { En línea }
+              @case ('conectando') { Conectando… }
+              @case ('reconectando') { Reconectando… }
+              @case ('rechazado') { Desconectado }
+              @default { Desconectado }
+            }
+          </span>
+        </header>
+
+        @if (chat.estado() === 'rechazado') {
+          <div class="cv-aviso" role="alert">
+            {{ chat.motivoRechazo() }}
+            <button type="button" class="cr-secundario" (click)="reconectar()">Reintentar</button>
+          </div>
+        }
+
+        <div class="cv-mensajes" #contenedorMensajes aria-live="polite">
+          @for (m of mensajes(); track m.id_mensaje) {
+            <div class="cv-burbuja" [class.mia]="esMio(m)">
+              <p>{{ m.contenido }}</p>
+              <time>{{ m.fecha_envio | date: 'dd/MM/yyyy, HH:mm' }}</time>
+            </div>
+          } @empty {
+            <p class="cr-muted cv-vacio">Escribe el primer mensaje.</p>
+          }
+        </div>
+
+        <form class="cv-envio" (submit)="$event.preventDefault(); enviar()">
+          <textarea
+            rows="2"
+            placeholder="Escribe un mensaje…"
+            aria-label="Mensaje"
+            [value]="texto()"
+            [attr.maxlength]="longitudMaxima"
+            (input)="escribir($event)"
+            (keydown)="alPresionarTecla($event)"
+          ></textarea>
+          <button type="submit" class="cr-primario" [disabled]="!puedeEnviar()">Enviar</button>
+        </form>
+        @if (errorEnvio()) {
+          <p class="cv-error-envio" role="alert">{{ errorEnvio() }}</p>
+        }
+      }
+    </section>
+  </div>
+</main>

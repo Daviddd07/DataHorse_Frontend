@@ -1,0 +1,269 @@
+/* Lo propio del chat; el resto viene de compatibilidad-resultado.component.css */
+.cv {
+  max-width: 1100px;
+}
+
+.cv-layout {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 18px;
+  min-height: 0;
+}
+
+/* ---------- Lista ---------- */
+.cv-lista {
+  padding: 14px;
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+.cv-lista ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.cv-item {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 12px 14px;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text-main);
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.cv-item:hover {
+  border-color: var(--border-glass);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.cv-item.activa {
+  border-color: var(--accent-gold);
+  background: rgba(230, 168, 23, 0.1);
+}
+
+.cv-item:focus-visible {
+  outline: 2px solid var(--accent-gold);
+  outline-offset: 2px;
+}
+
+.cv-item-nombre {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-weight: 700;
+}
+
+.cv-no-leidos {
+  min-width: 20px;
+  padding: 1px 7px;
+  border-radius: 999px;
+  background: var(--accent-gold);
+  color: #1a1a1a;
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-align: center;
+}
+
+.cv-item-titulo {
+  font-size: 0.82rem;
+  color: var(--accent-gold);
+}
+
+.cv-item-ultimo {
+  font-size: 0.85rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ---------- Chat ---------- */
+.cv-chat {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px 18px;
+  height: 70vh;
+  min-height: 420px;
+  box-sizing: border-box;
+}
+
+.cv-vacio {
+  margin: auto;
+  text-align: center;
+}
+
+.cv-cabecera {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border-glass);
+}
+
+.cv-cabecera > div {
+  flex: 1;
+  min-width: 0;
+}
+
+.cv-cabecera h2 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.cv-cabecera p {
+  margin: 2px 0 0;
+  font-size: 0.85rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cv-atras {
+  display: none;
+  padding: 0 10px;
+  border: none;
+  background: none;
+  color: var(--text-main);
+  font-size: 1.8rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.cv-estado {
+  flex-shrink: 0;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-muted);
+}
+
+.cv-estado-conectado {
+  background: rgba(74, 222, 128, 0.15);
+  color: var(--nivel-alto);
+}
+
+.cv-estado-reconectando,
+.cv-estado-conectando {
+  background: rgba(230, 168, 23, 0.15);
+  color: var(--accent-gold);
+}
+
+.cv-estado-rechazado {
+  background: rgba(255, 107, 107, 0.15);
+  color: var(--nivel-bajo);
+}
+
+.cv-aviso {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: rgba(255, 107, 107, 0.12);
+  font-size: 0.9rem;
+}
+
+.cv-mensajes {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.cv-burbuja {
+  align-self: flex-start;
+  max-width: 75%;
+  padding: 9px 13px;
+  border-radius: 14px 14px 14px 4px;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.cv-burbuja.mia {
+  align-self: flex-end;
+  border-radius: 14px 14px 4px 14px;
+  background: var(--accent-leather);
+}
+
+.cv-burbuja p {
+  margin: 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.cv-burbuja time {
+  display: block;
+  margin-top: 4px;
+  font-size: 0.7rem;
+  text-align: right;
+  color: var(--text-muted);
+}
+
+.cv-envio {
+  display: flex;
+  gap: 10px;
+  align-items: flex-end;
+}
+
+.cv-envio textarea {
+  flex: 1;
+  resize: none;
+  padding: 10px 12px;
+  border: 1px solid var(--border-glass);
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.25);
+  color: var(--text-main);
+  font-family: inherit;
+  font-size: 0.95rem;
+}
+
+.cv-envio textarea:focus {
+  outline: none;
+  border-color: var(--accent-gold);
+}
+
+.cv-envio button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.cv-error-envio {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--nivel-bajo);
+}
+
+/* En pantallas pequeñas se ve la lista o el chat, no los dos */
+@media (max-width: 760px) {
+  .cv-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .cv-layout.cv-con-activa .cv-lista,
+  .cv-layout:not(.cv-con-activa) .cv-chat {
+    display: none;
+  }
+
+  .cv-atras {
+    display: block;
+  }
+
+  .cv-burbuja {
+    max-width: 88%;
+  }
+}

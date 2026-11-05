@@ -1,4 +1,5 @@
-import { Provider } from '@angular/core';
+import { Provider, signal } from '@angular/core';
+import { NotificacionesService } from '../../Services/notificaciones.service';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, convertToParamMap, provideRouter } from '@angular/router';
 import { NEVER, of, throwError } from 'rxjs';
@@ -97,11 +98,15 @@ describe('MarketplaceComponent', () => {
     obtenerCupo: vi.fn().mockReturnValue(of({ limite: 5, usadas: 1, restantes: 4 })),
   };
 
+  const notificaciones = { noLeidos: signal(0) };
+
   const crear = async (extraProviders: Provider[] = []) => {
+    notificaciones.noLeidos.set(0);
     await TestBed.configureTestingModule({
       imports: [MarketplaceComponent],
       providers: [
         provideRouter([]),
+        { provide: NotificacionesService, useValue: notificaciones },
         { provide: LogService, useValue: logMock },
         { provide: AuthService, useValue: auth },
         { provide: CaballoService, useValue: caballos },
@@ -524,11 +529,43 @@ describe('MarketplaceComponent', () => {
       ) as HTMLButtonElement[];
       expect(pronto.map((b) => b.textContent?.replace('Próximamente', '').trim())).toEqual([
         'Mi cuenta',
-        'Mensajes',
         'Pedigrí y documentos',
         'Configuración',
       ]);
       expect(pronto.every((b) => b.disabled && b.textContent?.includes('Próximamente'))).toBe(true);
+    });
+
+    it('should open the messages from the sidebar and from the account menu', () => {
+      botonLateral('Mensajes')?.click();
+      expect(router.navigate).toHaveBeenCalledWith(['/conversaciones']);
+
+      component.menuAbierto.set(true);
+      fixture.detectChanges();
+      const opcion = (
+        Array.from(fixture.nativeElement.querySelectorAll('.user-menu-list button')) as HTMLButtonElement[]
+      ).find((b) => b.textContent?.includes('Mensajes'));
+      expect(opcion?.disabled).toBe(false);
+      opcion?.click();
+      expect(component.menuAbierto()).toBe(false);
+      expect(router.navigate).toHaveBeenCalledTimes(2);
+    });
+
+    it('should show how many messages are unread', () => {
+      expect(fixture.nativeElement.querySelector('.dock-badge')).toBeNull();
+
+      notificaciones.noLeidos.set(3);
+      component.menuAbierto.set(true);
+      fixture.detectChanges();
+
+      expect(botonLateral('Mensajes (3 sin leer)')?.querySelector('.dock-badge')?.textContent).toBe('3');
+      const opcion = (
+        Array.from(fixture.nativeElement.querySelectorAll('.user-menu-list button')) as HTMLButtonElement[]
+      ).find((b) => b.textContent?.includes('Mensajes'));
+      expect(opcion?.querySelector('.menu-badge')?.textContent).toBe('3');
+
+      notificaciones.noLeidos.set(150);
+      fixture.detectChanges();
+      expect(fixture.nativeElement.querySelector('.dock-badge').textContent).toBe('99+');
     });
 
     it('should show the Pedigrí tab as coming soon and not selectable', () => {

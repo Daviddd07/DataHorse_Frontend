@@ -554,7 +554,13 @@
   animation: slideInRight 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-/* Chat con el vendedor: aún no existe */
+.dp-chat-error {
+  margin: 10px 0 0;
+  font-size: 0.9rem;
+  color: #ff6b6b;
+}
+
+/* Chat con el vendedor: mientras se abre la conversación */
 .dp-btn-chat:disabled {
   cursor: not-allowed;
   opacity: 0.6;

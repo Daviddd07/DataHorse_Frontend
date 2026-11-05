@@ -95,6 +95,28 @@ export const routes: Routes = [
   },
 
   {
+    path: 'conversaciones',
+
+    loadComponent: () =>
+      import('./pages/conversaciones/conversaciones.component').then(
+        (m) => m.ConversacionesComponent,
+      ),
+
+    canActivate: [authGuard],
+  },
+
+  {
+    path: 'conversaciones/:id',
+
+    loadComponent: () =>
+      import('./pages/conversaciones/conversaciones.component').then(
+        (m) => m.ConversacionesComponent,
+      ),
+
+    canActivate: [authGuard],
+  },
+
+  {
     path: 'compatibilidad/mis-resultados',
 
     loadComponent: () =>

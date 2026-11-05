@@ -104,6 +104,30 @@
         </svg>
       </button>
 
+      <!-- Globo de chat: mensajes, con el número de mensajes sin leer -->
+      <button
+        type="button"
+        data-dock-item
+        [attr.aria-label]="noLeidos() > 0 ? 'Mensajes (' + noLeidos() + ' sin leer)' : 'Mensajes'"
+        class="icon-btn"
+        (click)="irAMensajes()"
+      >
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+        </svg>
+        @if (noLeidos() > 0) {
+          <span class="dock-badge" aria-hidden="true">{{ noLeidos() > 99 ? '99+' : noLeidos() }}</span>
+        }
+      </button>
+
       @if (esAdmin()) {
         <span class="sidebar-separador" aria-hidden="true"></span>
 
@@ -279,7 +303,7 @@
                 </button>
               </li>
               <li>
-                <button type="button" class="menu-pronto" disabled>
+                <button type="button" (click)="irAMensajes()">
                   <svg
                     viewBox="0 0 24 24"
                     fill="none"
@@ -291,7 +315,9 @@
                     <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
                   </svg>
                   Mensajes
-                  <span class="pronto">Próximamente</span>
+                  @if (noLeidos() > 0) {
+                    <span class="menu-badge">{{ noLeidos() }}</span>
+                  }
                 </button>
               </li>
               <li>

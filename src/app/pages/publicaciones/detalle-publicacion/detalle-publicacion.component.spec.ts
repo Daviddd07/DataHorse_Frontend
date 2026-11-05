@@ -3,6 +3,7 @@ import { ActivatedRoute, Router, convertToParamMap, provideRouter } from '@angul
 import { of, throwError } from 'rxjs';
 import { DetallePublicacionComponent } from './detalle-publicacion.component';
 import { CaballoService, PublicacionDetalle } from '../../../Services/caballo.service';
+import { ConversacionService } from '../../../Services/conversacion.service';
 
 const haceTiempo = (anios: number, meses: number) => {
   const d = new Date();
@@ -49,6 +50,7 @@ describe('DetallePublicacionComponent', () => {
   let component: DetallePublicacionComponent;
   let router: Router;
   let caballos: Record<string, ReturnType<typeof vi.fn>>;
+  let conversaciones: Record<string, ReturnType<typeof vi.fn>>;
 
   const crear = async (id: string | null = '3') => {
     await TestBed.configureTestingModule({
@@ -56,6 +58,7 @@ describe('DetallePublicacionComponent', () => {
       providers: [
         provideRouter([]),
         { provide: CaballoService, useValue: caballos },
+        { provide: ConversacionService, useValue: conversaciones },
         {
           provide: ActivatedRoute,
           useValue: { snapshot: { paramMap: convertToParamMap(id ? { id } : {}) } },
@@ -76,6 +79,9 @@ describe('DetallePublicacionComponent', () => {
       obtenerPublicacion: vi.fn().mockReturnValue(of(detalle())),
       agregarFavorito: vi.fn().mockReturnValue(of({})),
       quitarFavorito: vi.fn().mockReturnValue(of({})),
+    };
+    conversaciones = {
+      abrir: vi.fn().mockReturnValue(of({ id_conversacion: 12 })),
     };
   });
 
@@ -190,10 +196,43 @@ describe('DetallePublicacionComponent', () => {
     expect(router.navigate).toHaveBeenCalledWith(['/marketplace']);
   });
 
-  it('the chat with the seller should be disabled until it exists', async () => {
+  it('the chat button should open the conversation with the seller', async () => {
     await crear();
     const chat = fixture.nativeElement.querySelector('.dp-btn-chat') as HTMLButtonElement;
-    expect(chat.disabled).toBe(true);
-    expect(chat.textContent).toContain('Próximamente');
+    expect(chat.disabled).toBe(false);
+    expect(chat.textContent).toContain('Chatear con el vendedor');
+
+    chat.click();
+
+    expect(conversaciones['abrir']).toHaveBeenCalledWith(3);
+    expect(router.navigate).toHaveBeenCalledWith(['/conversaciones', 12]);
+    expect(component.abriendoChat()).toBe(false);
+  });
+
+  it('the chat button should not appear on my own publication', async () => {
+    caballos['obtenerPublicacion'].mockReturnValue(of(detalle({ es_mia: true })));
+    await crear();
+    expect(fixture.nativeElement.querySelector('.dp-btn-chat')).toBeNull();
+    component.chatearConVendedor();
+    expect(conversaciones['abrir']).not.toHaveBeenCalled();
+  });
+
+  it('should show an error if the chat cannot be opened', async () => {
+    conversaciones['abrir'].mockReturnValue(throwError(() => new Error('500')));
+    await crear();
+    component.chatearConVendedor();
+    fixture.detectChanges();
+    expect(component.errorChat()).toBe('No se pudo abrir el chat. Intenta de nuevo.');
+    expect(fixture.nativeElement.querySelector('.dp-chat-error').textContent).toContain(
+      'No se pudo abrir el chat',
+    );
+    expect(router.navigate).not.toHaveBeenCalled();
+  });
+
+  it('should ignore a second click while the chat is opening', async () => {
+    await crear();
+    component.abriendoChat.set(true);
+    component.chatearConVendedor();
+    expect(conversaciones['abrir']).not.toHaveBeenCalled();
   });
 });

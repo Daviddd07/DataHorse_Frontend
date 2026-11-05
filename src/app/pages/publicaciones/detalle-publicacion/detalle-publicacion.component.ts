@@ -6,6 +6,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 
 import { CaballoService, PublicacionDetalle } from '../../../Services/caballo.service';
 
+import { ConversacionService } from '../../../Services/conversacion.service';
+
 import { environment } from '../../../../environments/environment';
 
 @Component({
@@ -25,6 +27,12 @@ export class DetallePublicacionComponent {
   private readonly router = inject(Router);
 
   private readonly caballoService = inject(CaballoService);
+
+  private readonly conversacionService = inject(ConversacionService);
+
+  abriendoChat = signal(false);
+
+  errorChat = signal('');
 
   publicacion = signal<PublicacionDetalle | null>(null);
 
@@ -133,6 +141,30 @@ export class DetallePublicacionComponent {
     const actual = this.fotoActiva();
 
     this.fotoActiva.set(actual === p.fotos.length - 1 ? 0 : actual + 1);
+  }
+
+  // Abre (o reutiliza) la conversación con el vendedor y va al chat
+  chatearConVendedor(): void {
+    const p = this.publicacion();
+
+    if (!p || p.es_mia || this.abriendoChat()) {
+      return;
+    }
+
+    this.abriendoChat.set(true);
+    this.errorChat.set('');
+
+    this.conversacionService.abrir(p.id_publicacion).subscribe({
+      next: ({ id_conversacion }) => {
+        this.abriendoChat.set(false);
+        void this.router.navigate(['/conversaciones', id_conversacion]);
+      },
+
+      error: () => {
+        this.abriendoChat.set(false);
+        this.errorChat.set('No se pudo abrir el chat. Intenta de nuevo.');
+      },
+    });
   }
 
   toggleFavorito(): void {

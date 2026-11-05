@@ -27,6 +27,9 @@
             aria-label="Menú de usuario"
           >
             <span aria-hidden="true">{{ inicial() }}</span>
+            @if (noLeidos() > 0) {
+              <span class="dh-avatar-aviso" aria-hidden="true">{{ noLeidos() }}</span>
+            }
           </button>
 
           <div class="dh-user-menu" *ngIf="menuAbierto()">
@@ -41,7 +44,14 @@
               <li><button type="button" (click)="irAMisCaballos()">Mis caballos</button></li>
               <li><button type="button" (click)="cerrarMenu()">Mis publicaciones</button></li>
               <li><button type="button" (click)="cerrarMenu()">Favoritos</button></li>
-              <li><button type="button" (click)="cerrarMenu()">Mensajes</button></li>
+              <li>
+                <button type="button" (click)="irAMensajes()">
+                  Mensajes
+                  @if (noLeidos() > 0) {
+                    <span class="dh-menu-badge">{{ noLeidos() }}</span>
+                  }
+                </button>
+              </li>
               <li><button type="button" (click)="cerrarMenu()">Pedigrí y documentos</button></li>
               <li><button type="button" (click)="cerrarMenu()">Configuración</button></li>
             </ul>
