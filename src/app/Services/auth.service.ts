@@ -11,6 +11,7 @@ export interface UsuarioSesion {
   correo: string;
   nombre: string;
   es_admin?: boolean;
+  foto_perfil?: string | null; // ruta pública ('/uploads/perfiles/...')
 }
 
 export interface GoogleAuthResponse {

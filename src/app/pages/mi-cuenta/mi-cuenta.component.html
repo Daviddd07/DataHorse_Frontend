@@ -1,0 +1,424 @@
+<main class="mc">
+  <!-- BARRA SUPERIOR -->
+  <div class="mc-top">
+    <button type="button" class="mc-volver" (click)="volver()">
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+      >
+        <polyline points="15 18 9 12 15 6"></polyline>
+      </svg>
+      {{ perfil()?.es_admin ? 'Panel de administración' : 'Marketplace' }}
+    </button>
+  </div>
+
+  <div class="mc-grid">
+    <!-- ================= COLUMNA DEL PERFIL ================= -->
+    <aside class="mc-perfil" aria-labelledby="mc-nombre">
+      @if (cargandoPerfil()) {
+        <div class="mc-perfil-esqueleto" role="status" aria-label="Cargando perfil">
+          <span class="skeleton mc-avatar-esqueleto"></span>
+          <span class="skeleton mc-linea mc-linea-larga"></span>
+          <span class="skeleton mc-linea"></span>
+          <span class="skeleton mc-linea mc-linea-boton"></span>
+        </div>
+      } @else if (errorPerfil()) {
+        <div class="mc-error" role="alert">
+          <p>{{ errorPerfil() }}</p>
+          <button type="button" class="mc-btn" (click)="cargarPerfil()">Reintentar</button>
+        </div>
+      } @else if (perfil(); as p) {
+        <div class="mc-avatar mc-entra" [class.mc-avatar-con-foto]="urlFoto()">
+          @if (urlFoto(); as foto) {
+            <img class="mc-avatar-foto" [src]="foto" alt="" />
+          } @else {
+            <span aria-hidden="true">{{ inicial() }}</span>
+          }
+          @if (subiendoFoto()) {
+            <span
+              class="skeleton mc-avatar-cargando"
+              role="status"
+              aria-label="Guardando foto"
+            ></span>
+          }
+          <span class="mc-en-linea" aria-hidden="true"></span>
+
+          @if (!subiendoFoto()) {
+            <!-- Como en GitHub: al pasar el mouse aparece el botón para cambiar la foto -->
+            <button
+              type="button"
+              class="mc-avatar-cambiar"
+              (click)="selectorFoto.click()"
+              aria-label="Cambiar foto de perfil"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <path
+                  d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"
+                ></path>
+                <circle cx="12" cy="13" r="4"></circle>
+              </svg>
+              <span>Cambiar foto</span>
+            </button>
+          }
+        </div>
+        <input
+          #selectorFoto
+          type="file"
+          class="mc-oculto"
+          [accept]="tiposFoto"
+          (change)="elegirFoto($event)"
+          tabindex="-1"
+          aria-hidden="true"
+        />
+        @if (p.foto_perfil && !subiendoFoto()) {
+          <button type="button" class="mc-enlace mc-quitar-foto" (click)="quitarFoto()">
+            Quitar foto
+          </button>
+        }
+        @if (errorFoto()) {
+          <p class="mc-error-form" role="alert">{{ errorFoto() }}</p>
+        }
+
+        @if (!editando()) {
+          <div class="mc-entra" style="--i: 1">
+            <h1 id="mc-nombre" class="mc-nombre">{{ p.nombre }}</h1>
+            <p class="mc-correo">{{ p.correo }}</p>
+          </div>
+
+          <button
+            type="button"
+            class="mc-btn mc-btn-editar mc-entra"
+            style="--i: 2"
+            (click)="editarPerfil()"
+          >
+            Editar perfil
+          </button>
+
+          <ul class="mc-datos mc-entra" style="--i: 3">
+            <li>
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <path
+                  d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"
+                ></path>
+              </svg>
+              <span [class.mc-vacio-dato]="!p.telefono">{{ p.telefono || 'Sin teléfono' }}</span>
+            </li>
+            <li>
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                <circle cx="12" cy="10" r="3"></circle>
+              </svg>
+              <span [class.mc-vacio-dato]="!ubicacion()">{{ ubicacion() || 'Sin ubicación' }}</span>
+            </li>
+            @if (miembroDesde()) {
+              <li>
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <rect x="3" y="4" width="18" height="18" rx="2"></rect>
+                  <line x1="16" y1="2" x2="16" y2="6"></line>
+                  <line x1="8" y1="2" x2="8" y2="6"></line>
+                  <line x1="3" y1="10" x2="21" y2="10"></line>
+                </svg>
+                <span>Miembro desde {{ miembroDesde() }}</span>
+              </li>
+            }
+          </ul>
+
+          @if (p.es_admin || p.solo_google) {
+            <div class="mc-etiquetas mc-entra" style="--i: 4">
+              @if (p.es_admin) {
+                <span class="mc-etiqueta mc-etiqueta-admin">Administrador</span>
+              }
+              @if (p.solo_google) {
+                <span class="mc-etiqueta">Entras con Google</span>
+              }
+            </div>
+            @if (p.solo_google) {
+              <button type="button" class="mc-enlace" (click)="crearContrasena()">
+                Crear una contraseña
+              </button>
+            }
+          }
+        } @else {
+          <!-- FORMULARIO DE EDICIÓN -->
+          <form class="mc-form" (ngSubmit)="guardarPerfil()" aria-label="Editar perfil">
+            <label for="mc-f-nombre">Nombre</label>
+            <input
+              id="mc-f-nombre"
+              name="nombre"
+              autocomplete="name"
+              maxlength="120"
+              [ngModel]="formNombre()"
+              (ngModelChange)="formNombre.set($event)"
+              required
+            />
+
+            <label for="mc-f-telefono">Teléfono</label>
+            <input
+              id="mc-f-telefono"
+              name="telefono"
+              type="tel"
+              autocomplete="tel"
+              maxlength="30"
+              placeholder="Ej: 300 123 4567"
+              [ngModel]="formTelefono()"
+              (ngModelChange)="formTelefono.set($event)"
+            />
+
+            <label for="mc-f-departamento">Departamento</label>
+            <input
+              id="mc-f-departamento"
+              name="departamento"
+              list="mc-departamentos"
+              maxlength="120"
+              placeholder="Ej: Cundinamarca"
+              [ngModel]="formDepartamento()"
+              (ngModelChange)="cambiarDepartamento($event)"
+            />
+            <datalist id="mc-departamentos">
+              @for (d of sugerenciasDepartamentos(); track d) {
+                <option [value]="d"></option>
+              }
+            </datalist>
+
+            <label for="mc-f-ciudad">Ciudad</label>
+            <input
+              id="mc-f-ciudad"
+              name="ciudad"
+              list="mc-ciudades"
+              maxlength="120"
+              placeholder="Ej: Chía"
+              [ngModel]="formCiudad()"
+              (ngModelChange)="formCiudad.set($event)"
+            />
+            <datalist id="mc-ciudades">
+              @for (c of sugerenciasCiudades(); track c) {
+                <option [value]="c"></option>
+              }
+            </datalist>
+
+            <p class="mc-ayuda">El correo no se puede cambiar: {{ p.correo }}</p>
+
+            @if (errorEdicion()) {
+              <p class="mc-error-form" role="alert">{{ errorEdicion() }}</p>
+            }
+
+            <div class="mc-form-acciones">
+              <button type="submit" class="mc-btn mc-btn-primario" [disabled]="guardando()">
+                {{ guardando() ? 'Guardando…' : 'Guardar' }}
+              </button>
+              <button
+                type="button"
+                class="mc-btn"
+                (click)="cancelarEdicion()"
+                [disabled]="guardando()"
+              >
+                Cancelar
+              </button>
+            </div>
+          </form>
+        }
+      }
+    </aside>
+
+    <!-- ================= ACTIVIDAD ================= -->
+    <section class="mc-contenido">
+      <!-- CONTADORES -->
+      <div class="mc-stats" aria-label="Resumen de tu actividad">
+        @if (cargandoActividad()) {
+          @for (i of esqueletoTarjetas; track i) {
+            <span class="skeleton mc-stat-esqueleto"></span>
+          }
+        } @else {
+          <div class="mc-stat mc-entra" style="--i: 0">
+            <strong [appContador]="misPublicaciones().length"></strong>
+            <span>Publicaciones activas</span>
+          </div>
+          <div class="mc-stat mc-entra" style="--i: 1">
+            <strong [appContador]="chateadas().length"></strong>
+            <span>Publicaciones con las que chateaste</span>
+          </div>
+          <div class="mc-stat mc-entra" style="--i: 2">
+            <strong [appContador]="mensajesSinLeer()"></strong>
+            <span>Mensajes sin leer</span>
+          </div>
+        }
+      </div>
+
+      <!-- MIS PUBLICACIONES ACTIVAS -->
+      <section class="mc-seccion" aria-labelledby="mc-titulo-mias">
+        <header class="mc-seccion-cabecera">
+          <h2 id="mc-titulo-mias">Mis publicaciones activas</h2>
+          <button type="button" class="mc-enlace" (click)="irAMisCaballos()">
+            Ver mis caballos
+          </button>
+        </header>
+
+        @if (cargandoActividad()) {
+          <div class="mc-tarjetas" role="status" aria-label="Cargando publicaciones">
+            @for (i of esqueletoTarjetas; track i) {
+              <div class="mc-tarjeta mc-tarjeta-esqueleto" aria-hidden="true">
+                <span class="skeleton mc-tarjeta-foto"></span>
+                <span class="skeleton mc-linea mc-linea-larga"></span>
+                <span class="skeleton mc-linea"></span>
+              </div>
+            }
+          </div>
+        } @else if (misPublicaciones().length === 0) {
+          <div class="mc-vacio">
+            <p>No tienes publicaciones activas.</p>
+            <button type="button" class="mc-btn mc-btn-primario" (click)="publicar()">
+              Publicar un caballo
+            </button>
+          </div>
+        } @else {
+          <ul class="mc-tarjetas">
+            @for (pub of misPublicaciones(); track pub.id_publicacion; let i = $index) {
+              <li class="mc-entra" [style.--i]="i">
+                <button
+                  type="button"
+                  class="mc-tarjeta"
+                  (click)="irAPublicacion(pub.id_publicacion)"
+                >
+                  <span class="mc-tarjeta-foto">
+                    @if (foto(pub); as url) {
+                      <img [src]="url" [alt]="pub.nombre" />
+                    } @else {
+                      <span class="mc-placeholder">DH</span>
+                    }
+                  </span>
+                  <span class="mc-tarjeta-cuerpo">
+                    <span class="mc-tag">{{ pub.raza }} · {{ pub.sexo }}</span>
+                    <strong>{{ pub.nombre }}</strong>
+                    <span class="mc-precio">
+                      {{
+                        pub.precio !== null
+                          ? (pub.precio | currency: 'COP' : 'symbol' : '1.0-0')
+                          : 'Sin precio'
+                      }}
+                    </span>
+                  </span>
+                </button>
+              </li>
+            }
+          </ul>
+        }
+      </section>
+
+      <!-- PUBLICACIONES CON LAS QUE HE CHATEADO -->
+      <section class="mc-seccion" aria-labelledby="mc-titulo-chats">
+        <header class="mc-seccion-cabecera">
+          <h2 id="mc-titulo-chats">Publicaciones con las que has chateado</h2>
+        </header>
+
+        @if (cargandoActividad()) {
+          <div class="mc-chats" role="status" aria-label="Cargando conversaciones">
+            @for (i of esqueletoTarjetas; track i) {
+              <span class="skeleton mc-chat-esqueleto"></span>
+            }
+          </div>
+        } @else if (chateadas().length === 0) {
+          <div class="mc-vacio">
+            <p>Todavía no has chateado con ningún vendedor.</p>
+            <p class="mc-ayuda">Abre una publicación y usa "Chatear con el vendedor".</p>
+          </div>
+        } @else {
+          <ul class="mc-chats">
+            @for (item of chateadas(); track item.conversacion.id_conversacion; let i = $index) {
+              <li class="mc-entra" [style.--i]="i">
+                <button
+                  type="button"
+                  class="mc-chat"
+                  (click)="irAConversacion(item.conversacion.id_conversacion)"
+                >
+                  <span class="mc-chat-foto">
+                    @if (foto(item.publicacion); as url) {
+                      <img [src]="url" [alt]="item.conversacion.titulo_publicacion" />
+                    } @else {
+                      <span class="mc-placeholder">DH</span>
+                    }
+                  </span>
+                  <span class="mc-chat-cuerpo">
+                    <span class="mc-chat-titulo">
+                      <strong>{{ item.conversacion.titulo_publicacion }}</strong>
+                      <span class="mc-chat-fecha">{{
+                        haceCuanto(
+                          item.conversacion.fecha_ultimo_mensaje || item.conversacion.fecha_creacion
+                        )
+                      }}</span>
+                    </span>
+                    <span class="mc-chat-vendedor"
+                      >Vendedor: {{ item.conversacion.otro_usuario.nombre }}</span
+                    >
+                    <span class="mc-chat-mensaje">
+                      @if (item.conversacion.ultimo_mensaje) {
+                        {{ item.conversacion.ultimo_mensaje_es_mio ? 'Tú: ' : ''
+                        }}{{ item.conversacion.ultimo_mensaje }}
+                      } @else {
+                        Sin mensajes todavía
+                      }
+                    </span>
+                  </span>
+                  @if (item.conversacion.no_leidos > 0) {
+                    <span
+                      class="mc-no-leidos"
+                      [attr.aria-label]="item.conversacion.no_leidos + ' sin leer'"
+                    >
+                      {{ item.conversacion.no_leidos }}
+                    </span>
+                  }
+                </button>
+              </li>
+            }
+          </ul>
+        }
+      </section>
+    </section>
+  </div>
+
+  <!-- Ventana para encuadrar la foto antes de subirla -->
+  @if (archivoParaRecortar(); as archivo) {
+    <app-recortar-foto
+      [archivo]="archivo"
+      [guardando]="subiendoFoto()"
+      (recortada)="guardarFoto($event)"
+      (cancelado)="cerrarRecorte()"
+    />
+  }
+</main>

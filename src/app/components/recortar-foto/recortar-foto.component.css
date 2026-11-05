@@ -1,0 +1,227 @@
+/* Ventana para encuadrar la foto de perfil (vidrio oscuro, como el resto de la app) */
+.rf-fondo {
+  position: fixed;
+  inset: 0;
+  z-index: 3000;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  background: rgba(5, 8, 12, 0.72);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  animation: rf-aparecer 0.2s ease;
+}
+
+.rf-ventana {
+  width: min(420px, 100%);
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 20px;
+  border-radius: 22px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(24, 28, 33, 0.96);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.55);
+  color: #fff;
+  font-family: 'Inter', sans-serif;
+  animation: rf-entrar 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes rf-aparecer {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes rf-entrar {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.97);
+  }
+}
+
+.rf-cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.rf-cabecera h2 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.rf-cerrar {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.7);
+  cursor: pointer;
+}
+
+.rf-cerrar svg {
+  width: 18px;
+  height: 18px;
+}
+
+.rf-cerrar:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+.rf-ayuda {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.68);
+  font-size: 0.85rem;
+  line-height: 1.45;
+}
+
+/* Marco cuadrado: la imagen se arrastra dentro y nunca deja huecos */
+.rf-marco {
+  position: relative;
+  align-self: center;
+  width: min(320px, 78vw);
+  aspect-ratio: 1;
+  overflow: hidden;
+  border-radius: 16px;
+  background: #111;
+  cursor: grab;
+  touch-action: none; /* en celular el dedo mueve la foto, no la página */
+  user-select: none;
+}
+
+.rf-marco.rf-arrastrando {
+  cursor: grabbing;
+}
+
+.rf-marco:focus-visible {
+  outline: 2px solid #e6a817;
+  outline-offset: 3px;
+}
+
+.rf-imagen {
+  position: absolute;
+  top: 0;
+  left: 0;
+  max-width: none;
+  pointer-events: none;
+  transform-origin: 0 0;
+}
+
+/* Todo lo que queda fuera del círculo se oscurece (lo que se ve claro es la foto final) */
+.rf-mascara {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle closest-side, transparent 99.4%, rgba(0, 0, 0, 0.62) 100%);
+  pointer-events: none;
+}
+
+.rf-mascara::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.9);
+}
+
+.rf-cargando {
+  position: absolute;
+  inset: 0;
+  border-radius: 0;
+}
+
+/* Zoom */
+.rf-zoom {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.rf-zoom input[type='range'] {
+  flex: 1;
+  accent-color: #e6a817;
+}
+
+.rf-boton-zoom {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.06);
+  color: #fff;
+  cursor: pointer;
+}
+
+.rf-boton-zoom svg {
+  width: 16px;
+  height: 16px;
+}
+
+.rf-boton-zoom:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.rf-boton-zoom:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.rf-error {
+  margin: 0;
+  color: #ff8a8a;
+  font-size: 0.85rem;
+}
+
+.rf-acciones {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.rf-btn {
+  padding: 9px 16px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  font-family: inherit;
+  font-size: 0.92rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.rf-btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.rf-btn:disabled {
+  opacity: 0.6;
+  cursor: progress;
+}
+
+.rf-btn-primario {
+  border-color: transparent;
+  background: #b5651d;
+}
+
+.rf-btn-primario:hover:not(:disabled) {
+  background: #9a5214;
+}
+
+.rf-btn:focus-visible,
+.rf-boton-zoom:focus-visible,
+.rf-cerrar:focus-visible {
+  outline: 2px solid #e6a817;
+  outline-offset: 2px;
+}

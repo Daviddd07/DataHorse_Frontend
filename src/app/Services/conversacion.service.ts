@@ -24,7 +24,8 @@ export interface ResumenConversacion {
   id_publicacion: number;
   titulo_publicacion: string;
   soy_vendedor: boolean;
-  otro_usuario: { id: number; nombre: string };
+  // foto_perfil: ruta pública ('/uploads/perfiles/...') o null para mostrar la inicial
+  otro_usuario: { id: number; nombre: string; foto_perfil?: string | null };
   ultimo_mensaje: string | null;
   fecha_ultimo_mensaje: string | null;
   ultimo_mensaje_es_mio: boolean;

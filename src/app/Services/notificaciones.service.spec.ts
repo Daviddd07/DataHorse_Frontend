@@ -25,7 +25,9 @@ class SocketFalso {
   }
 
   recibir(datos: unknown): void {
-    this.onmessage?.({ data: typeof datos === 'string' ? datos : JSON.stringify(datos) } as MessageEvent);
+    this.onmessage?.({
+      data: typeof datos === 'string' ? datos : JSON.stringify(datos),
+    } as MessageEvent);
   }
 
   cerrar(code: number): void {
@@ -113,7 +115,11 @@ describe('NotificacionesService', () => {
 
     expect(service.noLeidos()).toBe(3);
     expect(avisos).toEqual([
-      { mensaje: mensaje({ id_conversacion: 4 }), remitente: 'Ana', titulo_publicacion: 'Lucero en venta' },
+      {
+        mensaje: mensaje({ id_conversacion: 4 }),
+        remitente: 'Ana',
+        titulo_publicacion: 'Lucero en venta',
+      },
     ]);
   });
 

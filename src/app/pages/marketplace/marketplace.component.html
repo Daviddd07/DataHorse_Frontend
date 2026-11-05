@@ -124,7 +124,9 @@
           <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
         </svg>
         @if (noLeidos() > 0) {
-          <span class="dock-badge" aria-hidden="true">{{ noLeidos() > 99 ? '99+' : noLeidos() }}</span>
+          <span class="dock-badge" aria-hidden="true">{{
+            noLeidos() > 99 ? '99+' : noLeidos()
+          }}</span>
         }
       </button>
 
@@ -182,16 +184,21 @@
 
       <span class="sidebar-separador" aria-hidden="true"></span>
 
-      <!-- Avatar con la inicial del usuario: abre el menú de la cuenta -->
+      <!-- Avatar con la inicial del usuario: abre Mi cuenta -->
       <button
         type="button"
         data-dock-item
         aria-label="Mi cuenta"
         class="icon-btn sidebar-avatar"
-        (click)="toggleMenu()"
-        [attr.aria-expanded]="menuAbierto()"
+        (click)="irAMiCuenta()"
       >
-        <span class="avatar-inicial" aria-hidden="true">{{ inicial() }}</span>
+        <span class="avatar-inicial" aria-hidden="true">
+          @if (fotoPerfil(); as foto) {
+            <img class="avatar-foto" [src]="foto" alt="" />
+          } @else {
+            {{ inicial() }}
+          }
+        </span>
         <span class="avatar-en-linea" aria-hidden="true"></span>
       </button>
     </div>
@@ -243,6 +250,7 @@
         <div class="dh-user-menu-wrap">
           <button
             class="avatar"
+            [class.con-foto]="fotoPerfil()"
             type="button"
             (click)="toggleMenu()"
             [attr.aria-expanded]="menuAbierto()"
@@ -251,14 +259,26 @@
             @if (cargandoUsuario()) {
               <span class="skeleton avatar-esqueleto" aria-hidden="true"></span>
             } @else {
-              <span class="entrada" aria-hidden="true">{{ inicial() }}</span>
+              <span class="entrada" aria-hidden="true">
+                @if (fotoPerfil(); as foto) {
+                  <img class="avatar-foto" [src]="foto" alt="" />
+                } @else {
+                  {{ inicial() }}
+                }
+              </span>
             }
           </button>
 
           <!-- DROPDOWN -->
           <div class="user-menu" *ngIf="menuAbierto()">
             <div class="user-menu-head">
-              <div class="user-avatar-lg">{{ inicial() }}</div>
+              <div class="user-avatar-lg" [class.con-foto]="fotoPerfil()">
+                @if (fotoPerfil(); as foto) {
+                  <img class="avatar-foto" [src]="foto" alt="" />
+                } @else {
+                  {{ inicial() }}
+                }
+              </div>
               <div class="user-info">
                 <strong>{{ nombreUsuario() }}</strong>
                 <span>{{ correoUsuario() }}</span>
@@ -267,7 +287,7 @@
 
             <ul class="user-menu-list">
               <li>
-                <button type="button" class="menu-pronto" disabled>
+                <button type="button" (click)="irAMiCuenta()">
                   <svg
                     viewBox="0 0 24 24"
                     fill="none"
@@ -280,7 +300,6 @@
                     <circle cx="12" cy="7" r="4"></circle>
                   </svg>
                   Mi cuenta
-                  <span class="pronto">Próximamente</span>
                 </button>
               </li>
               <li>

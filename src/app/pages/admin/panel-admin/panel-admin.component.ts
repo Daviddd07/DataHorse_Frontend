@@ -16,6 +16,8 @@ import { ContadorDirective } from '../../../directives/contador.directive';
 
 import { DockDirective } from '../../../directives/dock.directive';
 
+import { urlDeSubida } from '../../../Services/cuenta.service';
+
 export type ColumnaUsuarios = Exclude<keyof UsuarioAdmin, 'id_usuario' | 'departamento'>;
 
 type IconoTarjeta = 'usuarios' | 'nuevos' | 'caballos' | 'publicaciones';
@@ -65,6 +67,7 @@ export class PanelAdminComponent {
 
   // Inicial del administrador para el avatar de la barra lateral
   inicial = signal('?');
+  fotoPerfil = signal<string | null>(null);
 
   resumen = signal<ResumenAdmin | null>(null);
   usuarios = signal<UsuarioAdmin[]>([]);
@@ -140,7 +143,10 @@ export class PanelAdminComponent {
   constructor() {
     this.cargarDatos();
     this.auth.me().subscribe({
-      next: (usuario) => this.inicial.set(usuario.nombre.trim().charAt(0).toUpperCase() || '?'),
+      next: (usuario) => {
+        this.inicial.set(usuario.nombre.trim().charAt(0).toUpperCase() || '?');
+        this.fotoPerfil.set(urlDeSubida(usuario.foto_perfil));
+      },
       error: () => this.inicial.set('?'),
     });
   }
@@ -197,6 +203,10 @@ export class PanelAdminComponent {
   // ======================================================
   // NAVEGACIÓN
   // ======================================================
+
+  irAMiCuenta(): void {
+    void this.router.navigate(['/mi-cuenta']);
+  }
 
   irAlMarketplace(): void {
     void this.router.navigate(['/marketplace']);

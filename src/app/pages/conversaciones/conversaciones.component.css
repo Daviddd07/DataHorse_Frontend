@@ -26,11 +26,12 @@
   gap: 8px;
 }
 
+/* Avatar a la izquierda; nombre, publicación y último mensaje en columna a la derecha */
 .cv-item {
   width: 100%;
   display: flex;
-  flex-direction: column;
-  gap: 3px;
+  align-items: center;
+  gap: 12px;
   padding: 12px 14px;
   border: 1px solid transparent;
   border-radius: 12px;
@@ -54,6 +55,14 @@
 .cv-item:focus-visible {
   outline: 2px solid var(--accent-gold);
   outline-offset: 2px;
+}
+
+.cv-item-textos {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  flex: 1;
+  min-width: 0;
 }
 
 .cv-item-nombre {

@@ -18,6 +18,8 @@ import { CompatibilidadSelectorComponent } from './compatibilidad/compatibilidad
 
 import { LogoIaComponent } from '../../components/logo-ia/logo-ia.component';
 
+import { urlDeSubida } from '../../Services/cuenta.service';
+
 import { DockDirective } from '../../directives/dock.directive';
 
 interface CaballoMarketplace {
@@ -94,6 +96,9 @@ export class MarketplaceComponent {
   nombreUsuario = signal('');
 
   inicial = computed(() => this.nombreUsuario().charAt(0).toUpperCase() || '?');
+
+  // Foto de perfil (URL completa) o null para mostrar la inicial
+  fotoPerfil = signal<string | null>(null);
 
   busqueda = signal('');
 
@@ -299,6 +304,8 @@ export class MarketplaceComponent {
         this.correoUsuario.set(usuario.correo);
 
         this.esAdmin.set(usuario.es_admin === true);
+
+        this.fotoPerfil.set(urlDeSubida(usuario.foto_perfil));
 
         this.cargandoUsuario.set(false);
       },
@@ -512,6 +519,11 @@ export class MarketplaceComponent {
 
   toggleMenu(): void {
     this.menuAbierto.update((v) => !v);
+  }
+
+  irAMiCuenta(): void {
+    this.menuAbierto.set(false);
+    void this.router.navigate(['/mi-cuenta']);
   }
 
   irAMisCaballos(): void {

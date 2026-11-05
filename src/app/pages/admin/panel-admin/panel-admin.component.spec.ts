@@ -114,17 +114,33 @@ describe('PanelAdminComponent', () => {
         'Panel de administración',
         'Marketplace',
         'Cerrar sesión',
-        'Mi cuenta (próximamente)',
+        'Mi cuenta',
       ]);
       expect(html().querySelector('.sidebar .icon-btn.active')?.getAttribute('aria-label')).toBe(
         'Panel de administración',
       );
     });
 
-    it('should show the admin initial in the avatar', async () => {
+    it('should show the admin initial in the avatar and open Mi cuenta', async () => {
       await crear();
       expect(html().querySelector('.avatar-inicial')?.textContent?.trim()).toBe('D');
-      expect(html().querySelector('.sidebar-avatar')?.getAttribute('aria-disabled')).toBe('true');
+      (html().querySelector('.sidebar-avatar') as HTMLButtonElement).click();
+      expect(router.navigate).toHaveBeenCalledWith(['/mi-cuenta']);
+    });
+
+    it('should show the admin photo in the avatar when there is one', async () => {
+      auth['me'].mockReturnValue(
+        of({
+          id: 14,
+          correo: 'admin@correo.com',
+          nombre: 'data',
+          foto_perfil: '/uploads/perfiles/a.jpg',
+        }),
+      );
+      await crear();
+      expect((html().querySelector('.sidebar-avatar img') as HTMLImageElement).src).toContain(
+        '/uploads/perfiles/a.jpg',
+      );
     });
 
     it('should navigate to the marketplace from the sidebar', async () => {

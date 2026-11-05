@@ -478,6 +478,34 @@ describe('MarketplaceComponent', () => {
     });
   });
 
+  describe('profile photo', () => {
+    it('should show the profile photo in every avatar when there is one', async () => {
+      auth['me'].mockReturnValue(
+        of({
+          id: 1,
+          correo: 'ana@correo.com',
+          nombre: 'ana',
+          foto_perfil: '/uploads/perfiles/a.jpg',
+        }),
+      );
+      await crear();
+      component.menuAbierto.set(true);
+      fixture.detectChanges();
+
+      const fotos = Array.from(
+        fixture.nativeElement.querySelectorAll('img.avatar-foto'),
+      ) as HTMLImageElement[];
+      expect(fotos.length).toBe(3); // barra lateral, encabezado y menú de la cuenta
+      expect(fotos.every((f) => f.src.endsWith('/uploads/perfiles/a.jpg'))).toBe(true);
+    });
+
+    it('should show the initial when there is no photo', async () => {
+      await crear();
+      expect(fixture.nativeElement.querySelector('img.avatar-foto')).toBeNull();
+      expect(fixture.nativeElement.querySelector('.avatar-inicial')?.textContent?.trim()).toBe('A');
+    });
+  });
+
   describe('navigation and menu', () => {
     beforeEach(() => crear());
 
@@ -512,13 +540,26 @@ describe('MarketplaceComponent', () => {
       expect(router.navigate).toHaveBeenCalledWith(['/login']);
     });
 
-    it('should show the user initial at the bottom and open the account menu', () => {
+    it('should show the user initial at the bottom and open Mi cuenta', () => {
       const avatar = botonLateral('Mi cuenta') as HTMLButtonElement;
       expect(avatar.querySelector('.avatar-inicial')?.textContent?.trim()).toBe('A');
       avatar.click();
+      expect(router.navigate).toHaveBeenCalledWith(['/mi-cuenta']);
+    });
+
+    it('should open Mi cuenta from the account menu and close it', () => {
+      component.menuAbierto.set(true);
       fixture.detectChanges();
-      expect(component.menuAbierto()).toBe(true);
-      expect(avatar.getAttribute('aria-expanded')).toBe('true');
+      const opcion = (
+        Array.from(
+          fixture.nativeElement.querySelectorAll('.user-menu-list button'),
+        ) as HTMLButtonElement[]
+      ).find((b) => b.textContent?.trim() === 'Mi cuenta') as HTMLButtonElement;
+
+      expect(opcion.disabled).toBe(false);
+      opcion.click();
+      expect(component.menuAbierto()).toBe(false);
+      expect(router.navigate).toHaveBeenCalledWith(['/mi-cuenta']);
     });
 
     it('should mark the options that do not exist yet as "Próximamente"', () => {
@@ -528,7 +569,6 @@ describe('MarketplaceComponent', () => {
         fixture.nativeElement.querySelectorAll('.user-menu-list button.menu-pronto'),
       ) as HTMLButtonElement[];
       expect(pronto.map((b) => b.textContent?.replace('Próximamente', '').trim())).toEqual([
-        'Mi cuenta',
         'Pedigrí y documentos',
         'Configuración',
       ]);
@@ -542,7 +582,9 @@ describe('MarketplaceComponent', () => {
       component.menuAbierto.set(true);
       fixture.detectChanges();
       const opcion = (
-        Array.from(fixture.nativeElement.querySelectorAll('.user-menu-list button')) as HTMLButtonElement[]
+        Array.from(
+          fixture.nativeElement.querySelectorAll('.user-menu-list button'),
+        ) as HTMLButtonElement[]
       ).find((b) => b.textContent?.includes('Mensajes'));
       expect(opcion?.disabled).toBe(false);
       opcion?.click();
@@ -557,9 +599,13 @@ describe('MarketplaceComponent', () => {
       component.menuAbierto.set(true);
       fixture.detectChanges();
 
-      expect(botonLateral('Mensajes (3 sin leer)')?.querySelector('.dock-badge')?.textContent).toBe('3');
+      expect(botonLateral('Mensajes (3 sin leer)')?.querySelector('.dock-badge')?.textContent).toBe(
+        '3',
+      );
       const opcion = (
-        Array.from(fixture.nativeElement.querySelectorAll('.user-menu-list button')) as HTMLButtonElement[]
+        Array.from(
+          fixture.nativeElement.querySelectorAll('.user-menu-list button'),
+        ) as HTMLButtonElement[]
       ).find((b) => b.textContent?.includes('Mensajes'));
       expect(opcion?.querySelector('.menu-badge')?.textContent).toBe('3');
 

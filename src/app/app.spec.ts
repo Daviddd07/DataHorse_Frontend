@@ -9,7 +9,11 @@ import { NotificacionesService } from './Services/notificaciones.service';
 class PaginaVacia {}
 
 describe('App', () => {
-  let notificaciones: { iniciar: ReturnType<typeof vi.fn>; detener: ReturnType<typeof vi.fn>; avisos$: Subject<unknown> };
+  let notificaciones: {
+    iniciar: ReturnType<typeof vi.fn>;
+    detener: ReturnType<typeof vi.fn>;
+    avisos$: Subject<unknown>;
+  };
 
   beforeEach(async () => {
     notificaciones = { iniciar: vi.fn(), detener: vi.fn(), avisos$: new Subject() };

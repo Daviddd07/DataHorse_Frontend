@@ -80,16 +80,21 @@
 
       <span class="sidebar-separador" aria-hidden="true"></span>
 
-      <!-- Avatar con la inicial del administrador. "Mi cuenta" aún no existe: aria-disabled
-           (no disabled) para que siga recibiendo el mouse y muestre su tooltip. -->
+      <!-- Avatar con la inicial del administrador: abre Mi cuenta -->
       <button
         type="button"
         data-dock-item
-        aria-label="Mi cuenta (próximamente)"
-        aria-disabled="true"
+        aria-label="Mi cuenta"
         class="icon-btn sidebar-avatar"
+        (click)="irAMiCuenta()"
       >
-        <span class="avatar-inicial" aria-hidden="true">{{ inicial() }}</span>
+        <span class="avatar-inicial" aria-hidden="true">
+          @if (fotoPerfil(); as foto) {
+            <img class="avatar-foto" [src]="foto" alt="" />
+          } @else {
+            {{ inicial() }}
+          }
+        </span>
         <span class="avatar-en-linea" aria-hidden="true"></span>
       </button>
     </div>

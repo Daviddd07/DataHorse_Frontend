@@ -29,7 +29,9 @@ class SocketFalso {
   }
 
   recibir(datos: unknown): void {
-    this.onmessage?.({ data: typeof datos === 'string' ? datos : JSON.stringify(datos) } as MessageEvent);
+    this.onmessage?.({
+      data: typeof datos === 'string' ? datos : JSON.stringify(datos),
+    } as MessageEvent);
   }
 
   cerrar(code: number): void {

@@ -29,7 +29,7 @@ describe('Login', () => {
     vi.useFakeTimers();
     vi.clearAllMocks();
     auth.destinoTrasLogin.mockReturnValue(of('/marketplace'));
-    google ={ accounts: { id: { initialize: vi.fn(), renderButton: vi.fn() } } };
+    google = { accounts: { id: { initialize: vi.fn(), renderButton: vi.fn() } } };
     window.google = undefined;
     window.matchMedia = vi.fn().mockReturnValue({ matches: false }) as never;
 

@@ -1,0 +1,134 @@
+<div class="rf-fondo" (click)="cancelar()">
+  <section
+    class="rf-ventana"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="rf-titulo"
+    aria-describedby="rf-ayuda"
+    (click)="$event.stopPropagation()"
+  >
+    <header class="rf-cabecera">
+      <h2 id="rf-titulo">Ajusta tu foto de perfil</h2>
+      <button type="button" class="rf-cerrar" (click)="cancelar()" aria-label="Cerrar sin guardar">
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          aria-hidden="true"
+        >
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </header>
+
+    <p id="rf-ayuda" class="rf-ayuda">
+      Arrastra la foto para encuadrarla y usa el zoom para agrandarla. Lo que quede dentro del
+      círculo será tu foto.
+    </p>
+
+    <!-- Marco cuadrado: la imagen se mueve dentro; la máscara muestra el círculo final -->
+    <div
+      #marco
+      class="rf-marco"
+      [class.rf-arrastrando]="arrastrando()"
+      tabindex="0"
+      aria-label="Área de recorte. Usa las flechas para mover la foto."
+      (pointerdown)="alPresionar($event)"
+      (pointermove)="alArrastrar($event)"
+      (pointerup)="alSoltar()"
+      (pointercancel)="alSoltar()"
+      (wheel)="alRuedaMouse($event)"
+      (keydown)="alTeclaMarco($event)"
+    >
+      @if (url(); as fuente) {
+        <img
+          #imagen
+          class="rf-imagen"
+          [src]="fuente"
+          alt="Foto elegida"
+          draggable="false"
+          [style]="estiloImagen()"
+          (load)="alCargarImagen($event)"
+          (error)="alFallarImagen()"
+        />
+      }
+      @if (!lista() && !error()) {
+        <span class="skeleton rf-cargando" aria-hidden="true"></span>
+      }
+      <span class="rf-mascara" aria-hidden="true"></span>
+    </div>
+
+    <!-- Zoom -->
+    <div class="rf-zoom">
+      <button
+        type="button"
+        class="rf-boton-zoom"
+        (click)="alejar()"
+        [disabled]="zoom() <= 1"
+        aria-label="Alejar"
+      >
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          aria-hidden="true"
+        >
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+        </svg>
+      </button>
+      <input
+        #zoomControl
+        type="range"
+        min="1"
+        [max]="zoomMaximo"
+        step="0.01"
+        [value]="zoom()"
+        (input)="alMoverZoom($event)"
+        aria-label="Zoom"
+        [disabled]="!lista()"
+      />
+      <button
+        type="button"
+        class="rf-boton-zoom"
+        (click)="acercar()"
+        [disabled]="zoom() >= zoomMaximo"
+        aria-label="Acercar"
+      >
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          aria-hidden="true"
+        >
+          <line x1="12" y1="5" x2="12" y2="19"></line>
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+        </svg>
+      </button>
+    </div>
+
+    @if (error()) {
+      <p class="rf-error" role="alert">{{ error() }}</p>
+    }
+
+    <footer class="rf-acciones">
+      <button type="button" class="rf-btn" (click)="cancelar()" [disabled]="guardando()">
+        Cancelar
+      </button>
+      <button
+        type="button"
+        class="rf-btn rf-btn-primario"
+        (click)="guardar()"
+        [disabled]="!lista() || guardando()"
+      >
+        {{ guardando() ? 'Guardando…' : 'Guardar foto' }}
+      </button>
+    </footer>
+  </section>
+</div>

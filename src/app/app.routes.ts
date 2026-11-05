@@ -151,6 +151,15 @@ export const routes: Routes = [
   },
 
   {
+    path: 'mi-cuenta',
+
+    loadComponent: () =>
+      import('./pages/mi-cuenta/mi-cuenta.component').then((m) => m.MiCuentaComponent),
+
+    canActivate: [authGuard],
+  },
+
+  {
     path: 'admin',
 
     loadComponent: () =>

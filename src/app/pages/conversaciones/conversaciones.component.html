@@ -46,23 +46,31 @@
                 [class.activa]="c.id_conversacion === idActiva()"
                 (click)="abrir(c)"
               >
-                <span class="cv-item-nombre">
-                  {{ c.otro_usuario.nombre }}
-                  @if (c.no_leidos > 0) {
-                    <span class="cv-no-leidos" [attr.aria-label]="c.no_leidos + ' sin leer'">
-                      {{ c.no_leidos }}
-                    </span>
-                  }
-                </span>
-                <span class="cv-item-titulo">
-                  {{ c.soy_vendedor ? 'Interesado en' : 'Vendedor de' }} {{ c.titulo_publicacion }}
-                </span>
-                <span class="cr-muted cv-item-ultimo">
-                  @if (c.ultimo_mensaje) {
-                    {{ c.ultimo_mensaje_es_mio ? 'Tú: ' : '' }}{{ c.ultimo_mensaje }}
-                  } @else {
-                    Sin mensajes todavía
-                  }
+                <app-avatar
+                  [nombre]="c.otro_usuario.nombre"
+                  [foto]="c.otro_usuario.foto_perfil"
+                  [tamano]="42"
+                />
+                <span class="cv-item-textos">
+                  <span class="cv-item-nombre">
+                    {{ c.otro_usuario.nombre }}
+                    @if (c.no_leidos > 0) {
+                      <span class="cv-no-leidos" [attr.aria-label]="c.no_leidos + ' sin leer'">
+                        {{ c.no_leidos }}
+                      </span>
+                    }
+                  </span>
+                  <span class="cv-item-titulo">
+                    {{ c.soy_vendedor ? 'Interesado en' : 'Vendedor de' }}
+                    {{ c.titulo_publicacion }}
+                  </span>
+                  <span class="cr-muted cv-item-ultimo">
+                    @if (c.ultimo_mensaje) {
+                      {{ c.ultimo_mensaje_es_mio ? 'Tú: ' : '' }}{{ c.ultimo_mensaje }}
+                    } @else {
+                      Sin mensajes todavía
+                    }
+                  </span>
                 </span>
               </button>
             </li>
@@ -84,20 +92,40 @@
         </div>
       } @else if (activa(); as a) {
         <header class="cv-cabecera">
-          <button type="button" class="cv-atras" (click)="volverALista()" aria-label="Volver a la lista">
+          <button
+            type="button"
+            class="cv-atras"
+            (click)="volverALista()"
+            aria-label="Volver a la lista"
+          >
             ‹
           </button>
+          <app-avatar
+            [nombre]="a.otro_usuario.nombre"
+            [foto]="a.otro_usuario.foto_perfil"
+            [tamano]="44"
+          />
           <div>
             <h2>{{ a.otro_usuario.nombre }}</h2>
             <p class="cr-muted">{{ a.titulo_publicacion }}</p>
           </div>
           <span [class]="'cv-estado cv-estado-' + chat.estado()">
             @switch (chat.estado()) {
-              @case ('conectado') { En línea }
-              @case ('conectando') { Conectando… }
-              @case ('reconectando') { Reconectando… }
-              @case ('rechazado') { Desconectado }
-              @default { Desconectado }
+              @case ('conectado') {
+                En línea
+              }
+              @case ('conectando') {
+                Conectando…
+              }
+              @case ('reconectando') {
+                Reconectando…
+              }
+              @case ('rechazado') {
+                Desconectado
+              }
+              @default {
+                Desconectado
+              }
             }
           </span>
         </header>

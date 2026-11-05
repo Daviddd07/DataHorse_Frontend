@@ -2,6 +2,8 @@ import { Component, ElementRef, OnDestroy, computed, inject, signal, viewChild }
 
 import { DatePipe } from '@angular/common';
 
+import { AvatarComponent } from '../../components/avatar/avatar.component';
+
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { ActivatedRoute, Router } from '@angular/router';
@@ -21,7 +23,7 @@ const LONGITUD_MAXIMA = 2000;
 @Component({
   selector: 'app-conversaciones',
   standalone: true,
-  imports: [DatePipe],
+  imports: [DatePipe, AvatarComponent],
   // Una conexión WebSocket por pantalla de chat: se cierra al salir de ella
   providers: [ChatWebSocketService],
   templateUrl: './conversaciones.component.html',

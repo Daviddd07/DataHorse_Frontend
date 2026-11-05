@@ -95,9 +95,12 @@ describe('ConversacionesComponent', () => {
     conversaciones = {
       marcarLeidos: vi.fn().mockReturnValue(of({ marcados: 1 })),
       listar: vi.fn().mockReturnValue(of([resumen(), resumen({ id_conversacion: 4 })])),
-      obtener: vi
-        .fn()
-        .mockReturnValue(of({ conversacion: resumen(), mensajes: [mensaje(), mensaje({ id_mensaje: 2, id_usuario: 10, contenido: 'Buenas' })] })),
+      obtener: vi.fn().mockReturnValue(
+        of({
+          conversacion: resumen(),
+          mensajes: [mensaje(), mensaje({ id_mensaje: 2, id_usuario: 10, contenido: 'Buenas' })],
+        }),
+      ),
     };
   });
 
@@ -110,6 +113,31 @@ describe('ConversacionesComponent', () => {
     fixture.detectChanges();
     expect(texto()).toContain('Buenas');
     expect(texto()).toContain('En línea');
+  });
+
+  it('should show each user avatar left of the name (photo or initial)', async () => {
+    conversaciones['listar'].mockReturnValue(
+      of([
+        resumen(),
+        resumen({
+          id_conversacion: 4,
+          otro_usuario: { id: 11, nombre: 'Ana', foto_perfil: '/uploads/perfiles/ana.jpg' },
+        }),
+      ]),
+    );
+    await crear();
+    fixture.detectChanges();
+    const html = fixture.nativeElement as HTMLElement;
+
+    const [sinFoto, conFoto] = Array.from(html.querySelectorAll('.cv-item app-avatar'));
+    expect(sinFoto.textContent?.trim()).toBe('V');
+    expect((conFoto.querySelector('img') as HTMLImageElement).src).toContain(
+      '/uploads/perfiles/ana.jpg',
+    );
+
+    // El avatar va antes del nombre, en la lista y en la cabecera del chat
+    expect(html.querySelector('.cv-item')?.firstElementChild?.tagName).toBe('APP-AVATAR');
+    expect(html.querySelector('.cv-cabecera app-avatar')?.textContent?.trim()).toBe('V');
   });
 
   it('should tell my messages from the other participant ones', async () => {
@@ -304,7 +332,9 @@ describe('ConversacionesComponent', () => {
   /* ---------- Leídos y avisos ---------- */
 
   it('should mark the open conversation as read and refresh the counter', async () => {
-    conversaciones['listar'].mockReturnValue(of([resumen({ no_leidos: 2 }), resumen({ id_conversacion: 4, no_leidos: 1 })]));
+    conversaciones['listar'].mockReturnValue(
+      of([resumen({ no_leidos: 2 }), resumen({ id_conversacion: 4, no_leidos: 1 })]),
+    );
     await crear();
     expect(notificaciones.abrirConversacion).toHaveBeenCalledWith(3);
     expect(conversaciones['marcarLeidos']).toHaveBeenCalledWith(3);
