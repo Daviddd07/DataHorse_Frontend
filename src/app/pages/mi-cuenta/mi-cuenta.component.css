@@ -201,6 +201,12 @@
   word-break: break-all;
 }
 
+/* Estrellas que me dieron otros propietarios al finalizar un chat */
+.mc-estrellas {
+  margin-top: 8px;
+  font-size: 0.95rem;
+}
+
 /* Botones */
 .mc-btn {
   padding: 9px 16px;

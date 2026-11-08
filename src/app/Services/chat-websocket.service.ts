@@ -33,6 +33,7 @@ export class ChatWebSocketService implements OnDestroy {
   private readonly mensajesSubject = new Subject<MensajeChat>();
   private readonly erroresSubject = new Subject<string>();
   private readonly conectadoSubject = new Subject<void>();
+  private readonly finalizadaSubject = new Subject<number>();
 
   /** Mensajes nuevos de la conversación (propios y del otro participante). */
   readonly mensajes$: Observable<MensajeChat> = this.mensajesSubject.asObservable();
@@ -40,6 +41,8 @@ export class ChatWebSocketService implements OnDestroy {
   readonly errores$: Observable<string> = this.erroresSubject.asObservable();
   /** Cada vez que la conexión queda abierta (la primera y tras reconectar). */
   readonly conectado$: Observable<void> = this.conectadoSubject.asObservable();
+  /** Alguno de los dos finalizó el chat (emite el id de quien lo finalizó). */
+  readonly finalizada$: Observable<number> = this.finalizadaSubject.asObservable();
 
   private socket: WebSocket | null = null;
   private idConversacion: number | null = null;
@@ -87,6 +90,7 @@ export class ChatWebSocketService implements OnDestroy {
     this.mensajesSubject.complete();
     this.erroresSubject.complete();
     this.conectadoSubject.complete();
+    this.finalizadaSubject.complete();
   }
 
   /** Punto de extensión para las pruebas. */
@@ -100,7 +104,9 @@ export class ChatWebSocketService implements OnDestroy {
     }
 
     this.estado.set(estado);
-    const socket = this.crearSocket(`${environment.wsUrl}/ws/conversaciones/${this.idConversacion}`);
+    const socket = this.crearSocket(
+      `${environment.wsUrl}/ws/conversaciones/${this.idConversacion}`,
+    );
     this.socket = socket;
 
     socket.onopen = () => {
@@ -133,7 +139,7 @@ export class ChatWebSocketService implements OnDestroy {
   }
 
   private procesar(datos: unknown): void {
-    let evento: { tipo?: string; mensaje?: MensajeChat; detalle?: string };
+    let evento: { tipo?: string; mensaje?: MensajeChat; detalle?: string; por?: number };
     try {
       evento = JSON.parse(String(datos));
     } catch {
@@ -144,6 +150,8 @@ export class ChatWebSocketService implements OnDestroy {
       this.mensajesSubject.next(evento.mensaje);
     } else if (evento.tipo === 'error' && evento.detalle) {
       this.erroresSubject.next(evento.detalle);
+    } else if (evento.tipo === 'finalizada') {
+      this.finalizadaSubject.next(evento.por ?? 0);
     }
   }
 

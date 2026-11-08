@@ -20,7 +20,13 @@ import {
 
 import { CaballoService, Publicacion } from '../../Services/caballo.service';
 
-import { ConversacionService, ResumenConversacion } from '../../Services/conversacion.service';
+import {
+  Calificacion,
+  ConversacionService,
+  ResumenConversacion,
+} from '../../Services/conversacion.service';
+
+import { EstrellasComponent } from '../../components/estrellas/estrellas.component';
 
 import { LogService } from '../../Services/log.service';
 
@@ -41,7 +47,13 @@ const MESES_ES = new Intl.DateTimeFormat('es-CO', { month: 'long', year: 'numeri
 @Component({
   selector: 'app-mi-cuenta',
   standalone: true,
-  imports: [CurrencyPipe, FormsModule, ContadorDirective, RecortarFotoComponent],
+  imports: [
+    CurrencyPipe,
+    FormsModule,
+    ContadorDirective,
+    RecortarFotoComponent,
+    EstrellasComponent,
+  ],
   templateUrl: './mi-cuenta.component.html',
   styleUrls: ['./mi-cuenta.component.css'],
 })
@@ -58,6 +70,9 @@ export class MiCuentaComponent {
   perfil = signal<Perfil | null>(null);
   cargandoPerfil = signal(true);
   errorPerfil = signal('');
+
+  // Estrellas (1 a 5) que me han dado otros propietarios al finalizar un chat
+  calificacion = signal<Calificacion | null>(null);
 
   publicaciones = signal<Publicacion[]>([]);
   conversaciones = signal<ResumenConversacion[]>([]);
@@ -131,12 +146,20 @@ export class MiCuentaComponent {
       next: (perfil) => {
         this.perfil.set(perfil);
         this.cargandoPerfil.set(false);
+        this.cargarCalificacion(perfil.id);
       },
       error: (e: HttpErrorResponse) => {
         this.log.error('Error cargando el perfil', { status: e.status });
         this.errorPerfil.set('No fue posible cargar tu perfil.');
         this.cargandoPerfil.set(false);
       },
+    });
+  }
+
+  private cargarCalificacion(idUsuario: number): void {
+    this.chat.calificacionDe(idUsuario).subscribe({
+      next: (calificacion) => this.calificacion.set(calificacion),
+      error: () => this.calificacion.set(null),
     });
   }
 

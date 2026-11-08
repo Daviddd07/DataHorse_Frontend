@@ -252,4 +252,40 @@ describe('NotificacionesService', () => {
     service.ngOnDestroy();
     expect(completo).toHaveBeenCalled();
   });
+
+  it('should emit when a contact comes online or goes offline', () => {
+    const cambios: unknown[] = [];
+    service.presencia$.subscribe((c) => cambios.push(c));
+    service.iniciar();
+
+    service.ultimo.recibir({
+      tipo: 'presencia',
+      id_usuario: 10,
+      en_linea: true,
+      ultima_conexion: '2026-11-08T10:00:00',
+    });
+    service.ultimo.recibir({ tipo: 'presencia', id_usuario: 11 });
+    service.ultimo.recibir({ tipo: 'presencia' }); // sin usuario: se ignora
+
+    expect(cambios).toEqual([
+      { id_usuario: 10, en_linea: true, ultima_conexion: '2026-11-08T10:00:00' },
+      { id_usuario: 11, en_linea: false, ultima_conexion: null },
+    ]);
+    expect(service.noLeidos()).toBe(2); // no cuenta como mensaje
+  });
+
+  it('should emit when the other person finalizes a conversation', () => {
+    const finalizadas: unknown[] = [];
+    service.finalizadas$.subscribe((f) => finalizadas.push(f));
+    service.iniciar();
+
+    service.ultimo.recibir({ tipo: 'conversacion_finalizada', id_conversacion: 3, por: 'Ana' });
+    service.ultimo.recibir({ tipo: 'conversacion_finalizada', id_conversacion: 4 });
+    service.ultimo.recibir({ tipo: 'conversacion_finalizada' });
+
+    expect(finalizadas).toEqual([
+      { id_conversacion: 3, por: 'Ana' },
+      { id_conversacion: 4, por: '' },
+    ]);
+  });
 });

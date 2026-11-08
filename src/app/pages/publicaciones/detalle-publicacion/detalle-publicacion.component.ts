@@ -6,7 +6,9 @@ import { ActivatedRoute, Router } from '@angular/router';
 
 import { CaballoService, PublicacionDetalle } from '../../../Services/caballo.service';
 
-import { ConversacionService } from '../../../Services/conversacion.service';
+import { Calificacion, ConversacionService } from '../../../Services/conversacion.service';
+
+import { EstrellasComponent } from '../../../components/estrellas/estrellas.component';
 
 import { environment } from '../../../../environments/environment';
 
@@ -14,7 +16,7 @@ import { environment } from '../../../../environments/environment';
   selector: 'app-detalle-publicacion',
   standalone: true,
 
-  imports: [CommonModule, CurrencyPipe, DatePipe],
+  imports: [CommonModule, CurrencyPipe, DatePipe, EstrellasComponent],
 
   templateUrl: './detalle-publicacion.component.html',
 
@@ -33,6 +35,9 @@ export class DetallePublicacionComponent {
   abriendoChat = signal(false);
 
   errorChat = signal('');
+
+  // Estrellas (1 a 5) que otros le han dado al vendedor
+  calificacionVendedor = signal<Calificacion | null>(null);
 
   publicacion = signal<PublicacionDetalle | null>(null);
 
@@ -92,6 +97,7 @@ export class DetallePublicacionComponent {
     this.caballoService.obtenerPublicacion(id).subscribe({
       next: (p) => {
         this.publicacion.set(p);
+        this.cargarCalificacionVendedor(p.id_usuario);
         this.cargando.set(false);
 
         // Poner como activa la foto principal si existe
@@ -141,6 +147,13 @@ export class DetallePublicacionComponent {
     const actual = this.fotoActiva();
 
     this.fotoActiva.set(actual === p.fotos.length - 1 ? 0 : actual + 1);
+  }
+
+  private cargarCalificacionVendedor(idVendedor: number): void {
+    this.conversacionService.calificacionDe(idVendedor).subscribe({
+      next: (calificacion) => this.calificacionVendedor.set(calificacion),
+      error: () => this.calificacionVendedor.set(null), // sin estrellas no se muestra nada roto
+    });
   }
 
   // Abre (o reutiliza) la conversación con el vendedor y va al chat

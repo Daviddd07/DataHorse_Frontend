@@ -59,4 +59,31 @@ describe('ConversacionService', () => {
     expect(req.request.withCredentials).toBe(true);
     req.flush({ conversacion: { id_conversacion: 3 }, mensajes: [] });
   });
+
+  it('finalizar', () => {
+    service.finalizar(3).subscribe((r) => expect(r.estado).toBe('finalizada'));
+    const req = http.expectOne(`${api}/3/finalizar`);
+    expect(req.request.method).toBe('POST');
+    expect(req.request.withCredentials).toBe(true);
+    req.flush({ id_conversacion: 3, estado: 'finalizada' });
+  });
+
+  it('calificar', () => {
+    service
+      .calificar(3, 5, 'Muy serio')
+      .subscribe((r) => expect(r.calificacion_evaluado.total).toBe(1));
+    const req = http.expectOne(`${api}/3/resena`);
+    expect(req.request.method).toBe('POST');
+    expect(req.request.body).toEqual({ calificacion: 5, comentario: 'Muy serio' });
+    expect(req.request.withCredentials).toBe(true);
+    req.flush({ resena: { id_resena: 1 }, calificacion_evaluado: { promedio: 5, total: 1 } });
+  });
+
+  it('calificacionDe', () => {
+    service.calificacionDe(10).subscribe((c) => expect(c.promedio).toBe(4.5));
+    const req = http.expectOne(`${environment.apiUrl}/api/v1/usuarios/10/calificacion`);
+    expect(req.request.method).toBe('GET');
+    expect(req.request.withCredentials).toBe(true);
+    req.flush({ promedio: 4.5, total: 2 });
+  });
 });

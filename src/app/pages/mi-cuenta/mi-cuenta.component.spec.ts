@@ -112,7 +112,10 @@ describe('MiCuentaComponent', () => {
       quitarFoto: vi.fn(),
     };
     caballos = { listarPublicaciones: vi.fn().mockReturnValue(of(PUBLICACIONES)) };
-    chat = { listar: vi.fn().mockReturnValue(of(CONVERSACIONES)) };
+    chat = {
+      listar: vi.fn().mockReturnValue(of(CONVERSACIONES)),
+      calificacionDe: vi.fn().mockReturnValue(of({ promedio: 4.2, total: 5 })),
+    };
   });
 
   describe('profile', () => {
@@ -126,6 +129,21 @@ describe('MiCuentaComponent', () => {
       expect(texto()).toContain('Miembro desde octubre de 2026');
       expect(texto()).toContain('Administrador');
       expect(texto()).not.toContain('Entras con Google');
+    });
+
+    it('should show the stars other owners gave me', async () => {
+      await crear();
+      expect(chat['calificacionDe']).toHaveBeenCalled();
+      expect(html().querySelector('.mc-estrellas')?.getAttribute('aria-label')).toBe(
+        '4,2 de 5 estrellas, 5 reseñas',
+      );
+    });
+
+    it('should hide the stars quietly if they cannot be loaded', async () => {
+      chat['calificacionDe'].mockReturnValue(throwError(() => new Error('500')));
+      await crear();
+      expect(component.calificacion()).toBeNull();
+      expect(html().querySelector('.mc-estrellas')?.textContent).toContain('Sin reseñas');
     });
 
     it('should show skeletons while loading', async () => {

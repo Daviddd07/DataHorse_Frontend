@@ -4,12 +4,23 @@ import { Observable, Subject } from 'rxjs';
 
 import { environment } from '../../environments/environment';
 
-import { ConversacionService, MensajeChat } from './conversacion.service';
+import { ConversacionService, EstadoConexion, MensajeChat } from './conversacion.service';
 
 export interface AvisoMensaje {
   mensaje: MensajeChat;
   remitente: string;
   titulo_publicacion: string;
+}
+
+/** Un contacto (alguien con quien chateo) entró o salió de la app. */
+export interface CambioPresencia extends EstadoConexion {
+  id_usuario: number;
+}
+
+/** El otro participante finalizó una conversación conmigo. */
+export interface ConversacionFinalizada {
+  id_conversacion: number;
+  por: string;
 }
 
 /* Sin sesión u origen rechazado: no tiene sentido reintentar hasta la próxima navegación */
@@ -35,6 +46,15 @@ export class NotificacionesService implements OnDestroy {
 
   /** Mensajes nuevos de conversaciones que no están abiertas en pantalla. */
   readonly avisos$: Observable<AvisoMensaje> = this.avisosSubject.asObservable();
+
+  private readonly presenciaSubject = new Subject<CambioPresencia>();
+  private readonly finalizadasSubject = new Subject<ConversacionFinalizada>();
+
+  /** Contactos que pasan a "en línea" o a "inactivo". */
+  readonly presencia$: Observable<CambioPresencia> = this.presenciaSubject.asObservable();
+  /** Conversaciones que el otro participante finalizó (ya se le puede calificar). */
+  readonly finalizadas$: Observable<ConversacionFinalizada> =
+    this.finalizadasSubject.asObservable();
 
   private activo = false;
   private socket: WebSocket | null = null;
@@ -87,6 +107,8 @@ export class NotificacionesService implements OnDestroy {
   ngOnDestroy(): void {
     this.detener();
     this.avisosSubject.complete();
+    this.presenciaSubject.complete();
+    this.finalizadasSubject.complete();
   }
 
   /** Punto de extensión para las pruebas. */
@@ -124,10 +146,27 @@ export class NotificacionesService implements OnDestroy {
   }
 
   private procesar(datos: unknown): void {
-    let evento: Partial<AvisoMensaje> & { tipo?: string };
+    let evento: Partial<AvisoMensaje> &
+      Partial<CambioPresencia> &
+      Partial<Omit<ConversacionFinalizada, 'por'>> & { tipo?: string; por?: string };
     try {
       evento = JSON.parse(String(datos));
     } catch {
+      return;
+    }
+    if (evento.tipo === 'presencia' && typeof evento.id_usuario === 'number') {
+      this.presenciaSubject.next({
+        id_usuario: evento.id_usuario,
+        en_linea: !!evento.en_linea,
+        ultima_conexion: evento.ultima_conexion ?? null,
+      });
+      return;
+    }
+    if (evento.tipo === 'conversacion_finalizada' && typeof evento.id_conversacion === 'number') {
+      this.finalizadasSubject.next({
+        id_conversacion: evento.id_conversacion,
+        por: evento.por ?? '',
+      });
       return;
     }
     if (evento.tipo !== 'nuevo_mensaje' || !evento.mensaje) {

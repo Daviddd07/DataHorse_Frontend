@@ -19,18 +19,56 @@ export interface MensajeChat {
   estado_lectura: string;
 }
 
+/** Promedio de estrellas (1 a 5) y número de reseñas; promedio null si aún no tiene. */
+export interface Calificacion {
+  promedio: number | null;
+  total: number;
+}
+
+/** Si tiene la app abierta y cuándo se conectó por última vez (hora local, sin zona). */
+export interface EstadoConexion {
+  en_linea: boolean;
+  ultima_conexion: string | null;
+}
+
+export interface OtroParticipante {
+  id: number;
+  nombre: string;
+  // foto_perfil: ruta pública ('/uploads/perfiles/...') o null para mostrar la inicial
+  foto_perfil?: string | null;
+  calificacion?: Calificacion;
+  conexion?: EstadoConexion | null;
+}
+
 export interface ResumenConversacion {
   id_conversacion: number;
   id_publicacion: number;
   titulo_publicacion: string;
   soy_vendedor: boolean;
-  // foto_perfil: ruta pública ('/uploads/perfiles/...') o null para mostrar la inicial
-  otro_usuario: { id: number; nombre: string; foto_perfil?: string | null };
+  otro_usuario: OtroParticipante;
   ultimo_mensaje: string | null;
   fecha_ultimo_mensaje: string | null;
   ultimo_mensaje_es_mio: boolean;
   no_leidos: number; // mensajes del otro participante que aún no he leído
   fecha_creacion: string;
+  estado?: string;
+  finalizada?: boolean; // en solo lectura; se puede calificar al otro
+  ya_califique?: boolean; // solo en el detalle de una conversación
+}
+
+export interface Resena {
+  id_resena: number;
+  id_conversacion: number;
+  id_evaluador: number;
+  id_evaluado: number;
+  calificacion: number;
+  comentario: string | null;
+  fecha: string;
+}
+
+export interface RespuestaResena {
+  resena: Resena;
+  calificacion_evaluado: Calificacion;
 }
 
 export interface ConversacionConMensajes {
@@ -76,6 +114,38 @@ export class ConversacionService {
       `${this.apiUrl}/${idConversacion}/leer`,
       {},
       { withCredentials: true },
+    );
+  }
+
+  // POST /api/v1/conversaciones/:id/finalizar (queda en solo lectura y se puede calificar)
+  finalizar(idConversacion: number): Observable<{ id_conversacion: number; estado: string }> {
+    return this.http.post<{ id_conversacion: number; estado: string }>(
+      `${this.apiUrl}/${idConversacion}/finalizar`,
+      {},
+      { withCredentials: true },
+    );
+  }
+
+  // POST /api/v1/conversaciones/:id/resena (1 a 5 estrellas al otro participante)
+  calificar(
+    idConversacion: number,
+    calificacion: number,
+    comentario: string | null,
+  ): Observable<RespuestaResena> {
+    return this.http.post<RespuestaResena>(
+      `${this.apiUrl}/${idConversacion}/resena`,
+      { calificacion, comentario },
+      { withCredentials: true },
+    );
+  }
+
+  // GET /api/v1/usuarios/:id/calificacion
+  calificacionDe(idUsuario: number): Observable<Calificacion> {
+    return this.http.get<Calificacion>(
+      `${environment.apiUrl}/api/v1/usuarios/${idUsuario}/calificacion`,
+      {
+        withCredentials: true,
+      },
     );
   }
 

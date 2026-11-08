@@ -82,6 +82,7 @@ describe('DetallePublicacionComponent', () => {
     };
     conversaciones = {
       abrir: vi.fn().mockReturnValue(of({ id_conversacion: 12 })),
+      calificacionDe: vi.fn().mockReturnValue(of({ promedio: 4.5, total: 8 })),
     };
   });
 
@@ -194,6 +195,23 @@ describe('DetallePublicacionComponent', () => {
     await crear();
     component.volver();
     expect(router.navigate).toHaveBeenCalledWith(['/marketplace']);
+  });
+
+  it("should show the seller's stars next to their name", async () => {
+    await crear();
+    expect(conversaciones['calificacionDe']).toHaveBeenCalledWith(1);
+    expect(component.calificacionVendedor()).toEqual({ promedio: 4.5, total: 8 });
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('.dp-estrellas')?.getAttribute('aria-label')).toBe(
+      '4,5 de 5 estrellas, 8 reseñas',
+    );
+  });
+
+  it('should not break the page if the stars cannot be loaded', async () => {
+    conversaciones['calificacionDe'].mockReturnValue(throwError(() => new Error('500')));
+    await crear();
+    expect(component.calificacionVendedor()).toBeNull();
+    expect(component.publicacion()?.nombre).toBe('Rayo');
   });
 
   it('the chat button should open the conversation with the seller', async () => {

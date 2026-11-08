@@ -46,11 +46,18 @@
                 [class.activa]="c.id_conversacion === idActiva()"
                 (click)="abrir(c)"
               >
-                <app-avatar
-                  [nombre]="c.otro_usuario.nombre"
-                  [foto]="c.otro_usuario.foto_perfil"
-                  [tamano]="42"
-                />
+                <span class="cv-avatar-con-estado">
+                  <app-avatar
+                    [nombre]="c.otro_usuario.nombre"
+                    [foto]="c.otro_usuario.foto_perfil"
+                    [tamano]="42"
+                  />
+                  <app-estado-conexion
+                    class="cv-punto-estado"
+                    [conexion]="c.otro_usuario.conexion"
+                    [soloPunto]="true"
+                  />
+                </span>
                 <span class="cv-item-textos">
                   <span class="cv-item-nombre">
                     {{ c.otro_usuario.nombre }}
@@ -60,9 +67,13 @@
                       </span>
                     }
                   </span>
+                  <app-estrellas [calificacion]="c.otro_usuario.calificacion" [compacto]="true" />
                   <span class="cv-item-titulo">
                     {{ c.soy_vendedor ? 'Interesado en' : 'Vendedor de' }}
                     {{ c.titulo_publicacion }}
+                    @if (c.finalizada) {
+                      <span class="cv-etiqueta-finalizada">Finalizado</span>
+                    }
                   </span>
                   <span class="cr-muted cv-item-ultimo">
                     @if (c.ultimo_mensaje) {
@@ -107,28 +118,54 @@
           />
           <div>
             <h2>{{ a.otro_usuario.nombre }}</h2>
+            <p class="cv-cabecera-datos">
+              <app-estado-conexion [conexion]="a.otro_usuario.conexion" />
+              <app-estrellas [calificacion]="a.otro_usuario.calificacion" />
+            </p>
             <p class="cr-muted">{{ a.titulo_publicacion }}</p>
           </div>
-          <span [class]="'cv-estado cv-estado-' + chat.estado()">
-            @switch (chat.estado()) {
-              @case ('conectado') {
-                En línea
-              }
-              @case ('conectando') {
-                Conectando…
-              }
-              @case ('reconectando') {
-                Reconectando…
-              }
-              @case ('rechazado') {
-                Desconectado
-              }
-              @default {
-                Desconectado
-              }
-            }
-          </span>
+          <!-- Estado de MI conexión con el chat: solo se muestra si hay un problema -->
+          @if (chat.estado() === 'conectando' || chat.estado() === 'reconectando') {
+            <span [class]="'cv-estado cv-estado-' + chat.estado()">
+              {{ chat.estado() === 'conectando' ? 'Conectando…' : 'Reconectando…' }}
+            </span>
+          }
+          @if (!finalizada()) {
+            <button
+              type="button"
+              class="cr-secundario cv-finalizar"
+              (click)="pedirFinalizar()"
+              [disabled]="confirmandoFinalizar()"
+            >
+              Finalizar chat
+            </button>
+          }
         </header>
+
+        @if (confirmandoFinalizar()) {
+          <div class="cv-confirmar" role="alertdialog" aria-labelledby="cv-confirmar-texto">
+            <p id="cv-confirmar-texto">
+              ¿Finalizar el chat con {{ a.otro_usuario.nombre }}? Ya no se podrán enviar mensajes y
+              los dos podrán calificarse.
+            </p>
+            <div class="cv-confirmar-acciones">
+              <button type="button" class="cr-secundario" (click)="cancelarFinalizar()">
+                Cancelar
+              </button>
+              <button
+                type="button"
+                class="cr-primario"
+                (click)="finalizar()"
+                [disabled]="finalizando()"
+              >
+                {{ finalizando() ? 'Finalizando…' : 'Sí, finalizar' }}
+              </button>
+            </div>
+            @if (errorFinalizar()) {
+              <p class="cv-error-envio" role="alert">{{ errorFinalizar() }}</p>
+            }
+          </div>
+        }
 
         @if (chat.estado() === 'rechazado') {
           <div class="cv-aviso" role="alert">
@@ -148,20 +185,88 @@
           }
         </div>
 
-        <form class="cv-envio" (submit)="$event.preventDefault(); enviar()">
-          <textarea
-            rows="2"
-            placeholder="Escribe un mensaje…"
-            aria-label="Mensaje"
-            [value]="texto()"
-            [attr.maxlength]="longitudMaxima"
-            (input)="escribir($event)"
-            (keydown)="alPresionarTecla($event)"
-          ></textarea>
-          <button type="submit" class="cr-primario" [disabled]="!puedeEnviar()">Enviar</button>
-        </form>
-        @if (errorEnvio()) {
-          <p class="cv-error-envio" role="alert">{{ errorEnvio() }}</p>
+        @if (finalizada()) {
+          <!-- CHAT FINALIZADO: solo lectura y reseña -->
+          <div class="cv-finalizado">
+            <p class="cv-finalizado-titulo">Este chat está finalizado.</p>
+            @if (!a.soy_vendedor) {
+              <p class="cr-muted">
+                Si quieres seguir hablando, vuelve a la publicación y pulsa «Chatear con el
+                vendedor».
+              </p>
+            }
+
+            @if (resenaEnviada(); as estrellas) {
+              <p class="cv-resena-gracias" role="status">
+                ¡Gracias! Calificaste a {{ a.otro_usuario.nombre }} con {{ estrellas }}
+                {{ estrellas === 1 ? 'estrella' : 'estrellas' }}.
+              </p>
+            } @else if (a.ya_califique) {
+              <p class="cr-muted">Ya calificaste a {{ a.otro_usuario.nombre }} en este chat.</p>
+            } @else {
+              <form class="cv-resena" (submit)="$event.preventDefault(); enviarResena()">
+                <p class="cv-resena-titulo" id="cv-resena-titulo">
+                  ¿Cómo fue tu experiencia con {{ a.otro_usuario.nombre }}?
+                </p>
+                <div
+                  class="cv-selector-estrellas"
+                  role="radiogroup"
+                  aria-labelledby="cv-resena-titulo"
+                  (mouseleave)="resaltarEstrellas(0)"
+                >
+                  @for (n of opcionesEstrellas; track n) {
+                    <button
+                      type="button"
+                      role="radio"
+                      [attr.aria-checked]="estrellasElegidas() === n"
+                      [attr.aria-label]="n + (n === 1 ? ' estrella' : ' estrellas')"
+                      [class.llena]="n <= (estrellasResaltadas() || estrellasElegidas())"
+                      (click)="elegirEstrellas(n)"
+                      (mouseenter)="resaltarEstrellas(n)"
+                      (focus)="resaltarEstrellas(n)"
+                      (blur)="resaltarEstrellas(0)"
+                    >
+                      ★
+                    </button>
+                  }
+                </div>
+                <textarea
+                  rows="2"
+                  placeholder="Cuéntale a otros cómo te fue (opcional)"
+                  aria-label="Comentario de la reseña"
+                  [value]="comentarioResena()"
+                  [attr.maxlength]="longitudMaximaComentario"
+                  (input)="escribirComentario($event)"
+                ></textarea>
+                <button
+                  type="submit"
+                  class="cr-primario"
+                  [disabled]="enviandoResena() || estrellasElegidas() === 0"
+                >
+                  {{ enviandoResena() ? 'Enviando…' : 'Enviar reseña' }}
+                </button>
+                @if (errorResena()) {
+                  <p class="cv-error-envio" role="alert">{{ errorResena() }}</p>
+                }
+              </form>
+            }
+          </div>
+        } @else {
+          <form class="cv-envio" (submit)="$event.preventDefault(); enviar()">
+            <textarea
+              rows="2"
+              placeholder="Escribe un mensaje…"
+              aria-label="Mensaje"
+              [value]="texto()"
+              [attr.maxlength]="longitudMaxima"
+              (input)="escribir($event)"
+              (keydown)="alPresionarTecla($event)"
+            ></textarea>
+            <button type="submit" class="cr-primario" [disabled]="!puedeEnviar()">Enviar</button>
+          </form>
+          @if (errorEnvio()) {
+            <p class="cv-error-envio" role="alert">{{ errorEnvio() }}</p>
+          }
         }
       }
     </section>

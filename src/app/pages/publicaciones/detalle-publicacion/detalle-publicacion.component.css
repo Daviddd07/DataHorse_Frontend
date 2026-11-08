@@ -346,6 +346,11 @@
   font-weight: 500;
 }
 
+/* Estrellas del vendedor, bajo su nombre */
+.dp-estrellas {
+  margin-top: 4px;
+}
+
 /* PRECIO */
 .dp-precio {
   display: flex;

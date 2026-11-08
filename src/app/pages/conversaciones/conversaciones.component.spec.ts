@@ -4,7 +4,12 @@ import { ActivatedRoute, Router, convertToParamMap, provideRouter } from '@angul
 import { BehaviorSubject, Subject, of, throwError } from 'rxjs';
 import { ConversacionesComponent } from './conversaciones.component';
 import { ChatWebSocketService, EstadoChat } from '../../Services/chat-websocket.service';
-import { AvisoMensaje, NotificacionesService } from '../../Services/notificaciones.service';
+import {
+  AvisoMensaje,
+  CambioPresencia,
+  ConversacionFinalizada,
+  NotificacionesService,
+} from '../../Services/notificaciones.service';
 import {
   ConversacionService,
   MensajeChat,
@@ -41,6 +46,7 @@ class ChatFalso {
   mensajes$ = new Subject<MensajeChat>();
   errores$ = new Subject<string>();
   conectado$ = new Subject<void>();
+  finalizada$ = new Subject<number>();
   conectar = vi.fn((_id: number) => this.estado.set('conectado'));
   desconectar = vi.fn();
   enviar = vi.fn((_contenido: string) => true);
@@ -55,6 +61,8 @@ describe('ConversacionesComponent', () => {
   let conversaciones: Record<string, ReturnType<typeof vi.fn>>;
   let notificaciones: {
     avisos$: Subject<AvisoMensaje>;
+    presencia$: Subject<CambioPresencia>;
+    finalizadas$: Subject<ConversacionFinalizada>;
     abrirConversacion: ReturnType<typeof vi.fn>;
     cerrarConversacion: ReturnType<typeof vi.fn>;
     refrescarConteo: ReturnType<typeof vi.fn>;
@@ -88,12 +96,20 @@ describe('ConversacionesComponent', () => {
     chat = new ChatFalso();
     notificaciones = {
       avisos$: new Subject<AvisoMensaje>(),
+      presencia$: new Subject<CambioPresencia>(),
+      finalizadas$: new Subject<ConversacionFinalizada>(),
       abrirConversacion: vi.fn(),
       cerrarConversacion: vi.fn(),
       refrescarConteo: vi.fn(),
     };
     conversaciones = {
       marcarLeidos: vi.fn().mockReturnValue(of({ marcados: 1 })),
+      finalizar: vi.fn().mockReturnValue(of({ id_conversacion: 3, estado: 'finalizada' })),
+      calificar: vi
+        .fn()
+        .mockReturnValue(
+          of({ resena: { id_resena: 1 }, calificacion_evaluado: { promedio: 4.5, total: 2 } }),
+        ),
       listar: vi.fn().mockReturnValue(of([resumen(), resumen({ id_conversacion: 4 })])),
       obtener: vi.fn().mockReturnValue(
         of({
@@ -112,7 +128,8 @@ describe('ConversacionesComponent', () => {
     expect(component.mensajes().length).toBe(2);
     fixture.detectChanges();
     expect(texto()).toContain('Buenas');
-    expect(texto()).toContain('En línea');
+    // Sin datos de conexión del otro participante se muestra "Inactivo"
+    expect(texto()).toContain('Inactivo');
   });
 
   it('should show each user avatar left of the name (photo or initial)', async () => {
@@ -136,7 +153,10 @@ describe('ConversacionesComponent', () => {
     );
 
     // El avatar va antes del nombre, en la lista y en la cabecera del chat
-    expect(html.querySelector('.cv-item')?.firstElementChild?.tagName).toBe('APP-AVATAR');
+    // (en la lista el avatar va junto al punto de "en línea")
+    const primero = html.querySelector('.cv-item')?.firstElementChild;
+    expect(primero?.classList.contains('cv-avatar-con-estado')).toBe(true);
+    expect(primero?.firstElementChild?.tagName).toBe('APP-AVATAR');
     expect(html.querySelector('.cv-cabecera app-avatar')?.textContent?.trim()).toBe('V');
   });
 
@@ -381,5 +401,272 @@ describe('ConversacionesComponent', () => {
     await crear();
     params.next(convertToParamMap({}));
     expect(notificaciones.cerrarConversacion).toHaveBeenCalled();
+  });
+
+  /* ---------- Estrellas y estado en línea ---------- */
+
+  const conDatos = (r: Partial<ResumenConversacion> = {}) =>
+    resumen({
+      otro_usuario: {
+        id: 10,
+        nombre: 'Vendedor',
+        calificacion: { promedio: 4.5, total: 8 },
+        conexion: { en_linea: true, ultima_conexion: '2026-11-08T10:00:00' },
+      },
+      ...r,
+    });
+
+  it('should show the stars and online status of the other person', async () => {
+    conversaciones['listar'].mockReturnValue(of([conDatos()]));
+    conversaciones['obtener'].mockReturnValue(of({ conversacion: conDatos(), mensajes: [] }));
+    await crear();
+    fixture.detectChanges();
+    const cabecera = fixture.nativeElement.querySelector('.cv-cabecera') as HTMLElement;
+    expect(cabecera.textContent).toContain('En línea');
+    expect(cabecera.querySelector('app-estrellas')?.getAttribute('aria-label')).toBe(
+      '4,5 de 5 estrellas, 8 reseñas',
+    );
+    expect(fixture.nativeElement.querySelector('.cv-item app-estrellas')).not.toBeNull();
+  });
+
+  it('should update the online status when a contact comes and goes', async () => {
+    conversaciones['listar'].mockReturnValue(of([conDatos()]));
+    conversaciones['obtener'].mockReturnValue(of({ conversacion: conDatos(), mensajes: [] }));
+    await crear();
+
+    notificaciones.presencia$.next({
+      id_usuario: 10,
+      en_linea: false,
+      ultima_conexion: '2026-11-08T10:05:00',
+    });
+    notificaciones.presencia$.next({ id_usuario: 99, en_linea: true, ultima_conexion: null });
+
+    expect(component.activa()?.otro_usuario.conexion).toEqual({
+      en_linea: false,
+      ultima_conexion: '2026-11-08T10:05:00',
+    });
+    expect(component.lista()[0].otro_usuario.conexion?.en_linea).toBe(false);
+  });
+
+  it('should show my own connection problems only while reconnecting', async () => {
+    await crear();
+    chat.estado.set('reconectando');
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('.cv-estado')?.textContent).toContain(
+      'Reconectando',
+    );
+    chat.estado.set('conectado');
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('.cv-estado')).toBeNull();
+  });
+
+  /* ---------- Finalizar el chat ---------- */
+
+  it('should ask for confirmation and finalize the chat', async () => {
+    await crear();
+    fixture.detectChanges();
+    (fixture.nativeElement.querySelector('.cv-finalizar') as HTMLButtonElement).click();
+    fixture.detectChanges();
+    expect(texto()).toContain('¿Finalizar el chat con Vendedor?');
+
+    component.finalizar();
+    fixture.detectChanges();
+
+    expect(conversaciones['finalizar']).toHaveBeenCalledWith(3);
+    expect(component.finalizada()).toBe(true);
+    expect(component.confirmandoFinalizar()).toBe(false);
+    expect(component.lista()[0].finalizada).toBe(true);
+    expect(fixture.nativeElement.querySelector('.cv-envio')).toBeNull();
+    expect(texto()).toContain('Este chat está finalizado.');
+    expect(texto()).toContain('¿Cómo fue tu experiencia con Vendedor?');
+    expect(component.puedeEnviar()).toBe(false);
+  });
+
+  it('should cancel finalizing', async () => {
+    await crear();
+    component.pedirFinalizar();
+    component.cancelarFinalizar();
+    expect(component.confirmandoFinalizar()).toBe(false);
+    expect(conversaciones['finalizar']).not.toHaveBeenCalled();
+  });
+
+  it('should show an error if finalizing fails and ignore double clicks', async () => {
+    const pendiente = new Subject<unknown>();
+    conversaciones['finalizar'].mockReturnValue(pendiente);
+    await crear();
+    component.finalizar();
+    component.finalizar();
+    expect(conversaciones['finalizar']).toHaveBeenCalledTimes(1);
+    pendiente.error(new Error('500'));
+    expect(component.errorFinalizar()).toBe('No se pudo finalizar el chat. Intenta de nuevo.');
+    expect(component.finalizada()).toBe(false);
+  });
+
+  it('should not finalize without an active conversation', async () => {
+    await crear(null);
+    component.finalizar();
+    expect(conversaciones['finalizar']).not.toHaveBeenCalled();
+  });
+
+  it('should close the chat when the other person finalizes it', async () => {
+    await crear();
+    component.pedirFinalizar();
+    chat.finalizada$.next(10);
+    expect(component.finalizada()).toBe(true);
+    expect(component.confirmandoFinalizar()).toBe(false);
+  });
+
+  it('should ignore a finalized event without an active conversation', async () => {
+    await crear(null);
+    chat.finalizada$.next(10);
+    expect(component.lista().every((c) => !c.finalizada)).toBe(true);
+  });
+
+  it('should mark in the list the conversations finalized by others', async () => {
+    await crear();
+    notificaciones.finalizadas$.next({ id_conversacion: 4, por: 'Vendedor' });
+    expect(component.lista().find((c) => c.id_conversacion === 4)?.finalizada).toBe(true);
+    expect(component.finalizada()).toBe(false);
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('.cv-etiqueta-finalizada')).not.toBeNull();
+  });
+
+  it('should reopen the chat when a new message arrives', async () => {
+    conversaciones['obtener'].mockReturnValue(
+      of({ conversacion: resumen({ finalizada: true, estado: 'finalizada' }), mensajes: [] }),
+    );
+    await crear();
+    expect(component.finalizada()).toBe(true);
+    chat.mensajes$.next(mensaje({ id_mensaje: 20, id_usuario: 10 }));
+    expect(component.finalizada()).toBe(false);
+    expect(component.lista()[0].finalizada).toBe(false);
+  });
+
+  /* ---------- Reseña ---------- */
+
+  const abrirFinalizada = async (r: Partial<ResumenConversacion> = {}) => {
+    conversaciones['obtener'].mockReturnValue(
+      of({
+        conversacion: resumen({
+          finalizada: true,
+          estado: 'finalizada',
+          ya_califique: false,
+          ...r,
+        }),
+        mensajes: [],
+      }),
+    );
+    await crear();
+    fixture.detectChanges();
+  };
+
+  it('should rate the other person from 1 to 5 stars with a comment', async () => {
+    await abrirFinalizada();
+    const estrellas = Array.from(
+      fixture.nativeElement.querySelectorAll('.cv-selector-estrellas button'),
+    ) as HTMLButtonElement[];
+    expect(estrellas.length).toBe(5);
+
+    estrellas[3].dispatchEvent(new Event('mouseenter'));
+    fixture.detectChanges();
+    expect(estrellas.filter((b) => b.classList.contains('llena')).length).toBe(4);
+    estrellas[3].click();
+    estrellas[3].dispatchEvent(new Event('blur'));
+
+    const area = fixture.nativeElement.querySelector('.cv-resena textarea') as HTMLTextAreaElement;
+    area.value = '  Muy serio  ';
+    area.dispatchEvent(new Event('input'));
+    component.enviarResena();
+    fixture.detectChanges();
+
+    expect(conversaciones['calificar']).toHaveBeenCalledWith(3, 4, 'Muy serio');
+    expect(component.activa()?.ya_califique).toBe(true);
+    expect(component.activa()?.otro_usuario.calificacion).toEqual({ promedio: 4.5, total: 2 });
+    expect(component.lista()[0].otro_usuario.calificacion).toEqual({ promedio: 4.5, total: 2 });
+    expect(texto()).toContain('¡Gracias! Calificaste a Vendedor con 4 estrellas.');
+  });
+
+  it('should say "estrella" in singular for one star and send no empty comment', async () => {
+    await abrirFinalizada();
+    component.elegirEstrellas(1);
+    component.enviarResena();
+    fixture.detectChanges();
+    expect(conversaciones['calificar']).toHaveBeenCalledWith(3, 1, null);
+    expect(texto()).toContain('con 1 estrella.');
+  });
+
+  it('should require choosing the stars', async () => {
+    await abrirFinalizada();
+    component.enviarResena();
+    expect(component.errorResena()).toBe('Elige de 1 a 5 estrellas.');
+    expect(conversaciones['calificar']).not.toHaveBeenCalled();
+  });
+
+  it('should not send a review without an active conversation', async () => {
+    await crear(null);
+    component.elegirEstrellas(5);
+    component.enviarResena();
+    expect(conversaciones['calificar']).not.toHaveBeenCalled();
+  });
+
+  it('should treat a duplicated review as already rated', async () => {
+    conversaciones['calificar'].mockReturnValue(throwError(() => ({ status: 409 })));
+    await abrirFinalizada();
+    component.elegirEstrellas(5);
+    component.enviarResena();
+    fixture.detectChanges();
+    expect(component.activa()?.ya_califique).toBe(true);
+    expect(component.errorResena()).toBe('');
+    expect(texto()).toContain('Ya calificaste a Vendedor en este chat.');
+  });
+
+  it('should show an error if the review fails', async () => {
+    conversaciones['calificar'].mockReturnValue(throwError(() => ({ status: 500 })));
+    await abrirFinalizada();
+    component.elegirEstrellas(3);
+    component.enviarResena();
+    expect(component.errorResena()).toBe('No se pudo guardar tu reseña. Intenta de nuevo.');
+    expect(component.enviandoResena()).toBe(false);
+  });
+
+  it('should ignore the review answer if the conversation was closed meanwhile', async () => {
+    const pendiente = new Subject<unknown>();
+    conversaciones['calificar'].mockReturnValue(pendiente);
+    await abrirFinalizada();
+    component.elegirEstrellas(5);
+    component.enviarResena();
+    component.enviarResena(); // doble clic mientras se envía
+    expect(conversaciones['calificar']).toHaveBeenCalledTimes(1);
+    component.activa.set(null);
+    pendiente.next({ resena: {}, calificacion_evaluado: { promedio: 5, total: 1 } });
+    expect(component.resenaEnviada()).toBe(5);
+  });
+
+  it('should ignore a 409 if the conversation was closed meanwhile', async () => {
+    const pendiente = new Subject<unknown>();
+    conversaciones['calificar'].mockReturnValue(pendiente);
+    await abrirFinalizada();
+    component.elegirEstrellas(5);
+    component.enviarResena();
+    component.activa.set(null);
+    pendiente.error({ status: 409 });
+    expect(component.errorResena()).toBe('No se pudo guardar tu reseña. Intenta de nuevo.');
+  });
+
+  it('should not ask for a review I already left', async () => {
+    await abrirFinalizada({ ya_califique: true });
+    expect(fixture.nativeElement.querySelector('.cv-resena')).toBeNull();
+    expect(texto()).toContain('Ya calificaste a Vendedor en este chat.');
+  });
+
+  it('should tell the buyer how to reopen a finalized chat, but not the seller', async () => {
+    await abrirFinalizada();
+    expect(texto()).toContain('«Chatear con el vendedor»');
+    conversaciones['obtener'].mockReturnValue(
+      of({ conversacion: resumen({ finalizada: true, soy_vendedor: true }), mensajes: [] }),
+    );
+    params.next(convertToParamMap({ id: '4' }));
+    fixture.detectChanges();
+    expect(texto()).not.toContain('«Chatear con el vendedor»');
   });
 });

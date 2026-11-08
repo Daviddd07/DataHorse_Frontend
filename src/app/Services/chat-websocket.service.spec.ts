@@ -228,4 +228,16 @@ describe('ChatWebSocketService', () => {
     service.ngOnDestroy();
     expect(completo).toHaveBeenCalled();
   });
+
+  it('should tell when the chat is finalized and by whom', () => {
+    const finalizada = vi.fn();
+    service.finalizada$.subscribe(finalizada);
+    service.conectar(3);
+    service.ultimo.abrir();
+
+    service.ultimo.recibir({ tipo: 'finalizada', por: 10 });
+    service.ultimo.recibir({ tipo: 'finalizada' });
+
+    expect(finalizada.mock.calls).toEqual([[10], [0]]);
+  });
 });
