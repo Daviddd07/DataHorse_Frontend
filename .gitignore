@@ -45,3 +45,14 @@ Thumbs.db
 
 # SonarQube
 /.scannerwork
+
+# Variables de entorno
+.env
+.env.*
+
+# Caché de Angular completa y restos de herramientas de Python
+/.angular
+.pytest_cache/
+
+# Copias de seguridad locales
+*.bak
