@@ -310,6 +310,11 @@
         </button>
       </div>
 
+      <!-- DOCUMENTOS DE RESPALDO (opcional, solo machos). Se guardan al instante con su propio botón. -->
+      <div class="ec-fotos-field ec-full" *ngIf="c.sexo === 'Macho'">
+        <app-documentos-caballo [idCaballo]="idCaballo()" [gestionar]="true" />
+      </div>
+
       <!-- BOTONES DE ACCIÓN (Guardar, Cancelar, Eliminar) -->
       <div class="ec-actions ec-full">
         <button type="button" class="ec-btn ec-btn-danger" (click)="pedirEliminarCaballo()">

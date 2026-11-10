@@ -18,6 +18,7 @@ import {
 } from '../../Services/caballo.service';
 
 import { DescendenciaFormComponent } from '../../components/descendencia-form/descendencia-form.component';
+import { DocumentosCaballoComponent } from '../../components/documentos-caballo/documentos-caballo.component';
 
 import { environment } from '../../../environments/environment';
 
@@ -29,7 +30,7 @@ interface FotoVista extends FotoCaballoDetalle {
   selector: 'app-editar-caballo',
   standalone: true,
 
-  imports: [CommonModule, FormsModule, DescendenciaFormComponent],
+  imports: [CommonModule, FormsModule, DescendenciaFormComponent, DocumentosCaballoComponent],
 
   templateUrl: './editar-caballo.component.html',
 

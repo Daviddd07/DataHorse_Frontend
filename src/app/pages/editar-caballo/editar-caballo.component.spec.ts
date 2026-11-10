@@ -4,6 +4,12 @@ import { of, throwError } from 'rxjs';
 import { EditarCaballoComponent } from './editar-caballo.component';
 import { AuthService } from '../../Services/auth.service';
 import { CaballoDetalle, CaballoService } from '../../Services/caballo.service';
+import { DocumentoService } from '../../Services/documento.service';
+
+// Sin esto la sección de documentos hacía peticiones HTTP reales al backend durante los tests
+const documentosMock = {
+  listar: vi.fn().mockReturnValue(of({ es_propietario: true, documentos: [] })),
+};
 
 const CABALLO: CaballoDetalle = {
   id_caballo: 7,
@@ -40,6 +46,7 @@ describe('EditarCaballoComponent', () => {
         provideRouter([]),
         { provide: AuthService, useValue: auth },
         { provide: CaballoService, useValue: caballos },
+        { provide: DocumentoService, useValue: documentosMock },
         {
           provide: ActivatedRoute,
           useValue: { snapshot: { paramMap: convertToParamMap(id ? { id } : {}) } },
@@ -81,6 +88,19 @@ describe('EditarCaballoComponent', () => {
       expect(component.fotos()[0].urlCompleta).toContain('/uploads/a.png');
       expect(component.cargando()).toBe(false);
       expect(component.descendencia()).toEqual({ padre_nombre: 'Tormenta', modalidad: 'Trocha' });
+    });
+
+    it('muestra la sección de documentos solo para machos', async () => {
+      await crear();
+      fixture.detectChanges();
+      expect(fixture.nativeElement.querySelector('app-documentos-caballo')).not.toBeNull();
+      expect(documentosMock.listar).toHaveBeenCalledWith(7);
+
+      TestBed.resetTestingModule();
+      caballos['obtenerCaballo'].mockReturnValue(of({ ...CABALLO, sexo: 'Hembra' }));
+      await crear();
+      fixture.detectChanges();
+      expect(fixture.nativeElement.querySelector('app-documentos-caballo')).toBeNull();
     });
 
     it('should start with an empty descendencia when none was saved', async () => {

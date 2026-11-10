@@ -155,6 +155,10 @@
 }
 
 .dp-heading-text h1 {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
   margin: 0 0 6px;
   font-size: 2rem;
   font-weight: 800;
@@ -394,6 +398,13 @@
 /* DESCRIPCIÓN */
 .dp-descripcion {
   padding-top: 10px;
+}
+
+.dp-documentos {
+  padding: 16px;
+  border: 1px solid rgba(230, 168, 23, 0.25);
+  border-radius: 14px;
+  background: rgba(230, 168, 23, 0.05);
 }
 
 .dp-descripcion h2 {

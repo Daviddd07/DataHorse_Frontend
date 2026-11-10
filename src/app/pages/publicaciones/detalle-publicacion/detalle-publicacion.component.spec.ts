@@ -4,6 +4,12 @@ import { of, throwError } from 'rxjs';
 import { DetallePublicacionComponent } from './detalle-publicacion.component';
 import { CaballoService, PublicacionDetalle } from '../../../Services/caballo.service';
 import { ConversacionService } from '../../../Services/conversacion.service';
+import { DocumentoService } from '../../../Services/documento.service';
+
+// Sin esto la sección de documentos haría peticiones HTTP reales al backend durante los tests
+const documentosMock = {
+  listar: vi.fn().mockReturnValue(of({ es_propietario: false, documentos: [] })),
+};
 
 const haceTiempo = (anios: number, meses: number) => {
   const d = new Date();
@@ -59,6 +65,7 @@ describe('DetallePublicacionComponent', () => {
         provideRouter([]),
         { provide: CaballoService, useValue: caballos },
         { provide: ConversacionService, useValue: conversaciones },
+        { provide: DocumentoService, useValue: documentosMock },
         {
           provide: ActivatedRoute,
           useValue: { snapshot: { paramMap: convertToParamMap(id ? { id } : {}) } },
@@ -93,6 +100,21 @@ describe('DetallePublicacionComponent', () => {
     expect(component.fotoActiva()).toBe(1);
     expect(component.cargando()).toBe(false);
     expect(fixture.nativeElement.textContent).toContain('Rayo');
+  });
+
+  it('muestra el sello y los documentos solo si el caballo tiene', async () => {
+    await crear();
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('app-sello-respaldo')).toBeNull();
+    expect(fixture.nativeElement.querySelector('app-documentos-caballo')).toBeNull();
+
+    TestBed.resetTestingModule();
+    caballos['obtenerPublicacion'].mockReturnValue(of(detalle({ tiene_documentos: true })));
+    await crear();
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('app-sello-respaldo')).not.toBeNull();
+    expect(fixture.nativeElement.querySelector('app-documentos-caballo')).not.toBeNull();
+    expect(documentosMock.listar).toHaveBeenCalledWith(7);
   });
 
   it('should default to the first photo without a main one', async () => {

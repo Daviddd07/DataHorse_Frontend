@@ -58,7 +58,10 @@
       </button>
 
       <div class="dp-heading-text">
-        <h1>{{ p.nombre }}</h1>
+        <h1>
+          {{ p.nombre }}
+          <app-sello-respaldo *ngIf="p.tiene_documentos" [tamano]="26" />
+        </h1>
         <p>{{ p.raza }} · {{ p.sexo }} · {{ edad() }}</p>
       </div>
     </div>
@@ -195,6 +198,11 @@
         <div class="dp-descripcion">
           <h2>Descripción</h2>
           <p>{{ p.descripcion }}</p>
+        </div>
+
+        <!-- DOCUMENTOS DE RESPALDO (solo ver; el dueño los gestiona en Editar caballo) -->
+        <div class="dp-documentos" *ngIf="p.tiene_documentos">
+          <app-documentos-caballo [idCaballo]="p.id_caballo" />
         </div>
 
         <!-- ACCIONES -->

@@ -168,6 +168,9 @@ export interface Publicacion {
 
   es_favorita: boolean;
 
+  // Tiene documentos de respaldo (pedigrí, premios...) aportados por el propietario
+  tiene_documentos?: boolean;
+
   foto_principal?: string | null;
 }
 
@@ -208,6 +211,8 @@ export interface PublicacionDetalle {
 
   es_mia: boolean;
   es_favorita: boolean;
+
+  tiene_documentos?: boolean;
 
   fotos: FotoDetalle[];
 }

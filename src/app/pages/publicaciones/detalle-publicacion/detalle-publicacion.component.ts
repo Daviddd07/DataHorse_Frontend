@@ -10,13 +10,24 @@ import { Calificacion, ConversacionService } from '../../../Services/conversacio
 
 import { EstrellasComponent } from '../../../components/estrellas/estrellas.component';
 
+import { DocumentosCaballoComponent } from '../../../components/documentos-caballo/documentos-caballo.component';
+
+import { SelloRespaldoComponent } from '../../../components/sello-respaldo/sello-respaldo.component';
+
 import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-detalle-publicacion',
   standalone: true,
 
-  imports: [CommonModule, CurrencyPipe, DatePipe, EstrellasComponent],
+  imports: [
+    CommonModule,
+    CurrencyPipe,
+    DatePipe,
+    EstrellasComponent,
+    DocumentosCaballoComponent,
+    SelloRespaldoComponent,
+  ],
 
   templateUrl: './detalle-publicacion.component.html',
 

@@ -292,6 +292,13 @@
           </ul>
         </div>
 
+        <!-- DOCUMENTOS DE RESPALDO (opcional, solo caballos machos) -->
+        <app-documentos-selector
+          *ngIf="sexo() === 'Macho'"
+          class="np-full"
+          [(pendientes)]="documentosPendientes"
+        />
+
         <!-- BOTÓN PUBLICAR -->
         <button class="np-submit np-full" type="button" [disabled]="enviando()" (click)="guardar()">
           {{

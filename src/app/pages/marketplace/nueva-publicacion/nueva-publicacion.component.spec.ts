@@ -4,6 +4,7 @@ import { of, throwError } from 'rxjs';
 import { NuevaPublicacionComponent } from './nueva-publicacion.component';
 import { CaballoService } from '../../../Services/caballo.service';
 import { LogService } from '../../../Services/log.service';
+import { DocumentoPendiente, DocumentoService } from '../../../Services/documento.service';
 
 const logMock = { debug: vi.fn(), info: vi.fn(), warn: vi.fn(), error: vi.fn(), flush: vi.fn() };
 
@@ -12,7 +13,13 @@ describe('NuevaPublicacionComponent', () => {
   let component: NuevaPublicacionComponent;
   let router: Router;
   let caballos: Record<string, ReturnType<typeof vi.fn>>;
+  let documentos: { subir: ReturnType<typeof vi.fn> };
   const foto = new File(['x'], 'foto.png', { type: 'image/png' });
+  const documento: DocumentoPendiente = {
+    archivo: new File(['%PDF-'], 'registro.pdf', { type: 'application/pdf' }),
+    tipo: 'pedigri',
+    titulo: 'Registro ASDE',
+  };
 
   const crear = async () => {
     await TestBed.configureTestingModule({
@@ -21,6 +28,7 @@ describe('NuevaPublicacionComponent', () => {
         provideRouter([]),
         { provide: LogService, useValue: logMock },
         { provide: CaballoService, useValue: caballos },
+        { provide: DocumentoService, useValue: documentos },
       ],
     }).compileComponents();
     router = TestBed.inject(Router);
@@ -51,6 +59,7 @@ describe('NuevaPublicacionComponent', () => {
       crear: vi.fn().mockReturnValue(of({ id_caballo: 99 })),
       subirFotos: vi.fn().mockReturnValue(of([])),
     };
+    documentos = { subir: vi.fn().mockReturnValue(of([])) };
   });
 
   it('should load the breeds', async () => {
@@ -275,6 +284,75 @@ describe('NuevaPublicacionComponent', () => {
       llenar();
       component.guardar();
       expect(component.error()).toBe('No se pudo guardar la publicación. Intenta de nuevo.');
+    });
+  });
+
+  describe('documentos de respaldo (opcionales)', () => {
+    beforeEach(() => crear());
+
+    it('muestra el selector solo para caballos machos', () => {
+      component.elegirTipo('Macho');
+      fixture.detectChanges();
+      expect(fixture.nativeElement.querySelector('app-documentos-selector')).not.toBeNull();
+
+      component.volver();
+      component.elegirTipo('Hembra');
+      fixture.detectChanges();
+      expect(fixture.nativeElement.querySelector('app-documentos-selector')).toBeNull();
+    });
+
+    it('publica sin documentos: no llama al servicio', () => {
+      llenar('Macho');
+      component.guardar();
+      expect(documentos.subir).not.toHaveBeenCalled();
+      expect(router.navigate).toHaveBeenCalledWith(['/marketplace']);
+    });
+
+    it('sube los documentos después de las fotos y luego va al marketplace', () => {
+      llenar('Macho');
+      component.documentosPendientes.set([documento]);
+      component.guardar();
+      expect(caballos['subirFotos']).toHaveBeenCalledWith(99, [foto]);
+      expect(documentos.subir).toHaveBeenCalledWith(99, [documento]);
+      expect(router.navigate).toHaveBeenCalledWith(['/marketplace']);
+    });
+
+    it('elegir yegua descarta los documentos elegidos', () => {
+      component.elegirTipo('Macho');
+      component.documentosPendientes.set([documento]);
+      component.volver();
+      component.elegirTipo('Hembra');
+      expect(component.documentosPendientes()).toEqual([]);
+    });
+
+    it('no crea el caballo si un documento tiene un título inválido', () => {
+      llenar('Macho');
+      component.documentosPendientes.set([{ ...documento, titulo: ' ' }]);
+      component.guardar();
+      expect(caballos['crear']).not.toHaveBeenCalled();
+      expect(component.error()).toContain('Documentos de respaldo');
+    });
+
+    it('si fallan los documentos avisa que el caballo sí se publicó', () => {
+      documentos.subir.mockReturnValue(throwError(() => ({ error: { detail: 'Máximo 10' } })));
+      llenar('Macho');
+      component.documentosPendientes.set([documento]);
+      component.guardar();
+      expect(component.error()).toContain('El caballo se publicó');
+      expect(component.error()).toContain('(Máximo 10)');
+      expect(component.enviando()).toBe(false);
+      expect(router.navigate).not.toHaveBeenCalled();
+    });
+
+    it('sin fotos sube los documentos igual', () => {
+      llenar('Macho');
+      component.documentosPendientes.set([documento]);
+      caballos['crear'].mockImplementation(() => {
+        component.fotosSeleccionadas.set([]);
+        return of({ id_caballo: 99 });
+      });
+      component.guardar();
+      expect(documentos.subir).toHaveBeenCalledWith(99, [documento]);
     });
   });
 });

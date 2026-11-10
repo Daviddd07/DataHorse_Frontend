@@ -588,9 +588,19 @@
   margin-bottom: 6px;
 }
 .card-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
   font-size: 20px;
   font-weight: 700;
   margin-bottom: 5px;
+}
+/* El nombre se recorta si es largo, pero el sello siempre queda visible */
+.card-title-texto {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .card-loc {
   font-size: 13px;

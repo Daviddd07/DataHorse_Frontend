@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 
 import { HttpClient } from '@angular/common/http';
 
-import { Observable, catchError, map, of } from 'rxjs';
+import { Observable, catchError, map, of, shareReplay, tap, throwError } from 'rxjs';
 
 import { environment } from '../../environments/environment';
 
@@ -40,18 +40,20 @@ export class AuthService {
   // =====================================================
 
   login(correo: string, contrasena: string): Observable<{ mensaje: string }> {
-    return this.http.post<{ mensaje: string }>(
-      `${this.apiUrl}/auth/login`,
+    return this.http
+      .post<{ mensaje: string }>(
+        `${this.apiUrl}/auth/login`,
 
-      {
-        correo: correo,
-        password: contrasena,
-      },
+        {
+          correo: correo,
+          password: contrasena,
+        },
 
-      {
-        withCredentials: true,
-      },
-    );
+        {
+          withCredentials: true,
+        },
+      )
+      .pipe(tap(() => this.olvidarUsuario()));
   }
 
   // =====================================================
@@ -59,17 +61,19 @@ export class AuthService {
   // =====================================================
 
   google(credential: string): Observable<GoogleAuthResponse> {
-    return this.http.post<GoogleAuthResponse>(
-      `${this.apiUrl}/auth/google`,
+    return this.http
+      .post<GoogleAuthResponse>(
+        `${this.apiUrl}/auth/google`,
 
-      {
-        credential: credential,
-      },
+        {
+          credential: credential,
+        },
 
-      {
-        withCredentials: true,
-      },
-    );
+        {
+          withCredentials: true,
+        },
+      )
+      .pipe(tap(() => this.olvidarUsuario()));
   }
 
   // =====================================================
@@ -111,21 +115,47 @@ export class AuthService {
       {
         withCredentials: true,
       },
-    );
+    ).pipe(tap(() => this.olvidarUsuario()));
   }
 
   // =====================================================
   // USUARIO ACTUAL
   // =====================================================
 
-  me(): Observable<UsuarioSesion> {
-    return this.http.get<UsuarioSesion>(
-      `${this.apiUrl}/auth/me`,
+  // El guard de la ruta y la página piden el usuario casi a la vez: con esta caché
+  // corta comparten UNA petición. Es corta a propósito: en cada navegación
+  // posterior se vuelve a comprobar que la sesión siga viva.
+  private static readonly CACHE_ME_MS = 5000;
 
-      {
-        withCredentials: true,
-      },
-    );
+  private meEnCurso: Observable<UsuarioSesion> | null = null;
+
+  private meDesde = 0;
+
+  me(): Observable<UsuarioSesion> {
+    const vigente = this.meEnCurso && Date.now() - this.meDesde < AuthService.CACHE_ME_MS;
+
+    if (!vigente) {
+      this.meDesde = Date.now();
+
+      this.meEnCurso = this.http
+        .get<UsuarioSesion>(`${this.apiUrl}/auth/me`, { withCredentials: true })
+        .pipe(
+          // Un error (p. ej. sesión vencida) no se guarda: la próxima vez se pregunta de nuevo
+          catchError((error: unknown) => {
+            this.olvidarUsuario();
+            return throwError(() => error);
+          }),
+          shareReplay({ bufferSize: 1, refCount: false }),
+        );
+    }
+
+    return this.meEnCurso!;
+  }
+
+  /** Descarta el usuario guardado (al iniciar o cerrar sesión, o si cambian sus datos). */
+  olvidarUsuario(): void {
+    this.meEnCurso = null;
+    this.meDesde = 0;
   }
 
   // =====================================================
@@ -145,6 +175,9 @@ export class AuthService {
   // =====================================================
 
   logout(): Observable<{ mensaje: string }> {
+    // Se olvida antes de salir: aunque falle la petición, no debe quedar un usuario guardado
+    this.olvidarUsuario();
+
     return this.http.post<{ mensaje: string }>(
       `${this.apiUrl}/auth/logout`,
 

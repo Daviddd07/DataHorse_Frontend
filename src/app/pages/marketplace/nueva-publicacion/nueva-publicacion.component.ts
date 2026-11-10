@@ -15,6 +15,13 @@ import {
 
 import { DescendenciaFormComponent } from '../../../components/descendencia-form/descendencia-form.component';
 
+import {
+  DocumentosSelectorComponent,
+  errorDePendientes,
+} from '../../../components/documentos-selector/documentos-selector.component';
+
+import { DocumentoPendiente, DocumentoService } from '../../../Services/documento.service';
+
 import { LogService } from '../../../Services/log.service';
 
 type Paso = 'tipo' | 'formulario';
@@ -23,7 +30,7 @@ type Paso = 'tipo' | 'formulario';
   selector: 'app-nueva-publicacion',
   standalone: true,
 
-  imports: [CommonModule, FormsModule, DescendenciaFormComponent],
+  imports: [CommonModule, FormsModule, DescendenciaFormComponent, DocumentosSelectorComponent],
 
   templateUrl: './nueva-publicacion.component.html',
 
@@ -35,6 +42,8 @@ export class NuevaPublicacionComponent {
   private readonly router = inject(Router);
 
   private readonly log = inject(LogService);
+
+  private readonly documentoService = inject(DocumentoService);
 
   // ======================================================
   // PASOS
@@ -98,6 +107,9 @@ export class NuevaPublicacionComponent {
 
   fotosSeleccionadas = signal<File[]>([]);
 
+  // Documentos de respaldo: opcionales y solo para caballos machos
+  documentosPendientes = signal<DocumentoPendiente[]>([]);
+
   // Variable para obtener la fecha de hoy en formato YYYY-MM-DD
   hoy = new Date().toISOString().split('T')[0];
 
@@ -129,9 +141,10 @@ export class NuevaPublicacionComponent {
     this.error.set('');
     this.exito.set('');
 
-    // Las yeguas no manejan precio
+    // Las yeguas no manejan precio ni documentos de respaldo
     if (sexo === 'Hembra') {
       this.precio.set(null);
+      this.documentosPendientes.set([]);
     }
 
     this.paso.set('formulario');
@@ -332,6 +345,18 @@ export class NuevaPublicacionComponent {
     }
 
     // ==================================================
+    // DOCUMENTOS (opcionales): se revisan antes de crear el caballo
+    // ==================================================
+
+    const errorDocumentos = errorDePendientes(this.documentosPendientes());
+
+    if (errorDocumentos) {
+      this.error.set(`Documentos de respaldo: ${errorDocumentos}`);
+
+      return;
+    }
+
+    // ==================================================
     // CREAR OBJETO
     // ==================================================
 
@@ -391,6 +416,7 @@ export class NuevaPublicacionComponent {
             id_caballo: respuesta.id_caballo,
             sexo: this.sexo(),
             fotos: fotos.length,
+            documentos: documentos.length,
           });
 
           if (esYegua) {
@@ -400,14 +426,49 @@ export class NuevaPublicacionComponent {
           }
         };
 
+        // ============================================
+        // SUBIR DOCUMENTOS (opcionales, solo machos)
+        // ============================================
+
+        const documentos = esYegua ? [] : this.documentosPendientes();
+
+        const subirDocumentos = (): void => {
+          if (documentos.length === 0) {
+            finalizar();
+
+            return;
+          }
+
+          this.documentoService.subir(respuesta.id_caballo, documentos).subscribe({
+            next: () => finalizar(),
+
+            error: (err) => {
+              // El caballo ya quedó publicado: se avisa y se indica dónde reintentar
+              this.log.error('Caballo creado, pero fallaron los documentos', {
+                id_caballo: respuesta.id_caballo,
+                documentos: documentos.length,
+              });
+
+              this.enviando.set(false);
+
+              const detalle = typeof err?.error?.detail === 'string' ? ` (${err.error.detail})` : '';
+
+              this.error.set(
+                `El caballo se publicó, pero no se pudieron subir los documentos${detalle}. ` +
+                  'Puedes agregarlos desde "Mis caballos" → Editar.',
+              );
+            },
+          });
+        };
+
         if (fotos.length === 0) {
-          finalizar();
+          subirDocumentos();
 
           return;
         }
 
         this.caballoService.subirFotos(respuesta.id_caballo, fotos).subscribe({
-          next: () => finalizar(),
+          next: () => subirDocumentos(),
 
           error: (err) => {
             console.error('ERROR SUBIENDO FOTOS:', err);

@@ -522,7 +522,10 @@
             </div>
             <div class="card-body">
               <p class="card-tag">{{ h.raza }} · {{ h.sexo }}</p>
-              <h3 class="card-title">{{ h.nombre }}</h3>
+              <h3 class="card-title">
+                <span class="card-title-texto">{{ h.nombre }}</span>
+                <app-sello-respaldo *ngIf="h.conDocumentos" [tamano]="19" />
+              </h3>
               <p class="card-loc">{{ h.ubicacion }}</p>
               <div class="card-footer">
                 <span class="price" *ngIf="h.precio !== null">{{

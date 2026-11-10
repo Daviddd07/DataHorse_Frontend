@@ -18,6 +18,8 @@ import { CompatibilidadSelectorComponent } from './compatibilidad/compatibilidad
 
 import { LogoIaComponent } from '../../components/logo-ia/logo-ia.component';
 
+import { SelloRespaldoComponent } from '../../components/sello-respaldo/sello-respaldo.component';
+
 import { urlDeSubida } from '../../Services/cuenta.service';
 
 import { DockDirective } from '../../directives/dock.directive';
@@ -51,6 +53,9 @@ interface CaballoMarketplace {
 
   verificado: boolean;
 
+  // Documentos de respaldo aportados por el propietario (no verificados por DataHorse)
+  conDocumentos: boolean;
+
   calificacion: number;
 
   fondo: string;
@@ -76,6 +81,7 @@ interface CaballoMarketplace {
     CurrencyPipe,
     CompatibilidadSelectorComponent,
     LogoIaComponent,
+    SelloRespaldoComponent,
     DockDirective,
   ],
 
@@ -202,8 +208,9 @@ export class MarketplaceComponent {
           return caballo.esFavorito;
         }
 
+        // Caballos con documentos de respaldo (pedigrí, premios, pruebas genéticas)
         if (categoria === 'Pedigrí') {
-          return caballo.verificado;
+          return caballo.conDocumentos;
         }
 
         if (categoria === 'Proximidad') {
@@ -396,6 +403,8 @@ export class MarketplaceComponent {
             esFavorito: p.es_favorita,
 
             verificado: false,
+
+            conDocumentos: !!p.tiene_documentos,
 
             calificacion: 0,
 
