@@ -207,3 +207,94 @@
   height: 100%;
   object-fit: cover;
 }
+
+/* ======================================================
+   TABLET Y CELULAR: la misma píldora de vidrio pasa a ser una barra inferior
+   (como Instagram/WhatsApp). DockDirective apaga sola la magnificación y el
+   tooltip cuando la barra es horizontal (esVertical()).
+   Las páginas que la usan deben dejar espacio abajo (ver --alto-barra-inferior).
+====================================================== */
+@media (max-width: 1024px) {
+  .sidebar {
+    top: auto;
+    left: 50%;
+    right: auto;
+    bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+    transform: translateX(-50%);
+    width: max-content;
+    max-width: calc(100% - 24px);
+    height: 64px;
+    flex-direction: row;
+    justify-content: center;
+    gap: 4px;
+    padding: 0 10px;
+    border-radius: 32px;
+    background:
+      linear-gradient(
+        90deg,
+        rgba(181, 101, 29, 0.28),
+        rgba(181, 101, 29, 0.05) 45%,
+        rgba(20, 24, 28, 0.35)
+      ),
+      rgba(30, 35, 40, 0.72);
+  }
+
+  /* En horizontal el logo y los separadores ocupan espacio que necesitan los íconos */
+  .sidebar-logo,
+  .sidebar-separador {
+    display: none;
+  }
+
+  .sidebar-menu,
+  .sidebar-bottom {
+    flex-direction: row;
+    width: auto;
+    gap: 4px;
+  }
+
+  .sidebar-bottom {
+    margin-top: 0;
+  }
+
+  /* Sin magnificación vertical en la barra inferior */
+  .icon-btn,
+  .sidebar-avatar {
+    transform: none;
+    margin-block: 0;
+  }
+}
+
+/* Celular: íconos un poco más chicos para que quepan los 8 sin desbordar */
+@media (max-width: 640px) {
+  .sidebar {
+    height: 58px;
+    padding: 0 6px;
+    gap: 2px;
+  }
+
+  .sidebar-menu,
+  .sidebar-bottom {
+    gap: 2px;
+  }
+
+  .icon-btn {
+    width: 40px;
+    height: 40px;
+  }
+
+  .icon-btn svg {
+    width: 19px;
+    height: 19px;
+  }
+
+  .sidebar-avatar {
+    width: 42px;
+    height: 42px;
+  }
+
+  .avatar-inicial {
+    width: 36px;
+    height: 36px;
+    font-size: 15px;
+  }
+}

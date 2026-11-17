@@ -19,7 +19,9 @@
   background-size: cover;
   background-position: center;
   background-attachment: fixed;
-  overflow-x: hidden;
+  /* clip (no hidden): recorta lo que sobra a los lados SIN crear una zona de scroll propia,
+     así no hay barras dobles y la barra superior puede quedarse fija (sticky) en celular */
+  overflow-x: clip;
 }
 
 .glass {
@@ -738,37 +740,78 @@
    RESPONSIVE
 ====================================================== */
 @media (max-width: 1024px) {
-  .sidebar {
-    display: none;
-  }
+  /* La barra lateral pasa a ser barra inferior (barra-lateral.css): se deja su espacio abajo */
   .main-wrapper {
     margin-left: 0;
-    padding: 12px;
+    padding: 12px 12px 96px;
   }
+  /* Encabezado en 3 filas: marca + acciones / categorías (deslizables) / búsqueda.
+     sticky en vez de fixed: su altura cambia según el contenido y así nunca tapa las tarjetas */
   .top-navbar {
-    left: 12px;
-    right: 12px;
+    position: sticky;
     top: 12px;
-    padding: 15px;
+    left: auto;
+    right: auto;
     height: auto;
-    flex-wrap: wrap;
-    border-radius: 20px;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+      'marca acciones'
+      'categorias categorias'
+      'buscar buscar';
+    align-items: center;
+    row-gap: 10px;
+    column-gap: 12px;
+    padding: 14px 16px;
+    border-radius: 22px;
+  }
+  .nav-brand {
+    grid-area: marca;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .header-actions {
+    grid-area: acciones;
   }
   .nav-categories {
-    order: 3;
-    width: 100%;
+    grid-area: categorias;
+    min-width: 0;
+    margin: 0;
     justify-content: flex-start;
   }
   .search-bar {
-    order: 4;
-    width: 100%;
-    margin-top: 10px;
+    grid-area: buscar;
+    width: auto;
+    margin: 0;
   }
   .content-area {
-    padding-top: 140px;
+    padding-top: 0;
   }
   .grid-cards {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(auto-fill, minmax(min(220px, 100%), 1fr));
+    gap: 14px;
+  }
+}
+
+/* Celular */
+@media (max-width: 640px) {
+  .main-wrapper {
+    padding: 10px 10px 88px;
+    gap: 16px;
+  }
+  .top-navbar {
+    top: 10px;
+    padding: 12px 14px;
+  }
+  .nav-brand {
+    font-size: 19px;
+  }
+  .btn-add {
+    padding: 9px 16px;
+  }
+  .grid-cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 10px;
   }
 }

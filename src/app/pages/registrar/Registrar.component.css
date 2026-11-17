@@ -9,6 +9,9 @@
 
   min-height: 100vh;
   display: grid;
+  /* La columna nunca es más ancha que la pantalla: sin esto tomaba los 440px de la tarjeta
+     y en celular la tarjeta se salía por la derecha */
+  grid-template-columns: minmax(0, 1fr);
   place-items: center;
   padding: 24px;
   font-family: 'Inter', sans-serif;

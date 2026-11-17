@@ -231,6 +231,7 @@
   align-items: center;
   width: 100%;
   padding: 20px 10px 30px; /* Ajuste de espacio */
+  box-sizing: border-box; /* el relleno va DENTRO del 100%: antes se salía 20px a los lados */
   gap: 20px;
 }
 

@@ -5,10 +5,16 @@ html,
 body {
   margin: 0;
   padding: 0;
-  width: 100%;
-  height: 100%;
-  overflow-x: hidden; /* Elimina el scroll horizontal de raíz */
+  min-height: 100%;
   background-color: #0f1419; /* Color oscuro para que no haya destellos blancos */
+}
+
+/* Sin scroll horizontal, con UNA sola barra de scroll (la de la página).
+   Antes html Y body tenían overflow-x: hidden y height: 100%: el body se volvía una segunda
+   zona con scroll propio y aparecían barras de desplazamiento dobles en toda la app.
+   Puesto solo en body, el navegador lo aplica a la ventana y el body no crea su propio scroll. */
+body {
+  overflow-x: hidden;
 }
 
 /* =========================================

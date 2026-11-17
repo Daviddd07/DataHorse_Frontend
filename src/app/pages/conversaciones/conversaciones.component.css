@@ -102,8 +102,11 @@
   flex-direction: column;
   gap: 12px;
   padding: 16px 18px;
-  height: 70vh;
-  min-height: 420px;
+  /* El chat llena la pantalla menos el encabezado de la página (~232px), sin pasarse:
+     antes 70vh + encabezado superaban la altura y aparecía una barra de scroll extra */
+  height: calc(100vh - 232px);
+  height: calc(100dvh - 232px);
+  min-height: 340px;
   box-sizing: border-box;
 }
 

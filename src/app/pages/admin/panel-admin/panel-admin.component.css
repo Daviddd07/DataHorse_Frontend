@@ -479,51 +479,18 @@
 }
 
 /* ======================================================
-   RESPONSIVE: la barra lateral pasa arriba
+   RESPONSIVE: la barra lateral pasa a ser barra inferior (barra-lateral.css),
+   igual que en el marketplace; aquí solo se deja su espacio abajo
 ====================================================== */
 @media (max-width: 1024px) {
-  /* En horizontal DockDirective no actúa (la magnificación es vertical) */
-  .sidebar {
-    position: sticky;
-    top: 12px;
-    left: auto;
-    bottom: auto;
-    width: auto;
-    margin: 12px 12px 0;
-    padding: 8px 14px;
-    flex-direction: row;
-    border-radius: 999px;
-  }
-
-  .sidebar-logo {
-    width: 40px;
-    height: 40px;
-    margin: 0 4px 0 0;
-  }
-
-  .logo-img {
-    width: 36px;
-    height: 36px;
-  }
-
-  .sidebar-menu,
-  .sidebar-bottom {
-    flex-direction: row;
-    width: auto;
-  }
-
-  .sidebar-bottom {
-    margin: 0 0 0 auto;
-  }
-
-  .sidebar-separador {
-    width: 2px;
-    height: 22px;
-    margin: 0 6px;
-  }
-
   .admin-main {
     margin-left: 0;
-    padding: 20px 16px 40px;
+    padding: 20px 16px 96px;
+  }
+}
+
+@media (max-width: 640px) {
+  .admin-main {
+    padding: 14px 10px 88px;
   }
 }

@@ -27,8 +27,11 @@
 
 /* Tarjeta de Cristal Oscuro */
 .login-card {
-  width: 400px;
+  /* 400px de contenido + 2×40px de relleno = mismo ancho que antes en PC (480px);
+     con border-box el relleno queda DENTRO y en celular la tarjeta respeta los márgenes */
+  width: 480px;
   max-width: 100%;
+  box-sizing: border-box;
   padding: 44px 40px;
 
   background: var(--bg-glass);
@@ -411,6 +414,48 @@ button[type='submit']:active {
 .aviso-secundario:focus-visible {
   outline: 2px solid var(--accent-gold);
   outline-offset: 2px;
+}
+
+/* Pantallas bajas (portátiles con escalado de Windows, celular acostado): la tarjeta se
+   compacta para caber completa sin barra de desplazamiento. Mismo diseño, menos aire. */
+@media (max-height: 760px) {
+  .login-container {
+    padding: 16px;
+  }
+  .login-card {
+    padding: 28px 36px;
+  }
+  .login-logo {
+    width: 60px;
+    height: 60px;
+    margin-bottom: 10px;
+  }
+  .subtitle {
+    margin-bottom: 20px;
+  }
+  .form-group {
+    margin-bottom: 14px;
+  }
+  .divider {
+    margin: 14px 0;
+  }
+}
+
+@media (max-height: 640px) {
+  .login-card {
+    padding: 20px 32px;
+  }
+  .login-card h1 {
+    font-size: 22px;
+  }
+  .login-logo {
+    width: 48px;
+    height: 48px;
+    margin-bottom: 6px;
+  }
+  .subtitle {
+    margin-bottom: 14px;
+  }
 }
 
 @media (max-width: 420px) {
