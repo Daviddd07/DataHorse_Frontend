@@ -9,7 +9,10 @@ COPY package.json package-lock.json ./
 RUN npm ci
 
 COPY . .
-RUN npm run build -- --configuration production
+# Configuración de Angular: "production" (Docker local, por defecto) o "despliegue" (servidor AWS,
+# la pasa docker-compose.prod.yml como build arg)
+ARG CONFIGURACION=production
+RUN npm run build -- --configuration ${CONFIGURACION}
 
 # ==========================================
 # ETAPA 2: Servir con Nginx

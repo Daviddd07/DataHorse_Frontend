@@ -30,6 +30,11 @@
               }
             ],
             "styles": [
+              "node_modules/@fontsource/inter/400.css",
+              "node_modules/@fontsource/inter/500.css",
+              "node_modules/@fontsource/inter/600.css",
+              "node_modules/@fontsource/inter/700.css",
+              "node_modules/@fontsource/inter/800.css",
               "src/styles.css"
             ]
           },
@@ -52,6 +57,27 @@
                 {
                   "replace": "src/environments/environment.ts",
                   "with": "src/environments/environment.prod.ts"
+                }
+              ]
+            },
+            "despliegue": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "500kB",
+                  "maximumError": "1MB"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "10kB",
+                  "maximumError": "30kB"
+                }
+              ],
+              "outputHashing": "all",
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.despliegue.ts"
                 }
               ]
             },

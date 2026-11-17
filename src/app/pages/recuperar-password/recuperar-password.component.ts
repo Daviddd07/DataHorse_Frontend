@@ -184,7 +184,6 @@ import { AuthService } from '../../Services/auth.service';
   `,
   styles: [
     `
-      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
       :host {
         --bg-glass: rgba(30, 35, 40, 0.65);
