@@ -602,7 +602,7 @@
   border-radius: 12px;
   background: rgba(255, 107, 107, 0.15);
   border: 1px solid rgba(255, 107, 107, 0.3);
-  color: #5f0000;
+  color: #ffb4b4; /* rojo claro legible sobre el fondo oscuro (antes #5f0000) */
   font-size: 0.88rem;
 }
 .ec-error-block {

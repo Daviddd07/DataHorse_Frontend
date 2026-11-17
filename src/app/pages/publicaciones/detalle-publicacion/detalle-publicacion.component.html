@@ -6,6 +6,12 @@
       <span>DataHorse</span>
     </div>
 
+    @if (esVisitante()) {
+      <!-- Visitante sin sesión -->
+      <div class="dh-header-actions">
+        <button class="dp-btn-entrar" type="button" (click)="irAlLogin()">Iniciar sesión</button>
+      </div>
+    } @else {
     <div class="dh-header-actions">
       <!-- Botón del más (+) -->
       <button class="dh-icon-btn" type="button" aria-label="Agregar publicación" (click)="volver()">
@@ -29,6 +35,7 @@
         <button class="dh-avatar" type="button">D</button>
       </div>
     </div>
+    }
   </header>
 
   <p class="dp-empty glass" *ngIf="cargando()">Cargando publicación...</p>
@@ -202,7 +209,16 @@
 
         <!-- DOCUMENTOS DE RESPALDO (solo ver; el dueño los gestiona en Editar caballo) -->
         <div class="dp-documentos" *ngIf="p.tiene_documentos">
-          <app-documentos-caballo [idCaballo]="p.id_caballo" />
+          @if (esVisitante()) {
+            <!-- Los documentos son privados: el visitante solo sabe que existen -->
+            <p class="dp-documentos-privados">
+              Este ejemplar tiene documentos de respaldo.
+              <button type="button" class="dp-link" (click)="irAlLogin()">Inicia sesión</button>
+              para verlos.
+            </p>
+          } @else {
+            <app-documentos-caballo [idCaballo]="p.id_caballo" />
+          }
         </div>
 
         <!-- ACCIONES -->
@@ -228,7 +244,11 @@
                 d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"
               ></path>
             </svg>
-            {{ p.es_favorita ? 'En favoritos' : 'Agregar a favoritos' }}
+            @if (esVisitante()) {
+              Inicia sesión para guardar
+            } @else {
+              {{ p.es_favorita ? 'En favoritos' : 'Agregar a favoritos' }}
+            }
           </button>
 
           <button
@@ -251,7 +271,11 @@
             >
               <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
             </svg>
-            {{ abriendoChat() ? 'Abriendo chat…' : 'Chatear con el vendedor' }}
+            @if (esVisitante()) {
+              Inicia sesión para chatear
+            } @else {
+              {{ abriendoChat() ? 'Abriendo chat…' : 'Chatear con el vendedor' }}
+            }
           </button>
         </div>
         <p class="dp-chat-error" role="alert" *ngIf="errorChat()">{{ errorChat() }}</p>

@@ -175,7 +175,7 @@ button[type='submit']:active {
   align-items: center;
   gap: 8px;
   background-color: rgba(255, 107, 107, 0.15);
-  color: #5c1a1a;
+  color: #ffb4b4; /* rojo claro: se lee sobre el vidrio oscuro (antes #5c1a1a casi no se veía) */
   border: 1px solid rgba(255, 107, 107, 0.3);
   border-radius: 8px;
   padding: 10px 14px;

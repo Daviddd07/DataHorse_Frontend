@@ -16,7 +16,10 @@ describe('authGuard', () => {
   const ejecutar = () =>
     TestBed.runInInjectionContext(
       () =>
-        authGuard({} as ActivatedRouteSnapshot, {} as RouterStateSnapshot) as Observable<boolean>,
+        authGuard(
+          {} as ActivatedRouteSnapshot,
+          { url: '/mis-caballos' } as RouterStateSnapshot,
+        ) as Observable<boolean>,
     );
 
   beforeEach(() => {
@@ -36,6 +39,9 @@ describe('authGuard', () => {
   it('should redirect to login when there is no session', async () => {
     auth.me.mockReturnValue(throwError(() => new Error('401')));
     expect(await firstValueFrom(ejecutar())).toBe(false);
-    expect(router.navigate).toHaveBeenCalledWith(['/login']);
+    // Recuerda a dónde quería ir para volver después de iniciar sesión
+    expect(router.navigate).toHaveBeenCalledWith(['/login'], {
+      queryParams: { volver: '/mis-caballos' },
+    });
   });
 });

@@ -210,6 +210,31 @@ describe('Login', () => {
       expect(component.mensaje).toContain('verificar');
     });
 
+    it('should explain how long to wait when there are too many attempts (429)', () => {
+      auth.login.mockReturnValue(
+        throwError(
+          () =>
+            new HttpErrorResponse({
+              status: 429,
+              error: { detail: 'Demasiados intentos fallidos. Intenta de nuevo en 15 minutos.' },
+            }),
+        ),
+      );
+      component.correo = 'a@a.com';
+      component.password = 'Secreto123';
+      component.iniciarSesion();
+      expect(component.mensaje).toBe('Demasiados intentos fallidos. Intenta de nuevo en 15 minutos.');
+      expect(component.cargando).toBe(false);
+    });
+
+    it('should use a default message for 429 without detail', () => {
+      auth.login.mockReturnValue(throwError(() => new HttpErrorResponse({ status: 429 })));
+      component.correo = 'a@a.com';
+      component.password = 'Secreto123';
+      component.iniciarSesion();
+      expect(component.mensaje).toBe('Demasiados intentos. Espera un momento e inténtalo de nuevo.');
+    });
+
     it('should show a generic message on other errors', () => {
       auth.login.mockReturnValue(throwError(() => new HttpErrorResponse({ status: 401 })));
       component.correo = 'a@a.com';

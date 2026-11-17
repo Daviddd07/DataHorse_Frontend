@@ -239,13 +239,13 @@ input.invalido:focus {
 
 .error-msg {
   background-color: rgba(255, 107, 107, 0.15);
-  color: #630f0f;
+  color: #ffb4b4; /* rojo claro legible sobre el fondo oscuro (antes #630f0f) */
   border: 1px solid rgba(255, 107, 107, 0.3);
 }
 
 .ok-msg {
   background-color: rgba(74, 222, 128, 0.15);
-  color: #233f2d;
+  color: #86efac; /* verde claro legible sobre el fondo oscuro (antes #233f2d) */
   border: 1px solid rgba(74, 222, 128, 0.3);
 }
 

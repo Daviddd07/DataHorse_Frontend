@@ -9,7 +9,8 @@ import { adminGuard } from './admin.guard';
 export const routes: Routes = [
   {
     path: '',
-    redirectTo: 'login',
+    // Sin sesión también se puede ver el marketplace (los caballos y sus detalles)
+    redirectTo: 'marketplace',
     pathMatch: 'full',
   },
 
@@ -49,7 +50,7 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./pages/marketplace/marketplace.component').then((m) => m.MarketplaceComponent),
 
-    canActivate: [authGuard],
+    // Público: el visitante ve las publicaciones; publicar, chatear, etc. lo llevan al login
   },
 
   {
@@ -71,7 +72,7 @@ export const routes: Routes = [
         (m) => m.DetallePublicacionComponent,
       ),
 
-    canActivate: [authGuard],
+    // Público: sin sesión se ve el caballo, pero no el teléfono, el chat ni los documentos
   },
 
   {

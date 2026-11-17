@@ -143,6 +143,10 @@ export class MarketplaceComponent {
 
   esAdmin = signal(false);
 
+  // Marketplace público: sin sesión se ven los caballos, pero publicar, chatear, favoritos,
+  // compatibilidad y "lo mío" llevan al login (y después se vuelve aquí).
+  esVisitante = signal(false);
+
   error = signal('');
 
   alturaAscendente = signal(false);
@@ -288,7 +292,6 @@ export class MarketplaceComponent {
     this.cargarUsuario();
     this.cargarRazas();
     this.cargarPublicaciones();
-    this.cargarTotalMisCaballos();
 
     // ?categoria=Compatibilidad abre esa pestaña (p. ej. "Nueva evaluación" desde el resultado)
     const categoria = this.route.snapshot.queryParamMap.get('categoria');
@@ -314,13 +317,19 @@ export class MarketplaceComponent {
 
         this.fotoPerfil.set(urlDeSubida(usuario.foto_perfil));
 
+        this.esVisitante.set(false);
+
         this.cargandoUsuario.set(false);
+
+        // Solo con sesión: contador de "Mis caballos" del menú
+        this.cargarTotalMisCaballos();
       },
 
-      error: (err) => {
-        console.error('Error cargando usuario:', err);
-
+      // Sin sesión (401) es un visitante: puede ver el marketplace igual
+      error: () => {
         this.nombreUsuario.set('');
+
+        this.esVisitante.set(true);
 
         this.cargandoUsuario.set(false);
       },
@@ -449,6 +458,11 @@ export class MarketplaceComponent {
   // ======================================================
 
   toggleFavorito(caballo: CaballoMarketplace): void {
+    if (this.esVisitante()) {
+      this.irAlLogin();
+      return;
+    }
+
     if (caballo.esFavorito) {
       this.caballoService.quitarFavorito(caballo.idCaballo).subscribe({
         next: () => {
@@ -508,6 +522,19 @@ export class MarketplaceComponent {
 
   agregarPublicacion(): void {
     void this.router.navigate(['/publicaciones/nueva']);
+  }
+
+  // ======================================================
+  // VISITANTE SIN SESIÓN
+  // ======================================================
+
+  /** Al login; después de entrar vuelve a esta misma pantalla (?volver=). */
+  irAlLogin(): void {
+    void this.router.navigate(['/login'], { queryParams: { volver: this.router.url } });
+  }
+
+  irARegistro(): void {
+    void this.router.navigate(['/registrar']);
   }
   // ======================================================
   // IR AL DETALLE DE LA PUBLICACIÓN
@@ -603,6 +630,12 @@ export class MarketplaceComponent {
   // ======================================================
 
   seleccionarCategoria(categoria: string): void {
+    // Favoritos y Compatibilidad (IA) necesitan una cuenta
+    if (this.esVisitante() && (categoria === 'Favoritos' || categoria === 'Compatibilidad')) {
+      this.irAlLogin();
+      return;
+    }
+
     // Si vuelven a hacer clic en "Altura", cambiar dirección
     if (categoria === 'Altura' && this.categoriaActiva() === 'Altura') {
       this.alturaAscendente.update((v) => !v);

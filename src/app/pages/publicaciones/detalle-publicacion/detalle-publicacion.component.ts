@@ -4,6 +4,8 @@ import { CommonModule, CurrencyPipe, DatePipe } from '@angular/common';
 
 import { ActivatedRoute, Router } from '@angular/router';
 
+import { AuthService } from '../../../Services/auth.service';
+
 import { CaballoService, PublicacionDetalle } from '../../../Services/caballo.service';
 
 import { Calificacion, ConversacionService } from '../../../Services/conversacion.service';
@@ -42,6 +44,12 @@ export class DetallePublicacionComponent {
   private readonly caballoService = inject(CaballoService);
 
   private readonly conversacionService = inject(ConversacionService);
+
+  private readonly auth = inject(AuthService);
+
+  // Marketplace público: sin sesión se ve el caballo, pero chatear, favoritos y
+  // documentos llevan al login (y después se vuelve a esta publicación)
+  readonly esVisitante = signal(false);
 
   abriendoChat = signal(false);
 
@@ -97,6 +105,11 @@ export class DetallePublicacionComponent {
   });
 
   constructor() {
+    this.auth.me().subscribe({
+      next: () => this.esVisitante.set(false),
+      error: () => this.esVisitante.set(true),
+    });
+
     const id = Number(this.route.snapshot.paramMap.get('id'));
 
     if (!id) {
@@ -168,7 +181,17 @@ export class DetallePublicacionComponent {
   }
 
   // Abre (o reutiliza) la conversación con el vendedor y va al chat
+  /** Al login; después de entrar vuelve a esta publicación (?volver=). */
+  irAlLogin(): void {
+    void this.router.navigate(['/login'], { queryParams: { volver: this.router.url } });
+  }
+
   chatearConVendedor(): void {
+    if (this.esVisitante()) {
+      this.irAlLogin();
+      return;
+    }
+
     const p = this.publicacion();
 
     if (!p || p.es_mia || this.abriendoChat()) {
@@ -192,6 +215,11 @@ export class DetallePublicacionComponent {
   }
 
   toggleFavorito(): void {
+    if (this.esVisitante()) {
+      this.irAlLogin();
+      return;
+    }
+
     const p = this.publicacion();
 
     if (!p) {

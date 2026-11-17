@@ -8,13 +8,19 @@ describe('appConfig', () => {
 });
 
 describe('routes', () => {
-  it('should redirect the empty path to login', () => {
+  it('should redirect the empty path to the public marketplace', () => {
     const raiz = routes.find((r) => r.path === '');
-    expect(raiz?.redirectTo).toBe('login');
+    expect(raiz?.redirectTo).toBe('marketplace');
+  });
+
+  it('should let visitors see the marketplace and the publication detail', () => {
+    for (const path of ['marketplace', 'publicaciones/:id']) {
+      expect(routes.find((r) => r.path === path)?.canActivate).toBeUndefined();
+    }
   });
 
   it('should protect private routes with the guard', () => {
-    const privadas = ['marketplace', 'publicaciones/nueva', 'publicaciones/:id', 'mis-caballos'];
+    const privadas = ['publicaciones/nueva', 'mis-caballos', 'conversaciones', 'mi-cuenta'];
     for (const path of privadas) {
       expect(routes.find((r) => r.path === path)?.canActivate?.length).toBe(1);
     }

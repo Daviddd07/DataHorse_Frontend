@@ -9,6 +9,7 @@ import {
   inject,
   signal,
 } from '@angular/core';
+import { of } from 'rxjs';
 
 import { CommonModule } from '@angular/common';
 
@@ -145,13 +146,27 @@ export class Login implements AfterViewInit {
   private irSegunRol(): void {
     this.cargando = true;
 
-    this.auth.destinoTrasLogin().subscribe((destino) => {
-      void this.router.navigate([destino]).finally(() => {
+    const volver = this.rutaParaVolver();
+    const destino$ = volver ? of(volver) : this.auth.destinoTrasLogin();
+
+    destino$.subscribe((destino) => {
+      // ?volver= trae la URL completa (p. ej. /publicaciones/5); el destino por rol es una ruta simple
+      const navegacion = volver ? this.router.navigateByUrl(destino) : this.router.navigate([destino]);
+
+      void navegacion.finally(() => {
         this.cargando = false;
         this.cargandoGoogle = false;
         this.cdr.markForCheck();
       });
     });
+  }
+
+  /** ?volver= de la URL, solo si es una ruta interna (evita redirigir a otro sitio). */
+  private rutaParaVolver(): string | null {
+    const volver = this.router.parseUrl(this.router.url).queryParams['volver'];
+    if (typeof volver !== 'string' || !volver.startsWith('/') || volver.startsWith('//')) return null;
+    if (volver.startsWith('/login')) return null;
+    return volver;
   }
 
   // =====================================================
@@ -206,11 +221,18 @@ export class Login implements AfterViewInit {
         if (e.status === 403) {
           this.mensaje = 'Debes verificar tu correo antes de iniciar sesión.';
           this.necesitaVerificacion = true;
-          return;
+        } else if (e.status === 429) {
+          // Bloqueo temporal por demasiados intentos: el backend dice cuánto esperar
+          this.mensaje =
+            e.error?.detail || 'Demasiados intentos. Espera un momento e inténtalo de nuevo.';
+        } else {
+          // 3. Cualquier otro error (401, 500, etc.) mostramos el mensaje genérico
+          this.mensaje = 'Contraseña o correo incorrecto.';
         }
 
-        // 3. Cualquier otro error (401, 500, etc.) mostramos el mensaje genérico
-        this.mensaje = 'Contraseña o correo incorrecto.';
+        // La app no detecta cambios sola (zoneless): sin esto el mensaje de error no se
+        // mostraba y el botón se quedaba en "Ingresando..." después de un login fallido
+        this.cdr.markForCheck();
       },
     });
   }
