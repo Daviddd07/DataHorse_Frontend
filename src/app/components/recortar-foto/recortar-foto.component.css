@@ -85,6 +85,12 @@
 
 /* Marco cuadrado: la imagen se arrastra dentro y nunca deja huecos */
 .rf-marco {
+  /* Es un <button> (elemento interactivo con foco): se quitan sus estilos por defecto */
+  display: block;
+  padding: 0;
+  border: 0;
+  font: inherit;
+  color: inherit;
   position: relative;
   align-self: center;
   width: min(320px, 78vw);

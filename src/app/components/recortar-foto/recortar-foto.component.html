@@ -30,11 +30,11 @@
     </p>
 
     <!-- Marco cuadrado: la imagen se mueve dentro; la máscara muestra el círculo final -->
-    <div
+    <button
       #marco
+      type="button"
       class="rf-marco"
       [class.rf-arrastrando]="arrastrando()"
-      tabindex="0"
       aria-label="Área de recorte. Usa las flechas para mover la foto."
       (pointerdown)="alPresionar($event)"
       (pointermove)="alArrastrar($event)"
@@ -48,7 +48,7 @@
           #imagen
           class="rf-imagen"
           [src]="fuente"
-          alt="Foto elegida"
+          alt=""
           draggable="false"
           [style]="estiloImagen()"
           (load)="alCargarImagen($event)"
@@ -59,7 +59,7 @@
         <span class="skeleton rf-cargando" aria-hidden="true"></span>
       }
       <span class="rf-mascara" aria-hidden="true"></span>
-    </div>
+    </button>
 
     <!-- Zoom -->
     <div class="rf-zoom">

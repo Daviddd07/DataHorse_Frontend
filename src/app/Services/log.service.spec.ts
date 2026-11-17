@@ -91,7 +91,7 @@ describe('LogService', () => {
     });
 
     it('flush should do nothing with an empty queue', () => {
-      service.flush();
+      expect(() => service.flush()).not.toThrow();
       http.expectNone(url);
     });
 
@@ -188,7 +188,9 @@ describe('LogService', () => {
       http.expectNone(url);
       service.info('si');
       vi.advanceTimersByTime(5000);
-      http.expectOne(url).flush({});
+      const req = http.expectOne(url);
+      expect((req.request.body as LogLote).logs.map((l) => l.mensaje)).toEqual(['si']);
+      req.flush({});
     });
 
     it('should not write to the console in production', () => {

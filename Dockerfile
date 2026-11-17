@@ -6,7 +6,8 @@ FROM node:22-alpine AS build
 WORKDIR /app
 
 COPY package.json package-lock.json ./
-RUN npm ci
+# Versiones exactas del lock y sin ejecutar scripts de instalación de terceros
+RUN npm ci --ignore-scripts
 
 COPY . .
 # Configuración de Angular: "production" (Docker local, por defecto) o "despliegue" (servidor AWS,

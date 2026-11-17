@@ -8,15 +8,15 @@ import { Directive, ElementRef, OnDestroy, effect, inject, input } from '@angula
 })
 export class ContadorDirective implements OnDestroy {
   readonly appContador = input.required<number>();
-  readonly duracion = input(1200, { alias: 'contadorDuracion' });
-  readonly retraso = input(0, { alias: 'contadorRetraso' });
+  readonly contadorDuracion = input(1200);
+  readonly contadorRetraso = input(0);
 
   private readonly el = inject<ElementRef<HTMLElement>>(ElementRef);
   private actual = 0;
   private frame = 0;
 
   constructor() {
-    effect(() => this.animar(this.appContador(), this.duracion(), this.retraso()));
+    effect(() => this.animar(this.appContador(), this.contadorDuracion(), this.contadorRetraso()));
   }
 
   ngOnDestroy(): void {

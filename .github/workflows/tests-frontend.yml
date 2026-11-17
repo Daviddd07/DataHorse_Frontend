@@ -25,14 +25,17 @@ jobs:
           node-version: "24"
           cache: npm
 
+      # Versiones exactas de package-lock.json y sin ejecutar scripts de instalación de
+      # terceros (esbuild, lmdb, etc. traen sus binarios como dependencias opcionales).
       - name: Instalar dependencias del proyecto
-        run: npm ci
+        run: npm ci --ignore-scripts
 
+      # Scripts de package.json: usan el Angular CLI instalado desde package-lock.json
       - name: Compilar la aplicación
-        run: npx ng build
+        run: npm run build
 
       - name: Ejecutar pruebas con cobertura
-        run: npx ng test --no-watch --coverage
+        run: npm run test:coverage
 
       - name: Guardar informe de cobertura
         if: always()

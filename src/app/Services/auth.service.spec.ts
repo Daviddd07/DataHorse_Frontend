@@ -79,20 +79,28 @@ describe('AuthService', () => {
 
     it('pasados 5 s vuelve a comprobar la sesión', () => {
       const ahora = vi.spyOn(Date, 'now').mockReturnValue(1_000_000);
-      service.me().subscribe();
+      const nombres: string[] = [];
+      service.me().subscribe((u) => nombres.push(u.nombre));
       http.expectOne(`${api}/auth/me`).flush(USUARIO);
 
       ahora.mockReturnValue(1_000_000 + 5001);
-      service.me().subscribe();
+      service.me().subscribe((u) => nombres.push(u.nombre));
       http.expectOne(`${api}/auth/me`).flush(USUARIO);
+
+      expect(nombres).toEqual(['Ana', 'Ana']);
     });
 
     it('un error no se guarda: la siguiente vez pregunta de nuevo', () => {
-      service.me().subscribe({ error: () => undefined });
+      let fallo = false;
+      service.me().subscribe({ error: () => (fallo = true) });
       http.expectOne(`${api}/auth/me`).flush('no', { status: 401, statusText: 'No autorizado' });
 
-      service.me().subscribe();
+      let nombre = '';
+      service.me().subscribe((u) => (nombre = u.nombre));
       http.expectOne(`${api}/auth/me`).flush(USUARIO);
+
+      expect(fallo).toBe(true);
+      expect(nombre).toBe('Ana');
     });
 
     it('login, Google, cambio de contraseña y logout olvidan al usuario', () => {
@@ -103,6 +111,7 @@ describe('AuthService', () => {
         ['logout', () => service.logout().subscribe()],
       ];
 
+      const consultasTrasLlamada: string[] = [];
       for (const [ruta, llamar] of llamadas) {
         service.olvidarUsuario(); // cada vuelta empieza sin el usuario de la anterior
         service.me().subscribe();
@@ -111,9 +120,13 @@ describe('AuthService', () => {
         llamar();
         http.expectOne(`${api}/auth/${ruta}`).flush({ mensaje: 'ok', usuario: USUARIO });
 
+        // Tras la llamada el usuario guardado se olvidó: /auth/me se vuelve a pedir
         service.me().subscribe();
         http.expectOne(`${api}/auth/me`).flush(USUARIO);
+        consultasTrasLlamada.push(ruta);
       }
+
+      expect(consultasTrasLlamada).toEqual(['login', 'google', 'reset-password', 'logout']);
     });
   });
 
